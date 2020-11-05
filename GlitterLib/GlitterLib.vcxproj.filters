@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{aaf271da-01da-43c7-8548-7f62b92eb88c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{0754d7ba-a052-4835-96d0-6aa680d15d1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IO">
+      <UniqueIdentifier>{c252de7b-9b35-40e2-b01f-cf1c961a118a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Material">
+      <UniqueIdentifier>{a91823dd-20e0-4045-a291-b4f6290aa350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Glitter">
+      <UniqueIdentifier>{e5ad6d86-ef9d-494f-8b03-e8b3379b93ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BIXF">
+      <UniqueIdentifier>{ef84064a-e686-48e4-b32d-894b36635ba9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="VertexFormat.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Submesh.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGens.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryWriter.cpp">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryReader.cpp">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Endianness.cpp">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Parameter.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="GlitterMaterial.cpp">
+      <Filter>Glitter</Filter>
+    </ClCompile>
+    <ClCompile Include="GlitterEffect.cpp">
+      <Filter>Glitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Emitter.cpp">
+      <Filter>Glitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Glitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Glitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Material</Filter>
+    </ClCompile>
+    <ClCompile Include="BIXF.cpp">
+      <Filter>BIXF</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bone.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Submesh.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexFormat.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGens.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryReader.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryWriter.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Endianness.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameter.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Emitter.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="GlitterEffect.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="GlitterMaterial.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="BIXF.h">
+      <Filter>BIXF</Filter>
+    </ClInclude>
+    <ClInclude Include="GlitterEnums.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

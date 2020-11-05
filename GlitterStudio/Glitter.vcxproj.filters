@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{addcb70c-acb1-4812-bf11-f9e9e7a5d81e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{835cd113-6b99-459d-816e-20ac272f094f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{32a0bf3e-35da-47d5-bc8b-baa394d75460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{977ab9ad-3de8-4d16-ab9d-0b8aa5d10b23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{a22afce8-bb34-435d-8529-60dccad4675f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Model">
+      <UniqueIdentifier>{3deeec2a-2b06-409f-aa0c-932e06a3c96f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render">
+      <UniqueIdentifier>{6588d707-e7bb-45c0-acbf-eb5ccb800a8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Nodes">
+      <UniqueIdentifier>{51d4849d-cfa2-44f1-a4f2-c38cf5a3cc2b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_glfw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_opengl3.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_stdlib.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectNode.cpp">
+      <Filter>Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="EmitterNode.cpp">
+      <Filter>Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleNode.cpp">
+      <Filter>Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialNode.cpp">
+      <Filter>Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationNode.cpp">
+      <Filter>Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleInstance.cpp">
+      <Filter>Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Inspector.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandManager.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationTimeline.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GlitterPlayer.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectCommands.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Stopwatch.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationCommands.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialEditor.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Camera.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ResourceManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shader.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\MeshData.cpp">
+      <Filter>Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ModelData.cpp">
+      <Filter>Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SubmeshData.cpp">
+      <Filter>Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\TextureData.cpp">
+      <Filter>Engine\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\RenderTarget.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="OpenGlLoader.cpp" />
+    <ClCompile Include="EffectOperations.cpp" />
+    <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="DebugInfo.cpp" />
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="FileGUI.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFn.cpp" />
+    <ClCompile Include="GlitterTreeView.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_glfw.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_opengl3.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_stdlib.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectNode.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationNode.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="EmitterNode.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleNode.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialNode.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleInstance.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Inspector.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ICommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandManager.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="IGlitterNode.h">
+      <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTimeline.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GlitterPlayer.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="IconsFontAwesome5.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="UiHelper.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopwatch.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialEditor.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Light.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ResourceManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shader.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Transform.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\MeshData.h">
+      <Filter>Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ModelData.h">
+      <Filter>Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SubmeshData.h">
+      <Filter>Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TextureData.h">
+      <Filter>Engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\RenderTarget.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor.h" />
+    <ClInclude Include="Renderer.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="FileGUI.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="UIFn.h" />
+    <ClInclude Include="Logger.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

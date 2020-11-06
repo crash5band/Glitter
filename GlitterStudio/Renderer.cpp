@@ -115,7 +115,7 @@ void Renderer::initQuad()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexBuffer), (void*)offsetof(VertexBuffer, uv));
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
@@ -132,7 +132,7 @@ void Renderer::setBlendMode(Glitter::BlendMode mode)
 {
 	if (mode == Glitter::BlendMode::Zero || mode == Glitter::BlendMode::Opaque)
 	{
-		//glDisable(GL_BLEND);
+		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 	}
 	else
@@ -341,11 +341,10 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 				{
 					if (node->getMesh())
 					{
-						configureShader(meshParticleShader, camera, viewportSize);
-
 						if (batchStarted)
 							endBatch();
 
+						configureShader(meshParticleShader, camera, viewportSize);
 						drawPoolMesh(instance, camera);
 					}
 				}
@@ -353,11 +352,10 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 				{
 					if (node->getMaterialNode()->getTexture())
 					{
-						configureShader(billboardShader, camera, viewportSize);
-
 						if (!batchStarted)
 							beginBatch();
 
+						configureShader(billboardShader, camera, viewportSize);
 						drawPoolQuad(instance, camera);
 					}
 				}

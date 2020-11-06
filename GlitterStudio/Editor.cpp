@@ -68,7 +68,8 @@ bool Editor::openGlitterFile(const std::string& filename)
 		{
 			for (int i = 0; i < MaterialEditor::getNodes().size(); ++i)
 			{
-				if (materials[i]->getMaterial()->getName() == p->getParticle()->getMaterial())
+				if (Glitter::File::getFilePath(effect->getFilename()) == Glitter::File::getFilePath(materials[i]->getMaterial()->getFilename())
+					&& materials[i]->getMaterial()->getName() == p->getParticle()->getMaterial())
 					p->setMaterial(materials[i]);
 			}
 		}
@@ -201,6 +202,7 @@ void Editor::reset()
 	CommandManager::clearAll();
 	ResourceManager::disposeAll();
 	Logger::clear();
+
 }
 
 void Editor::go()

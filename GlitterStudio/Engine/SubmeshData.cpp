@@ -53,7 +53,6 @@ void SubmeshData::build()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, uv));
 	glEnableVertexAttribArray(2);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 

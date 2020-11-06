@@ -2,6 +2,7 @@
 #include "Editor.h"
 #include "Utilities.h"
 #include "UiHelper.h"
+#include "Logger.h"
 #include "AnimationCommands.h"
 #include "Stopwatch.h"
 
@@ -164,7 +165,10 @@ void Inspector::update()
 			auto animNode = animationNode.lock();
 
 			if (ImGui::Button("Rebuild Animation Cache", ImVec2(ImGui::GetContentRegionAvail().x, 30)))
+			{
 				animNode->buildCache();
+				Logger::log(Message(MessageType::Normal, "Rebuilt animation cache."));
+			}
 
 			std::vector<Glitter::Animation>& list = (*animNode->getAnimationList());
 			addListProperty("##Animations", list, selectedAnimation);
@@ -213,7 +217,7 @@ void Inspector::update()
 	{
 		if (animationNode.lock() && selectedAnimation >= 0 && selectedAnimation < animationNode.lock()->getAnimationList()->size())
 		{
-			Stopwatch timelineTimer("Timeline");
+			Stopwatch timelineTimer("Curve Editor");
 			timeline.update(animationNode, selectedAnimation);
 		}
 		else

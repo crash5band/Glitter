@@ -106,7 +106,6 @@ void GlitterPlayer::update(float deltaT)
 	{
 		//ImGui::Button(ICON_FA_VIDEO, ImVec2(30, 25));
 
-		ImGui::SameLine();
 		if (ImGui::Button(ICON_FA_VIDEO " Reset", ImVec2(80, 25)))
 			camera->reset();
 
@@ -124,7 +123,7 @@ void GlitterPlayer::update(float deltaT)
 		static const char* speeds[2]{ "0.50", "1.00"};
 		int selectedIndex = (int)(playbackSpeed / 0.5f) - 1;
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 3.0f);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 4.0f);
 		if (ImGui::BeginCombo("Playback Speed", speeds[selectedIndex]))
 		{
 			for (int i = 0; i < 2; ++i)
@@ -158,6 +157,9 @@ void GlitterPlayer::update(float deltaT)
 		}
 		ImGui::EndMainMenuBar();
 
+		ImGui::SameLine();
+		ImGui::Text("Camera Pitch: %.3f, Yaw: %.3f", camera->getPitch(), camera->getYaw());
+		
 		updatePreview(deltaT);
 	}
 	ImGui::End();

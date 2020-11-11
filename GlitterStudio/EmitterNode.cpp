@@ -81,8 +81,6 @@ void EmitterNode::setVisibleAll(bool val)
 
 void EmitterNode::emit(float time, Transform& baseTransform)
 {
-	// TODO: Account for different direction types
-
 	if (!emissionCount)
 		return;
 
@@ -172,6 +170,10 @@ void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, Camera* ca
 	switch (type)
 	{
 	case Glitter::EmitterDirectionType::Billboard:
+		transform.rotation.x = transform.rotation.x - camera->getPitch();
+		transform.rotation.y = 90.0f - camera->getYaw();
+		break;
+
 	case Glitter::EmitterDirectionType::YRotationOnly:
 		transform.rotation.y = 90.0f - camera->getYaw();
 		break;

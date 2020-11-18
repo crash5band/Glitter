@@ -332,7 +332,7 @@ void Editor::updateGlitterTreeView()
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 				ImGui::SetCursorScreenPos(cursorPos);
-				if (ImGui::Button(lbl.c_str(), ImVec2(23, 20)))
+				if (ImGui::Button(lbl.c_str(), ImVec2(24, 24)))
 					emitterNodes[j]->setVisible(!emitterNodes[j]->isVisible());
 
 				ImGui::PopStyleColor(3);
@@ -356,7 +356,7 @@ void Editor::updateGlitterTreeView()
 							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 							ImGui::SetCursorScreenPos(cursorPos);
-							if (ImGui::Button(lbl.c_str(), ImVec2(23, 20)))
+							if (ImGui::Button(lbl.c_str(), ImVec2(24, 24)))
 								emitterParticles[p].setVisible(!emitterParticles[p].isVisible());
 
 							ImGui::PopStyleColor(3);

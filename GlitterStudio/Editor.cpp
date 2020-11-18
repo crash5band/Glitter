@@ -51,6 +51,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 	}
 
 	std::string extension = Glitter::File::getFileExtension(filename);
+	std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 	if (extension == "gte")
 	{
 		auto effect = std::make_shared<Glitter::GlitterEffect>(filename);

@@ -158,7 +158,7 @@ void GlitterPlayer::update(float deltaT)
 		ImGui::EndMainMenuBar();
 
 		ImGui::SameLine();
-		ImGui::Text("Camera Pitch: %.3f, Yaw: %.3f", camera->getPitch(), camera->getYaw());
+		ImGui::Text("Camera Pitch: %.2f, Yaw: %.2f", camera->getPitch(), camera->getYaw());
 		
 		updatePreview(deltaT);
 	}

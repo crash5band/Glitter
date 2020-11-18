@@ -54,6 +54,7 @@ private:
 	void updateTimelineKeys();
 	void updateTimelineContents();
 	void drawAnimationCurve(const Glitter::Key &k1, const Glitter::Key &k2);
+	void onHandleDrag(Glitter::Key &k, int index, ImVec2& pos);
 	float heightToValue(float height);
 	float valueToHeight(float val);
 

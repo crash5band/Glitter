@@ -330,6 +330,20 @@ void AnimationTimeline::updateTimelineContents()
 		ImGui::GetColorU32(ImVec4(0.5, 0.5, 0.5, 0.85)), 2.0f);
 }
 
+void AnimationTimeline::onHandleDrag(Glitter::Key& k, int index, ImVec2& pos)
+{
+	currentFrame = k.time;
+	selectedKey = index;
+	pos.y += io->MouseDelta.y;
+
+	if (pos.y < canvasPos.y + 1.0f)
+		pos.y = canvasPos.y + 1.0f;
+	if (pos.y > canvasPos.y + canvasSize.y - 1.0f)
+		pos.y = canvasPos.y + canvasSize.y - 1.0f;
+
+	holdingTan = true;
+}
+
 void AnimationTimeline::updateTimelineKeys()
 {
 	if (!animation)
@@ -357,7 +371,7 @@ void AnimationTimeline::updateTimelineKeys()
 			ImGui::InvisibleButton(std::string("##circle" + i).c_str(), ImVec2(20, 20));
 
 
-			// capture the initial state of the key once any of the buttons (key, or tangent hangles) are active
+			// capture the initial state of the key once any of the buttons (key, or tangent handles) are active
 			// then push the initial and final state to the command's constructor
 			if (ImGui::IsItemActivated())
 				k = keys[i];
@@ -382,67 +396,67 @@ void AnimationTimeline::updateTimelineKeys()
 
 			anyDeacvtivated |= ImGui::IsItemDeactivated();
 
+			// From here on this needs to be put into one or more methods due to its complexity.
+
 			ImVec2 circlePos = ImVec2(x - 50, y + keys[i].inParam * 10);
 			drawList->AddLine(ImVec2(x, y), circlePos, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 3);
-			ImGui::SetCursorScreenPos(ImVec2(circlePos.x - 10, circlePos.y - 10));
 
 			if (Utilities::isWithinRange(circlePos.y, canvasPos.y, canvasPos.y + canvasSize.y + 10))
+			{
+				ImGui::SetCursorScreenPos(ImVec2(circlePos.x, circlePos.y - 10));
 				ImGui::InvisibleButton(std::string("tan_in" + std::to_string(i)).c_str(), ImVec2(20, 20));
 
-			if (ImGui::IsItemActivated())
-				k = keys[i];
+				if (ImGui::IsItemActivated())
+					k = keys[i];
 
-			// left tangent
-			if (ImGui::IsItemActive())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text("InParam: %.3f", keys[i].inParam);
-				ImGui::Text("OutParam: %.3f", keys[i].outParam);
-				ImGui::EndTooltip();
-
-				if (ImGui::IsMouseDragging(0))
+				// left tangent
+				if (ImGui::IsItemActive())
 				{
-					currentFrame = keys[i].time;
-					selectedKey = i;
-					circlePos.y += io->MouseDelta.y;
-					keys[i].inParam = (circlePos.y - y) / 10.0f;
-					holdingTan = true;
-				}
-			}
+					ImGui::BeginTooltip();
+					ImGui::Text("InParam: %.3f", keys[i].inParam);
+					ImGui::Text("OutParam: %.3f", keys[i].outParam);
+					ImGui::EndTooltip();
 
-			anyDeacvtivated |= ImGui::IsItemDeactivated();
-			drawList->AddCircleFilled(circlePos, 6, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+					if (ImGui::IsMouseDragging(0))
+					{
+						onHandleDrag(keys[i], i, circlePos);
+						keys[i].inParam = (circlePos.y - y) / 10.0f;
+					}
+				}
+
+				anyDeacvtivated |= ImGui::IsItemDeactivated();
+				drawList->AddCircleFilled(circlePos, 6, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+			}
 
 			circlePos = ImVec2(x + 50, y - keys[i].outParam * 10);
 			drawList->AddLine(ImVec2(x, y), circlePos, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 3);
-			ImGui::SetCursorScreenPos(ImVec2(circlePos.x - 10, circlePos.y - 10));
 			
 			if (Utilities::isWithinRange(circlePos.y, canvasPos.y, canvasPos.y + canvasSize.y + 10))
+			{
+				ImGui::SetCursorScreenPos(ImVec2(circlePos.x - 10, circlePos.y - 10));
 				ImGui::InvisibleButton(std::string("tan_out" + std::to_string(i)).c_str(), ImVec2(20, 20));
 
-			if (ImGui::IsItemActivated())
-				k = keys[i];
+				if (ImGui::IsItemActivated())
+					k = keys[i];
 
-			// right tangent
-			if (ImGui::IsItemActive())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text("InParam: %.3f", keys[i].inParam);
-				ImGui::Text("OutParam: %.3f", keys[i].outParam);
-				ImGui::EndTooltip();
-
-				if (ImGui::IsMouseDragging(0))
+				// right tangent
+				if (ImGui::IsItemActive())
 				{
-					currentFrame = keys[i].time;
-					selectedKey = i;
-					circlePos.y += io->MouseDelta.y;
-					keys[i].outParam = -(circlePos.y - y) / 10.0f;
-					holdingTan = true;
-				}
-			}
+					ImGui::BeginTooltip();
+					ImGui::Text("InParam: %.3f", keys[i].inParam);
+					ImGui::Text("OutParam: %.3f", keys[i].outParam);
+					ImGui::EndTooltip();
 
-			anyDeacvtivated |= ImGui::IsItemDeactivated();
-			drawList->AddCircleFilled(circlePos, 6, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+					if (ImGui::IsMouseDragging(0))
+					{
+						onHandleDrag(keys[i], i, circlePos);
+						keys[i].outParam = -(circlePos.y - y) / 10.0f;
+					}
+				}
+
+				anyDeacvtivated |= ImGui::IsItemDeactivated();
+				drawList->AddCircleFilled(circlePos, 6, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+			}
 
 			if (anyDeacvtivated && k != keys[i])
 			{

@@ -123,7 +123,20 @@ float AnimationNode::tryGetValue(Glitter::AnimationType type, float time, float 
 	if (anim->getRepeatType() == Glitter::RepeatType::Repeat)
 		time = (int)time % (int)anim->getEndTime();
 
-	return time >= values.size() ? values[values.size() - 1] : values[time];
+	if (time >= values.size() || time < 0)
+		return values[values.size() - 1];
+
+	/*
+		interpolate key frame values for smoother animations. Mostly noticeable when using playback
+		speeds less than 1.0x.
+	*/
+	float start = values[(int)time];
+	float end = start;
+	if ((int)time < values.size() - 1)
+		end = values[(int)time + 1];
+
+	float ratio = time - (int)time;
+	return start + (ratio * (end - start));
 }
 
 Glitter::Vector3 AnimationNode::tryGetTranslation(float time)

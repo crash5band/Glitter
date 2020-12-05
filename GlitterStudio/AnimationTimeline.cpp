@@ -62,19 +62,22 @@ void AnimationTimeline::initLimits()
 
 void AnimationTimeline::updateCurveEdit()
 {
-    drawList	= ImGui::GetWindowDrawList();
+	drawList	= ImGui::GetWindowDrawList();
 	canvasSize	= ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - 10);
 	canvasPos	= ImGui::GetCursorScreenPos();
 	boundaries	= ImRect(canvasPos, canvasPos + canvasSize);
 	
 	ImGui::ItemSize(boundaries);
-	hovered		= ImGui::IsMouseHoveringRect(boundaries.Min, boundaries.Max);
+	hovered	= ImGui::IsMouseHoveringRect(boundaries.Min, boundaries.Max);
 	effectiveFrameWidth = frameWidth * zoom;
 	canvasPos -= timelinePosOffset;
 
 	// draw background
 	ImU32 bgColor = ImGui::GetColorU32(ImGuiCol_FrameBg);
 	ImGui::RenderFrame(boundaries.Min, boundaries.Max, bgColor, true, 1.0f);
+
+	// scroll bar
+	updateCurveScroll();
 
 	if (animation)
 	{
@@ -102,6 +105,49 @@ void AnimationTimeline::updateCurveEdit()
 
 	timelinePosOffset.x = std::clamp(timelinePosOffset.x, timelineMinOffset.x, timelineMaxOffset.x);
 	drawList->PopClipRect();
+}
+
+void AnimationTimeline::updateCurveScroll()
+{
+	const float scrollHeight = 15.0f;
+	float winY = ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y - scrollHeight -5.0f;
+	
+	scrollbarPos = ImVec2(ImGui::GetCurrentWindow()->Pos.x, winY);
+	scrollbarSize = ImGui::GetCurrentWindow()->Size;
+	scrollBoundaries = ImRect(scrollbarPos, ImVec2(scrollbarPos.x + scrollbarSize.x, scrollbarPos.y + scrollHeight));
+
+	//ImGui::SetCursorScreenPos(scrollbarPos);
+	//if (ImGui::InvisibleButton("scroll_btn", ImVec2(scrollbarSize.x, scrollHeight)))
+	{
+		// TODO: make this work!
+	}
+
+	ImGui::RenderFrame(scrollBoundaries.Min, scrollBoundaries.Max, ImGui::GetColorU32(ImGuiCol_ScrollbarBg));
+
+	float maxPos = timelineMaxOffset.x + abs(timelineMinOffset.x);
+	float curPos = timelinePosOffset.x + abs(timelineMinOffset.x);
+	float ratio = curPos / maxPos;
+	int visibleFrames = canvasSize.x / effectiveFrameWidth;
+	int maxFrames = ((timelineMaxOffset.x + abs(timelineMinOffset.x) + canvasSize.x) / effectiveFrameWidth) + frameStart;
+
+	float sizeRatio = ((float)visibleFrames / (float)maxFrames);
+	sizeRatio = std::clamp(sizeRatio, 0.05f, 1.0f);
+	float size = scrollbarSize.x * sizeRatio;
+
+	// we subtract barOffset.x twice for barMax because it is already included in barMin.
+	ImVec2 barOffset(5.0f, 2.5f);
+	ImVec2 barMin = ImVec2(scrollBoundaries.Min.x + ratio * (scrollBoundaries.Max.x - scrollBoundaries.Min.x - size), scrollbarPos.y) + barOffset;
+	ImVec2 barMax = ImVec2(barMin.x - barOffset.x + size, scrollbarPos.y + scrollHeight) - barOffset;
+
+	ImGui::SetCursorScreenPos(barMin);
+	ImGui::InvisibleButton("scroll_handle", barMax - barMin);
+	if (ImGui::IsItemActive())
+	{
+		timelinePosOffset.x += ImGui::GetIO().MouseDelta.x * zoom;
+		timelinePosOffset.x = std::clamp(timelinePosOffset.x, timelineMinOffset.x, timelineMaxOffset.x);
+	}
+
+	drawList->AddRectFilled(barMin, barMax, ImGui::GetColorU32(ImGuiCol_ScrollbarGrab), 15.0f);
 }
 
 int AnimationTimeline::getCurrentFrame() const
@@ -241,7 +287,7 @@ void AnimationTimeline::updateMarker()
 {
 	if (animation)
 	{
-		if (io->MouseDown[0] && hovered && !holdingTan)
+		if (io->MouseClicked[0] && hovered && !holdingTan)
 		{
 			currentFrame = ((io->MousePos.x - canvasPos.x) / effectiveFrameWidth) + frameStart;
 		}
@@ -388,6 +434,8 @@ void AnimationTimeline::updateTimelineKeys()
 					y += io->MouseDelta.y;
 
 					selectedKey = i;
+					currentFrame = ((io->MousePos.x - canvasPos.x) / effectiveFrameWidth) + frameStart;
+					currentFrame = std::clamp(currentFrame, frameStart, frameEnd);
 					keys[i].time = currentFrame;
 					keys[i].value = std::clamp(heightToValue(y), lowerLimits[limitIndex], higherLimits[limitIndex]);
 					animation->verifyKeyOrder(i);

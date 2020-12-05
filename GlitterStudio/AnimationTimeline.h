@@ -42,15 +42,19 @@ private:
 	ImVec2 timelineMinOffset;
 	ImVec2 timelineMaxOffset;
 	ImRect boundaries;
+	ImRect scrollBoundaries;
 
 	ImVec2 canvasPos;
 	ImVec2 canvasSize;
+	ImVec2 scrollbarPos;
+	ImVec2 scrollbarSize;
 	float effectiveFrameWidth;
 
 	void initLimits();
 	void updateMarker();
 	void updateControls();
 	void updateCurveEdit();
+	void updateCurveScroll();
 	void updateTimelineKeys();
 	void updateTimelineContents();
 	void drawAnimationCurve(const Glitter::Key &k1, const Glitter::Key &k2);

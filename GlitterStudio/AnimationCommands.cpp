@@ -8,32 +8,32 @@ AddAnimationCommand::AddAnimationCommand(std::shared_ptr<AnimationNode> &node, G
 
 void AddAnimationCommand::execute()
 {
-	animationNode->add(anim, position);
-	animationNode->buildCache();
+	animationNode.lock()->add(anim, position);
+	animationNode.lock()->buildCache();
 }
 
 void AddAnimationCommand::undo()
 {
-	animationNode->remove(position);
-	animationNode->buildCache();
+	animationNode.lock()->remove(position);
+	animationNode.lock()->buildCache();
 }
 
 RemoveAnimationCommand::RemoveAnimationCommand(std::shared_ptr<AnimationNode> &node, size_t pos) :
 	animationNode{ node }, position{ pos }
 {
-	anim = (*animationNode->getAnimationList())[pos];
+	anim = (*animationNode.lock()->getAnimationList())[pos];
 }
 
 void RemoveAnimationCommand::execute()
 {
-	animationNode->remove(position);
-	animationNode->buildCache();
+	animationNode.lock()->remove(position);
+	animationNode.lock()->buildCache();
 }
 
 void RemoveAnimationCommand::undo()
 {
-	animationNode->add(anim, position);
-	animationNode->buildCache();
+	animationNode.lock()->add(anim, position);
+	animationNode.lock()->buildCache();
 }
 
 AddKeyCommand::AddKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, int frame) :
@@ -44,48 +44,48 @@ AddKeyCommand::AddKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, int
 
 void AddKeyCommand::execute()
 {
-	keyPos = animationNode->getAnimationList()->at(animIndex).insertKey(key);
-	animationNode->buildCache();
+	keyPos = animationNode.lock()->getAnimationList()->at(animIndex).insertKey(key);
+	animationNode.lock()->buildCache();
 }
 
 void AddKeyCommand::undo()
 {
-	animationNode->getAnimationList()->at(animIndex).removeKey(keyPos);
-	animationNode->buildCache();
+	animationNode.lock()->getAnimationList()->at(animIndex).removeKey(keyPos);
+	animationNode.lock()->buildCache();
 }
 
 RemoveKeyCommand::RemoveKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, size_t pos) :
 	animationNode{ node }, animIndex{ a }, keyPos{ pos }
 {
-	key = animationNode->getAnimationList()->at(animIndex).getKeys()[keyPos];
+	key = animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos];
 }
 
 void RemoveKeyCommand::execute()
 {
-	animationNode->getAnimationList()->at(animIndex).removeKey(keyPos);
-	animationNode->buildCache();
+	animationNode.lock()->getAnimationList()->at(animIndex).removeKey(keyPos);
+	animationNode.lock()->buildCache();
 }
 
 void RemoveKeyCommand::undo()
 {
-	animationNode->getAnimationList()->at(animIndex).insertKey(key);
-	animationNode->buildCache();
+	animationNode.lock()->getAnimationList()->at(animIndex).insertKey(key);
+	animationNode.lock()->buildCache();
 }
 
 ChangeKeyCommand::ChangeKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, size_t pos, Glitter::Key &k) :
 	animationNode{ node }, animIndex{ a }, keyPos{ pos }, newVal{ k }
 {
-	oldVal = animationNode->getAnimationList()->at(animIndex).getKeys()[keyPos];
+	oldVal = animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos];
 }
 
 void ChangeKeyCommand::execute()
 {
-	animationNode->getAnimationList()->at(animIndex).getKeys()[keyPos] = newVal;
-	animationNode->buildCache();
+	animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos] = newVal;
+	animationNode.lock()->buildCache();
 }
 
 void ChangeKeyCommand::undo()
 {
-	animationNode->getAnimationList()->at(animIndex).getKeys()[keyPos] = oldVal;
-	animationNode->buildCache();
+	animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos] = oldVal;
+	animationNode.lock()->buildCache();
 }

@@ -266,27 +266,26 @@ NodeType EmitterNode::getType()
 
 void EmitterNode::populateInspector()
 {
-	Glitter::Emitter* em = emitter.get();
 	using Emitter = Glitter::Emitter;
 	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
 
 	if (ImGui::TreeNodeEx("Emitter", treeFlags))
 	{
-		addTextProperty("Name", em->getName(), em, std::mem_fn(&Emitter::setName));
+		addTextProperty("Name", emitter->getName(), emitter, std::mem_fn(&Emitter::setName));
 
 		addComboBoxProperty("Type", Glitter::emitterTypeTable, Glitter::emitterTypeTableSize,
-			em->getType(), em, std::mem_fn(&Emitter::setType));
+			emitter->getType(), emitter, std::mem_fn(&Emitter::setType));
 
-		addFloatProperty("Start", em->getStartTime(), em, std::mem_fn(&Emitter::setStartTime));
-		addFloatProperty("Life", em->getLifeTime(), em, std::mem_fn(&Emitter::setLifeTime));
-		addFloatProperty("Loop Start", em->getLoopStartTime(), em, std::mem_fn(&Emitter::setLoopStartTime));
-		addFloatProperty("Loop End", em->getLoopEndTime(), em, std::mem_fn(&Emitter::setLoopEndTime));
+		addFloatProperty("Start", emitter->getStartTime(), emitter, std::mem_fn(&Emitter::setStartTime));
+		addFloatProperty("Life", emitter->getLifeTime(), emitter, std::mem_fn(&Emitter::setLifeTime));
+		addFloatProperty("Loop Start", emitter->getLoopStartTime(), emitter, std::mem_fn(&Emitter::setLoopStartTime));
+		addFloatProperty("Loop End", emitter->getLoopEndTime(), emitter, std::mem_fn(&Emitter::setLoopEndTime));
 
-		addVector3Property("Translation", em->getTranslation(), em, std::mem_fn(&Emitter::setTranslation));
-		addVector3Property("Rotation", em->getRotation(), em, std::mem_fn(&Emitter::setRotation));
-		addVector3Property("Rotation Add", em->getRotationAdd(), em, std::mem_fn(&Emitter::setRotationAdd));
-		addVector3Property("Rotation Add Random", em->getRotationAddRandom(), em, std::mem_fn(&Emitter::setRotationAddRandom));
-		addVector3Property("Scaling", em->getScaling(), em, std::mem_fn(&Emitter::setScaling));
+		addVector3Property("Translation", emitter->getTranslation(), emitter, std::mem_fn(&Emitter::setTranslation));
+		addVector3Property("Rotation", emitter->getRotation(), emitter, std::mem_fn(&Emitter::setRotation));
+		addVector3Property("Rotation Add", emitter->getRotationAdd(), emitter, std::mem_fn(&Emitter::setRotationAdd));
+		addVector3Property("Rotation Add Random", emitter->getRotationAddRandom(), emitter, std::mem_fn(&Emitter::setRotationAddRandom));
+		addVector3Property("Scaling", emitter->getScaling(), emitter, std::mem_fn(&Emitter::setScaling));
 
 		ImGui::TreePop();
 	}
@@ -295,26 +294,26 @@ void EmitterNode::populateInspector()
 	if (ImGui::TreeNodeEx("Emission", treeFlags))
 	{
 		addComboBoxProperty("Condition", Glitter::emitConditionTable, Glitter::emitConditionTableSize,
-			em->getEmitCondition(), em, std::mem_fn(&Emitter::setEmitCondition));
+			emitter->getEmitCondition(), emitter, std::mem_fn(&Emitter::setEmitCondition));
 
 		// Emitters use the first 6 entries in DirectionType
 		addComboBoxProperty("Direction Type", Glitter::EdirectionTypeTable, Glitter::EdirectionTypeTableSize,
-			em->getDirectionType(), em, std::mem_fn(&Emitter::setDirectionType));
+			emitter->getDirectionType(), emitter, std::mem_fn(&Emitter::setDirectionType));
 
-		addFloatProperty("Interval", em->getEmissionInterval(), em, std::mem_fn(&Emitter::setEmissionInterval));
-		addIntProperty("Particles Per Emission", em->getParticlesPerEmission(), em, std::mem_fn(&Emitter::setParticlePerEmission));
+		addFloatProperty("Interval", emitter->getEmissionInterval(), emitter, std::mem_fn(&Emitter::setEmissionInterval));
+		addIntProperty("Particles Per Emission", emitter->getParticlesPerEmission(), emitter, std::mem_fn(&Emitter::setParticlePerEmission));
 
 		ImGui::TreePop();
 	}
 	endPropertyColumn();
 
 	// Type specific properties
-	switch (em->getType())
+	switch (emitter->getType())
 	{
 	case Glitter::EmitterType::Box:
 		if (ImGui::TreeNodeEx("Box Properties", treeFlags))
 		{
-			addVector3Property("Size", em->getSize(), em, std::mem_fn(&Emitter::setSize));
+			addVector3Property("Size", emitter->getSize(), emitter, std::mem_fn(&Emitter::setSize));
 			ImGui::TreePop();
 		}
 		break;
@@ -322,12 +321,12 @@ void EmitterNode::populateInspector()
 	case Glitter::EmitterType::Cylinder:
 		if (ImGui::TreeNodeEx("Cylinder Properties", treeFlags))
 		{
-			addFloatProperty("Radius", em->getRadius(), em, std::mem_fn(&Emitter::setRadius));
-			addFloatProperty("Height", em->getHeight(), em, std::mem_fn(&Emitter::setHeight));
-			addFloatProperty("Start Angle", em->getStartAngle(), em, std::mem_fn(&Emitter::setStartAngle));
-			addFloatProperty("End Angle",	em->getEndAngle(), em, std::mem_fn(&Emitter::setEndAngle));
+			addFloatProperty("Radius", emitter->getRadius(), emitter, std::mem_fn(&Emitter::setRadius));
+			addFloatProperty("Height", emitter->getHeight(), emitter, std::mem_fn(&Emitter::setHeight));
+			addFloatProperty("Start Angle", emitter->getStartAngle(), emitter, std::mem_fn(&Emitter::setStartAngle));
+			addFloatProperty("End Angle",	emitter->getEndAngle(), emitter, std::mem_fn(&Emitter::setEndAngle));
 			addComboBoxProperty("Direction Type", Glitter::emissionDirectionTypeTable, Glitter::emissionDirectionTypeTableSize,
-				em->getEmissionDirectionType(), em, std::mem_fn(&Emitter::setEmissionDirectionType));
+				emitter->getEmissionDirectionType(), emitter, std::mem_fn(&Emitter::setEmissionDirectionType));
 
 			ImGui::TreePop();
 		}
@@ -336,11 +335,11 @@ void EmitterNode::populateInspector()
 	case Glitter::EmitterType::Sphere:
 		if (ImGui::TreeNodeEx("Sphere Properties", treeFlags))
 		{
-			addFloatProperty("Radius", em->getRadius(), em, std::mem_fn(&Emitter::setRadius));
-			addFloatProperty("Latitude", em->getLatitude(), em, std::mem_fn(&Emitter::setLatitude));
-			addFloatProperty("Longitude", em->getLongitude(), em, std::mem_fn(&Emitter::setLongitude));
+			addFloatProperty("Radius", emitter->getRadius(), emitter, std::mem_fn(&Emitter::setRadius));
+			addFloatProperty("Latitude", emitter->getLatitude(), emitter, std::mem_fn(&Emitter::setLatitude));
+			addFloatProperty("Longitude", emitter->getLongitude(), emitter, std::mem_fn(&Emitter::setLongitude));
 			addComboBoxProperty("Emission Direction Type", Glitter::emissionDirectionTypeTable, Glitter::emissionDirectionTypeTableSize,
-				em->getEmissionDirectionType(), em, std::mem_fn(&Emitter::setEmissionDirectionType));
+				emitter->getEmissionDirectionType(), emitter, std::mem_fn(&Emitter::setEmissionDirectionType));
 
 			ImGui::TreePop();
 		}
@@ -350,7 +349,7 @@ void EmitterNode::populateInspector()
 		if (ImGui::TreeNodeEx("Mesh", treeFlags))
 		{
 			beginPropertyColumn("Mesh");
-			if (ImGui::Button(mesh.get() ? em->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
+			if (ImGui::Button(mesh.get() ? emitter->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
 			{
 				std::string name;
 				if (FileGUI::openFileGUI(FileType::Model, name))
@@ -365,7 +364,7 @@ void EmitterNode::populateInspector()
 	case Glitter::EmitterType::Polygon:
 		if (ImGui::TreeNodeEx("Polygon Properties", treeFlags))
 		{
-			addIntProperty("Point Count", em->getPointCount(), em, std::mem_fn(&Emitter::setPointCount));
+			addIntProperty("Point Count", emitter->getPointCount(), emitter, std::mem_fn(&Emitter::setPointCount));
 			ImGui::TreePop();
 		}
 		break;
@@ -374,8 +373,8 @@ void EmitterNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Flags", treeFlags))
 	{
-		addFlagsProperty("Loop", em->getFlags(), 1, em, std::mem_fn(&Emitter::setFlags));
-		addUIntProperty("Flags", em->getFlags(), em, std::mem_fn(&Emitter::setFlags));
+		addFlagsProperty("Loop", emitter->getFlags(), 1, emitter, std::mem_fn(&Emitter::setFlags));
+		addUIntProperty("Flags", emitter->getFlags(), emitter, std::mem_fn(&Emitter::setFlags));
 		ImGui::TreePop();
 	}
 	endPropertyColumn();

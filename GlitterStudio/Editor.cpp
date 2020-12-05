@@ -104,6 +104,19 @@ bool Editor::openGlitterFile(const std::string& filename)
 	return true;
 }
 
+void Editor::closeEffect(size_t index)
+{
+	effectNodes.erase(effectNodes.begin() + index);
+
+	ResourceManager::cleanModels();
+	ResourceManager::cleanTextures();
+}
+
+void Editor::closeMaterial(size_t index)
+{
+	// TODO: make it work lol
+}
+
 void Editor::saveEffect(bool saveAs)
 {
 	if (selectedParent > -1)
@@ -228,6 +241,8 @@ void Editor::go()
 
 			resizeLayout(dockspaceID, screenWidth, screenHeight);
 			initLayout(dockspaceID);
+
+			//ImGui::ShowDemoWindow();
 
 			updateGlitterTreeView();
 			MaterialEditor::update();

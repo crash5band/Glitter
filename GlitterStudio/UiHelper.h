@@ -25,13 +25,13 @@ static void endPropertyColumn()
 }
 
 template <typename T>
-static void addTextProperty(const char* label, std::string val, T* obj, std::_Mem_fn<void (T::*)(std::string)> func)
+static void addTextProperty(const char* label, std::string val, std::shared_ptr<T> &obj, std::_Mem_fn<void (T::*)(std::string)> func)
 {
 	static std::string old;
 
 	beginPropertyColumn(label);
 	if (ImGui::InputText(std::string("##").append(label).c_str(), &val))
-		func(obj, val);
+		func(obj.get(), val);
 
 	ImGui::NextColumn();
 	if (ImGui::IsItemActivated())
@@ -42,13 +42,13 @@ static void addTextProperty(const char* label, std::string val, T* obj, std::_Me
 }
 
 template <typename T>
-static void addIntProperty(const char* label, int val, T* obj, std::_Mem_fn<void (T::*)(int)> func)
+static void addIntProperty(const char* label, int val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(int)> func)
 {
 	static int old;
 
 	beginPropertyColumn(label);
 	if (ImGui::InputInt(std::string("##").append(label).c_str(), &val, 1, 10))
-		func(obj, val);
+		func(obj.get(), val);
 
 	ImGui::NextColumn();
 	if (ImGui::IsItemActivated())
@@ -59,7 +59,7 @@ static void addIntProperty(const char* label, int val, T* obj, std::_Mem_fn<void
 }
 
 template <typename T>
-static void addUIntProperty(const char* label, unsigned int val, T* obj, std::_Mem_fn<void (T::*)(unsigned int)> func)
+static void addUIntProperty(const char* label, unsigned int val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(unsigned int)> func)
 {
 	static unsigned int old;
 	int num = val;
@@ -69,7 +69,7 @@ static void addUIntProperty(const char* label, unsigned int val, T* obj, std::_M
 	{
 		if (num < 0)
 			num = 0;
-		func(obj, num);
+		func(obj.get(), num);
 	}
 
 	ImGui::NextColumn();
@@ -81,13 +81,13 @@ static void addUIntProperty(const char* label, unsigned int val, T* obj, std::_M
 }
 
 template <typename T>
-static void addFloatProperty(const char* label, float val, T* obj, std::_Mem_fn<void (T::*)(float)> func)
+static void addFloatProperty(const char* label, float val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(float)> func)
 {
 	static float old;
 
 	beginPropertyColumn(label);
 	if (ImGui::InputFloat(std::string("##").append(label).c_str(), &val, 1.0f, 5.0f, 2))
-		func(obj, val);
+		func(obj.get(), val);
 
 	ImGui::NextColumn();
 	if (ImGui::IsItemActivated())
@@ -98,14 +98,14 @@ static void addFloatProperty(const char* label, float val, T* obj, std::_Mem_fn<
 }
 
 template <typename T>
-static void addVector2Property(const char* label, Glitter::Vector2 val, T* obj, std::_Mem_fn<void (T::*)(Glitter::Vector2)> func)
+static void addVector2Property(const char* label, Glitter::Vector2 val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(Glitter::Vector2)> func)
 {
 	float v2[2] = { val.x, val.y };
 	static Glitter::Vector2 old;
 
 	beginPropertyColumn(label);
 	if (ImGui::DragFloat2(std::string("##").append(label).c_str(), v2, 0.1f))
-		func(obj, Glitter::Vector2(v2[0], v2[1]));
+		func(obj.get(), Glitter::Vector2(v2[0], v2[1]));
 
 	ImGui::NextColumn();
 	if (ImGui::IsItemActivated())
@@ -116,14 +116,14 @@ static void addVector2Property(const char* label, Glitter::Vector2 val, T* obj, 
 }
 
 template <typename T>
-static void addVector3Property(const char* label, Glitter::Vector3 val, T* obj, std::_Mem_fn<void (T::*)(Glitter::Vector3)> func)
+static void addVector3Property(const char* label, Glitter::Vector3 val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(Glitter::Vector3)> func)
 {
 	float v3[3] = { val.x, val.y, val.z };
 	static Glitter::Vector3 old;
 
 	beginPropertyColumn(label);
 	if (ImGui::DragFloat3(std::string("##").append(label).c_str(), v3, 0.1f))
-		func(obj, Glitter::Vector3(v3[0], v3[1], v3[2]));
+		func(obj.get(), Glitter::Vector3(v3[0], v3[1], v3[2]));
 
 	ImGui::NextColumn();
 	if (ImGui::IsItemActivated())
@@ -134,7 +134,7 @@ static void addVector3Property(const char* label, Glitter::Vector3 val, T* obj, 
 }
 
 template <typename T>
-static void addColorProperty(const char* label, Glitter::Color val, T* obj, std::_Mem_fn<void (T::*)(Glitter::Color)> func)
+static void addColorProperty(const char* label, Glitter::Color val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(Glitter::Color)> func)
 {
 	float v4[4] = { val.r, val.g, val.b, val.a };
 	static Glitter::Color old;
@@ -145,7 +145,7 @@ static void addColorProperty(const char* label, Glitter::Color val, T* obj, std:
 		flags |= ImGuiColorEditFlags_PickerHueWheel;
 
 	if (ImGui::ColorEdit4(std::string("##").append(label).c_str(), v4, flags))
-		func(obj, Glitter::Color(v4[0], v4[1], v4[2], v4[3]));
+		func(obj.get(), Glitter::Color(v4[0], v4[1], v4[2], v4[3]));
 
 	ImGui::NextColumn();
 	if (ImGui::IsItemActivated())
@@ -156,7 +156,7 @@ static void addColorProperty(const char* label, Glitter::Color val, T* obj, std:
 }
 
 template <typename T, typename S>
-static void addComboBoxProperty(const char* label, const std::string* items, const size_t count, S val, T* obj, std::_Mem_fn<void (T::*)(S)> func)
+static void addComboBoxProperty(const char* label, const std::string* items, const size_t count, S val, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(S)> func)
 {
 	int selectedIndex = size_t(val);
 	std::string comboLabel = Glitter::glitterEnumToString(items, count, (size_t)val);
@@ -243,7 +243,7 @@ static void addStackView(const char* label, std::stack<ICommand*>& items)
 }
 
 template <typename T>
-static void addFlagsProperty(const char* label, unsigned int flags, unsigned int flagVal, T* obj, std::_Mem_fn<void (T::*)(unsigned int)> func)
+static void addFlagsProperty(const char* label, unsigned int flags, unsigned int flagVal, std::shared_ptr<T>& obj, std::_Mem_fn<void (T::*)(unsigned int)> func)
 {
 	unsigned int f = flags;
 	if (ImGui::CheckboxFlags(label, &f, flagVal))

@@ -87,6 +87,8 @@ public:
 	void go();
 	void reset();
 	bool openGlitterFile(const std::string& filename);
+	void closeEffect(size_t index);
+	void closeMaterial(size_t index);
 	void saveEffect(bool saveAs);
 	void saveMaterial(bool saveAs);
 	bool isNodeSelected(int index1, int index2);
@@ -97,7 +99,7 @@ public:
 	void updateMenuBar();
 	void frameTime();
 
-	void effectMenu(int index);
+	bool effectMenu(int index);
 	void emitterMenu(int parent, int index);
 	void particleMenu(int parent, int index);
 	void instanceMenu(int effect, int parent, int index);

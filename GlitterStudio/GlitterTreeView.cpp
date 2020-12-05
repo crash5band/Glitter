@@ -106,6 +106,7 @@ void Editor::updateMenuBar()
 		ImGui::EndMenu();
 	}
 
+#ifdef _DEBUG
 	if (ImGui::BeginMenu("Debug"))
 	{
 		ImGui::MenuItem("Debug Info", NULL, &Editor::debugWindows.performanceOpen);
@@ -116,6 +117,7 @@ void Editor::updateMenuBar()
 
 		ImGui::EndMenu();
 	}
+#endif
 
 	if (ImGui::BeginMenu("Preferences"))
 	{
@@ -137,8 +139,9 @@ bool Editor::isNodeSelected(int parentIndex, int childIndex)
 	return selectedParent == parentIndex && selectedChild == childIndex;
 }
 
-void Editor::effectMenu(int index)
+bool Editor::effectMenu(int index)
 {
+	bool closed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
 		if (ImGui::Selectable(ICON_FA_CUBE " Add Emitter"))
@@ -149,12 +152,21 @@ void Editor::effectMenu(int index)
 
 		if (ImGui::Selectable(ICON_FA_TIMES " Close"))
 		{
-			//effectNodes.erase(effectNodes.begin() + index);
+			closeEffect(index);
 			selectedChild = selectedParent == index ? selectedChild : -1;
+			if (selectedParent == index)
+			{
+				selectedParent = -1;
+				selectedChild = -1;
+			}
+
+			closed = true;
 		}
 
 		ImGui::EndPopup();
 	}
+
+	return closed;
 }
 
 void Editor::emitterMenu(int parent, int index)
@@ -301,7 +313,13 @@ void Editor::updateGlitterTreeView()
 		std::string effectName = effectNodes[i]->getEffect()->getName();
 		nodeFlags = isNodeSelected(i, -1) ? selectedParentFlags : parentNodeFlags;
 		bool open = ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, "");
-		effectMenu(i);
+		if (effectMenu(i))
+		{
+			--i;
+			if (open) ImGui::TreePop();
+
+			continue;
+		}
 		setNodeSelected(i, -1);
 
 		ImGui::SameLine();

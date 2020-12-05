@@ -38,16 +38,15 @@ void MaterialNode::changeTexture(const std::string& filepath)
 
 void MaterialNode::populateInspector()
 {
-	Glitter::GlitterMaterial* mat = material.get();
 	using Material = Glitter::GlitterMaterial;
 	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
 
 	if (ImGui::TreeNodeEx("Material", treeFlags))
 	{
-		addTextProperty("Name", mat->getName(), mat, std::mem_fn(&Material::setName));
+		addTextProperty("Name", material->getName(), material, std::mem_fn(&Material::setName));
 
 		beginPropertyColumn("Texture");
-		if (ImGui::Button(texture.get() ? mat->getTexture().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
+		if (ImGui::Button(texture.get() ? material->getTexture().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
 		{
 			std::string name;
 			if (FileGUI::openFileGUI(FileType::Texture, name))
@@ -55,13 +54,13 @@ void MaterialNode::populateInspector()
 		}
 		ImGui::NextColumn();
 
-		addComboBoxProperty("Blend Mode", Glitter::blendModeTable, Glitter::blendModeTableSize - 1, mat->getBlendMode(),
-			mat, std::mem_fn(&Material::setBlendMode));
+		addComboBoxProperty("Blend Mode", Glitter::blendModeTable, Glitter::blendModeTableSize - 1, material->getBlendMode(),
+			material, std::mem_fn(&Material::setBlendMode));
 
-		addComboBoxProperty("Address Mode", Glitter::addressModeTable, Glitter::addressModeTableSize, mat->getAddressMode(),
-			mat, std::mem_fn(&Material::setAddressMode));
+		addComboBoxProperty("Address Mode", Glitter::addressModeTable, Glitter::addressModeTableSize, material->getAddressMode(),
+			material, std::mem_fn(&Material::setAddressMode));
 
-		addVector2Property("Split", mat->getSplit(), mat, std::mem_fn(&Material::setSplit));
+		addVector2Property("Split", material->getSplit(), material, std::mem_fn(&Material::setSplit));
 
 		ImGui::TreePop();
 	}

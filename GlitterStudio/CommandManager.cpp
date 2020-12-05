@@ -19,6 +19,17 @@ void CommandManager::undo()
 		return;
 
 	ICommand* command = undoStack.top();
+	while (!command->isValid())
+	{
+		undoStack.pop();
+		delete command;
+
+		if (undoStack.size())
+			command = undoStack.top();
+		else
+			return;
+	}
+
 	undoStack.pop();
 	command->undo();
 	redoStack.push(command);

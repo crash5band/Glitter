@@ -80,35 +80,34 @@ void ParticleNode::setBaseColor(Glitter::Color color)
 
 void ParticleNode::populateInspector()
 {
-	Glitter::Particle* p = particle.get();
 	using Particle = Glitter::Particle;
 	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_FramePadding;
 	ImGuiTreeNodeFlags defaultOpen = ImGuiTreeNodeFlags_DefaultOpen | treeFlags;
 
 	if (ImGui::TreeNodeEx("Particle", defaultOpen))
 	{
-		addTextProperty("Name", p->getName(), p, std::mem_fn(&Particle::setName));
-		addComboBoxProperty("Type", Glitter::particleTypeTable, Glitter::particleTypeTableSize, p->getType(),
-			p, std::mem_fn(&Particle::setType));
+		addTextProperty("Name", particle->getName(), particle, std::mem_fn(&Particle::setName));
+		addComboBoxProperty("Type", Glitter::particleTypeTable, Glitter::particleTypeTableSize, particle->getType(),
+			particle, std::mem_fn(&Particle::setType));
 
-		addFloatProperty("Life", p->getLifeTime(), p, std::mem_fn(&Particle::setLifeTime));
-		addColorProperty("Color", p->getColor(), p, std::mem_fn(&Particle::setColor));
-		addIntProperty("Max Count", p->getMaxCount(), p, std::mem_fn(&Particle::setMaxCount));
+		addFloatProperty("Life", particle->getLifeTime(), particle, std::mem_fn(&Particle::setLifeTime));
+		addColorProperty("Color", particle->getColor(), particle, std::mem_fn(&Particle::setColor));
+		addIntProperty("Max Count", particle->getMaxCount(), particle, std::mem_fn(&Particle::setMaxCount));
 
-		addComboBoxProperty("Pivot", Glitter::pivotPositionTable, Glitter::pivotPositionTableSize, p->getPivotPosition(),
-			p, std::mem_fn(&Particle::setPivotPosition));
+		addComboBoxProperty("Pivot", Glitter::pivotPositionTable, Glitter::pivotPositionTableSize, particle->getPivotPosition(),
+			particle, std::mem_fn(&Particle::setPivotPosition));
 
 		addComboBoxProperty("Direction Type", Glitter::PdirectionTypeTable, Glitter::PdirectionTypeTableSize,
-			p->getDirectionType(), p, std::mem_fn(&Particle::setDirectionType));
+			particle->getDirectionType(), particle, std::mem_fn(&Particle::setDirectionType));
 
-		addFloatProperty("Z Offset", p->getZOffset(), p, std::mem_fn(&Particle::setZOffset));
+		addFloatProperty("Z Offset", particle->getZOffset(), particle, std::mem_fn(&Particle::setZOffset));
 
-		addVector3Property("Size", p->getSize(), p, std::mem_fn(&Particle::setSize));
-		addVector3Property("Size Random", p->getSizeRandom(), p, std::mem_fn(&Particle::setSizeRandom));
-		addVector3Property("Rotation", p->getRotation(), p, std::mem_fn(&Particle::setRotation));
-		addVector3Property("Rotation Random", p->getRotationRandom(), p, std::mem_fn(&Particle::setRotationRandom));
-		addVector3Property("Rotation Add", p->getRotationAdd(), p, std::mem_fn(&Particle::setRotationAdd));
-		addVector3Property("Rotation Add Random", p->getRotationAddRandom(), p, std::mem_fn(&Particle::setRotationAddRandom));
+		addVector3Property("Size", particle->getSize(), particle, std::mem_fn(&Particle::setSize));
+		addVector3Property("Size Random", particle->getSizeRandom(), particle, std::mem_fn(&Particle::setSizeRandom));
+		addVector3Property("Rotation", particle->getRotation(), particle, std::mem_fn(&Particle::setRotation));
+		addVector3Property("Rotation Random", particle->getRotationRandom(), particle, std::mem_fn(&Particle::setRotationRandom));
+		addVector3Property("Rotation Add", particle->getRotationAdd(), particle, std::mem_fn(&Particle::setRotationAdd));
+		addVector3Property("Rotation Add Random", particle->getRotationAddRandom(), particle, std::mem_fn(&Particle::setRotationAddRandom));
 
 		ImGui::TreePop();
 	}
@@ -116,35 +115,35 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Force", treeFlags))
 	{
-		addVector3Property("Direction", p->getDirection(), p, std::mem_fn(&Particle::setDirection));
-		addVector3Property("Direction Random", p->getDirectionRandom(), p, std::mem_fn(&Particle::setDirectionRandom));
-		addFloatProperty("Speed", p->getSpeed(), p, std::mem_fn(&Particle::setSpeed));
-		addFloatProperty("Speed Random", p->getSpeedRandom(), p, std::mem_fn(&Particle::setSpeedRandom));
+		addVector3Property("Direction", particle->getDirection(), particle, std::mem_fn(&Particle::setDirection));
+		addVector3Property("Direction Random", particle->getDirectionRandom(), particle, std::mem_fn(&Particle::setDirectionRandom));
+		addFloatProperty("Speed", particle->getSpeed(), particle, std::mem_fn(&Particle::setSpeed));
+		addFloatProperty("Speed Random", particle->getSpeedRandom(), particle, std::mem_fn(&Particle::setSpeedRandom));
 		
 		ImGui::Separator();
 
-		addVector3Property("Gravity", p->getGravitationalAccel(), p, std::mem_fn(&Particle::setGravitationalAccel));
-		addVector3Property("Acceleration", p->getExternalAccel(), p, std::mem_fn(&Particle::setExternalAccel));
-		addVector3Property("Acceleration Random", p->getExternalAccelRandom(), p, std::mem_fn(&Particle::setExternalAccelRandom));
-		addFloatProperty("Deceleration", p->getDeceleration(), p, std::mem_fn(&Particle::setDeceleration));
-		addFloatProperty("Deceleration Random", p->getDecelerationRandom(), p, std::mem_fn(&Particle::setDecelerationRandom));
+		addVector3Property("Gravity", particle->getGravitationalAccel(), particle, std::mem_fn(&Particle::setGravitationalAccel));
+		addVector3Property("Acceleration", particle->getExternalAccel(), particle, std::mem_fn(&Particle::setExternalAccel));
+		addVector3Property("Acceleration Random", particle->getExternalAccelRandom(), particle, std::mem_fn(&Particle::setExternalAccelRandom));
+		addFloatProperty("Deceleration", particle->getDeceleration(), particle, std::mem_fn(&Particle::setDeceleration));
+		addFloatProperty("Deceleration Random", particle->getDecelerationRandom(), particle, std::mem_fn(&Particle::setDecelerationRandom));
 		
 		ImGui::Separator();
 
-		addFloatProperty("Reflection Coeff", p->getReflectionCoeff(), p, std::mem_fn(&Particle::setReflectionCoeff));
-		addFloatProperty("Reflection Coeff Random", p->getReflectionCoeffRandom(), p, std::mem_fn(&Particle::setReflectionCoeffRandom));
-		addFloatProperty("Rebound Plane Y", p->getReboundPlaneY(), p, std::mem_fn(&Particle::setReboundPlaneY));
+		addFloatProperty("Reflection Coeff", particle->getReflectionCoeff(), particle, std::mem_fn(&Particle::setReflectionCoeff));
+		addFloatProperty("Reflection Coeff Random", particle->getReflectionCoeffRandom(), particle, std::mem_fn(&Particle::setReflectionCoeffRandom));
+		addFloatProperty("Rebound Plane Y", particle->getReboundPlaneY(), particle, std::mem_fn(&Particle::setReboundPlaneY));
 
 		ImGui::TreePop();
 	}
 	endPropertyColumn();
 
-	if (p->getType() == Glitter::ParticleType::Mesh)
+	if (particle->getType() == Glitter::ParticleType::Mesh)
 	{
 		if (ImGui::TreeNodeEx("Mesh", defaultOpen))
 		{
 			beginPropertyColumn("Mesh");
-			if (ImGui::Button(mesh.get() ? p->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
+			if (ImGui::Button(mesh.get() ? particle->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
 			{
 				std::string name;
 				if (FileGUI::openFileGUI(FileType::Model, name))
@@ -155,12 +154,12 @@ void ParticleNode::populateInspector()
 		}
 		endPropertyColumn();
 	}
-	else if (p->getType() == Glitter::ParticleType::Locus)
+	else if (particle->getType() == Glitter::ParticleType::Locus)
 	{
 		if (ImGui::TreeNodeEx("Locus Properties", defaultOpen))
 		{
-			addUIntProperty("Locus History Size", p->getLocusHistorySize(), p, std::mem_fn(&Particle::setLocusHistorySize));
-			addUIntProperty("Locus History Size Random", p->getLocusHistorySize(), p, std::mem_fn(&Particle::setLocusHistorySizeRandom));
+			addUIntProperty("Locus History Size", particle->getLocusHistorySize(), particle, std::mem_fn(&Particle::setLocusHistorySize));
+			addUIntProperty("Locus History Size Random", particle->getLocusHistorySize(), particle, std::mem_fn(&Particle::setLocusHistorySizeRandom));
 			ImGui::TreePop();
 		}
 		endPropertyColumn();
@@ -168,7 +167,7 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Texture", defaultOpen))
 	{
-		std::string comboLbl = materialNode ? materialNode->getMaterial()->getName() : std::string(p->getMaterial() + "(Not Loaded)");
+		std::string comboLbl = materialNode ? materialNode->getMaterial()->getName() : std::string(particle->getMaterial() + "(Not Loaded)");
 		std::vector<std::shared_ptr<MaterialNode>> materials = MaterialEditor::getNodes();
 		static int selectedIndex = -1;
 
@@ -192,12 +191,12 @@ void ParticleNode::populateInspector()
 		}
 		ImGui::NextColumn();
 
-		addUIntProperty("Texture Index", p->getTextureIndex(), p, std::mem_fn(&Particle::setTextureIndex));
-		addComboBoxProperty("UV Index Type", Glitter::uvIndexTypeTable, Glitter::uvIndexTypeTableSize, p->getUVIndexType(),
-			p, std::mem_fn(&Particle::setUVIndexType));
+		addUIntProperty("Texture Index", particle->getTextureIndex(), particle, std::mem_fn(&Particle::setTextureIndex));
+		addComboBoxProperty("UV Index Type", Glitter::uvIndexTypeTable, Glitter::uvIndexTypeTableSize, particle->getUVIndexType(),
+			particle, std::mem_fn(&Particle::setUVIndexType));
 
-		addUIntProperty("UV Index", p->getUVIndex(), p, std::mem_fn(&Particle::setUVIndex));
-		addFloatProperty("UV Change Interval", p->getUVChangeInterval(), p, std::mem_fn(&Particle::setUVChangeInterval));
+		addUIntProperty("UV Index", particle->getUVIndex(), particle, std::mem_fn(&Particle::setUVIndex));
+		addFloatProperty("UV Change Interval", particle->getUVChangeInterval(), particle, std::mem_fn(&Particle::setUVChangeInterval));
 
 		ImGui::TreePop();
 	}
@@ -205,15 +204,15 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Color", treeFlags))
 	{
-		addVector2Property("Color Scroll", p->getColorScroll(), p, std::mem_fn(&Particle::setColorScroll));
-		addVector2Property("Color Scroll Random", p->getColorScrollRandom(), p, std::mem_fn(&Particle::setColorScrollRandom));
-		addFloatProperty("Color Scroll Speed", p->getColorScrollSpeed(), p, std::mem_fn(&Particle::setColorScrollSpeed));
+		addVector2Property("Color Scroll", particle->getColorScroll(), particle, std::mem_fn(&Particle::setColorScroll));
+		addVector2Property("Color Scroll Random", particle->getColorScrollRandom(), particle, std::mem_fn(&Particle::setColorScrollRandom));
+		addFloatProperty("Color Scroll Speed", particle->getColorScrollSpeed(), particle, std::mem_fn(&Particle::setColorScrollSpeed));
 
 		ImGui::Separator();
 
-		addVector2Property("2nd Color Scroll", p->getSecondaryColorScroll(), p, std::mem_fn(&Particle::setSecondaryColorScroll));
-		addVector2Property("2nd Color Scroll Random", p->getSecondaryColorScrollRandom(), p, std::mem_fn(&Particle::setSecondaryColorScrollRandom));
-		addFloatProperty("2nd Color Scroll Speed", p->getSecondaryColorScrollSpeed(), p, std::mem_fn(&Particle::setSecondaryColorScrollSpeed));
+		addVector2Property("2nd Color Scroll", particle->getSecondaryColorScroll(), particle, std::mem_fn(&Particle::setSecondaryColorScroll));
+		addVector2Property("2nd Color Scroll Random", particle->getSecondaryColorScrollRandom(), particle, std::mem_fn(&Particle::setSecondaryColorScrollRandom));
+		addFloatProperty("2nd Color Scroll Speed", particle->getSecondaryColorScrollSpeed(), particle, std::mem_fn(&Particle::setSecondaryColorScrollSpeed));
 
 		ImGui::TreePop();
 	}
@@ -221,15 +220,15 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Alpha", treeFlags))
 	{
-		addVector2Property("Alpha Scroll", p->getAlphaScroll(), p, std::mem_fn(&Particle::setAlphaScroll));
-		addVector2Property("Alpha Scroll Random", p->getAlphaScrollRandom(), p, std::mem_fn(&Particle::setAlphaScrollRandom));
-		addFloatProperty("Alpha Scroll Speed", p->getAlphaScrollSpeed(), p, std::mem_fn(&Particle::setAlphaScrollSpeed));
+		addVector2Property("Alpha Scroll", particle->getAlphaScroll(), particle, std::mem_fn(&Particle::setAlphaScroll));
+		addVector2Property("Alpha Scroll Random", particle->getAlphaScrollRandom(), particle, std::mem_fn(&Particle::setAlphaScrollRandom));
+		addFloatProperty("Alpha Scroll Speed", particle->getAlphaScrollSpeed(), particle, std::mem_fn(&Particle::setAlphaScrollSpeed));
 
 		ImGui::Separator();
 
-		addVector2Property("2nd Alpha Scroll", p->getSecondaryAlphaScroll(), p, std::mem_fn(&Particle::setSecondaryAlphaScroll));
-		addVector2Property("2nd Alpha Scroll Random", p->getSecondaryAlphaScrollRandom(), p, std::mem_fn(&Particle::setSecondaryAlphaScrollRandom));
-		addFloatProperty("2nd Alpha Scroll Speed", p->getSecondaryAlphaScrollSpeed(), p, std::mem_fn(&Particle::setSecondaryAlphaScrollSpeed));
+		addVector2Property("2nd Alpha Scroll", particle->getSecondaryAlphaScroll(), particle, std::mem_fn(&Particle::setSecondaryAlphaScroll));
+		addVector2Property("2nd Alpha Scroll Random", particle->getSecondaryAlphaScrollRandom(), particle, std::mem_fn(&Particle::setSecondaryAlphaScrollRandom));
+		addFloatProperty("2nd Alpha Scroll Speed", particle->getSecondaryAlphaScrollSpeed(), particle, std::mem_fn(&Particle::setSecondaryAlphaScrollSpeed));
 
 		ImGui::TreePop();
 	}
@@ -237,9 +236,9 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Emitter Translation", treeFlags))
 	{
-		addFloatProperty("Emitter-Effect Ratio", p->getEmitterTranslationEffectRatio(), p, std::mem_fn(&Particle::setEmitterTranslationEffectRatio));
-		addFloatProperty("Follow Ratio", p->getFollowEmitterTranslationRatio(), p, std::mem_fn(&Particle::setFollowEmitterTranslationRatio));
-		addFloatProperty("Follow Y Ratio", p->getFollowEmitterTranslationYRatio(), p, std::mem_fn(&Particle::setFollowEmitterTranslationYRatio));
+		addFloatProperty("Emitter-Effect Ratio", particle->getEmitterTranslationEffectRatio(), particle, std::mem_fn(&Particle::setEmitterTranslationEffectRatio));
+		addFloatProperty("Follow Ratio", particle->getFollowEmitterTranslationRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationRatio));
+		addFloatProperty("Follow Y Ratio", particle->getFollowEmitterTranslationYRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationYRatio));
 
 		ImGui::TreePop();
 	}
@@ -247,13 +246,13 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Blending", treeFlags))
 	{
-		addComboBoxProperty("Blending Mode", Glitter::blendModeTable, Glitter::blendModeTableSize, p->getBlendMode(),
-			p, std::mem_fn(&Particle::setBlendMode));
+		addComboBoxProperty("Blending Mode", Glitter::blendModeTable, Glitter::blendModeTableSize, particle->getBlendMode(),
+			particle, std::mem_fn(&Particle::setBlendMode));
 
-		addComboBoxProperty("2nd Blending Mode", Glitter::blendModeTable, Glitter::blendModeTableSize, p->getSecondaryBlendMode(),
-			p, std::mem_fn(&Particle::setSecondaryBlendMode));
+		addComboBoxProperty("2nd Blending Mode", Glitter::blendModeTable, Glitter::blendModeTableSize, particle->getSecondaryBlendMode(),
+			particle, std::mem_fn(&Particle::setSecondaryBlendMode));
 
-		addFloatProperty("2nd Blend", p->getSecondaryBlend(), p, std::mem_fn(&Particle::setSecondaryBlend));
+		addFloatProperty("2nd Blend", particle->getSecondaryBlend(), particle, std::mem_fn(&Particle::setSecondaryBlend));
 
 		ImGui::TreePop();
 	}
@@ -261,11 +260,11 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Flags", defaultOpen))
 	{
-		addFlagsProperty("Emitter Local", p->getFlags(), 4, p, std::mem_fn(&Particle::setFlags));
-		addFlagsProperty("Scale Using X Only", p->getFlags(), 16, p, std::mem_fn(&Particle::setFlags));
-		addFlagsProperty("Z Test", p->getFlags(), 64, p, std::mem_fn(&Particle::setFlags));
+		addFlagsProperty("Emitter Local", particle->getFlags(), 4, particle, std::mem_fn(&Particle::setFlags));
+		addFlagsProperty("Scale Using X Only", particle->getFlags(), 16, particle, std::mem_fn(&Particle::setFlags));
+		addFlagsProperty("Z Test", particle->getFlags(), 64, particle, std::mem_fn(&Particle::setFlags));
 
-		addUIntProperty("Flags", p->getFlags(), p, std::mem_fn(&Particle::setFlags));
+		addUIntProperty("Flags", particle->getFlags(), particle, std::mem_fn(&Particle::setFlags));
 		ImGui::TreePop();
 	}
 }

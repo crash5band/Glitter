@@ -8,14 +8,14 @@ CreateEmitterCommand::CreateEmitterCommand(std::shared_ptr<EffectNode> &eff, std
 
 void CreateEmitterCommand::execute()
 {
-	effect->getEffect()->addEmitter(emitter->getEmitter(), position);
-	effect->getEmitterNodes().insert(effect->getEmitterNodes().begin() + position, emitter);
+	effect.lock()->getEffect()->addEmitter(emitter->getEmitter(), position);
+	effect.lock()->getEmitterNodes().insert(effect.lock()->getEmitterNodes().begin() + position, emitter);
 }
 
 void CreateEmitterCommand::undo()
 {
-	effect->getEffect()->removeEmitter(position);
-	effect->getEmitterNodes().erase(effect->getEmitterNodes().begin() + position);
+	effect.lock()->getEffect()->removeEmitter(position);
+	effect.lock()->getEmitterNodes().erase(effect.lock()->getEmitterNodes().begin() + position);
 }
 
 DeleteEmitterCommand::DeleteEmitterCommand(std::shared_ptr<EffectNode> &eff, std::shared_ptr<EmitterNode> &em, size_t pos) :
@@ -26,14 +26,14 @@ DeleteEmitterCommand::DeleteEmitterCommand(std::shared_ptr<EffectNode> &eff, std
 
 void DeleteEmitterCommand::execute()
 {
-	effect->getEffect()->removeEmitter(position);
-	effect->getEmitterNodes().erase(effect->getEmitterNodes().begin() + position);
+	effect.lock()->getEffect()->removeEmitter(position);
+	effect.lock()->getEmitterNodes().erase(effect.lock()->getEmitterNodes().begin() + position);
 }
 
 void DeleteEmitterCommand::undo()
 {
-	effect->getEffect()->addEmitter(emitter->getEmitter(), position);
-	effect->getEmitterNodes().insert(effect->getEmitterNodes().begin() + position, emitter);
+	effect.lock()->getEffect()->addEmitter(emitter->getEmitter(), position);
+	effect.lock()->getEmitterNodes().insert(effect.lock()->getEmitterNodes().begin() + position, emitter);
 }
 
 CreateParticleCommand::CreateParticleCommand(std::shared_ptr<EffectNode> &eff, std::shared_ptr<ParticleNode> &p, size_t pos) :
@@ -44,14 +44,14 @@ CreateParticleCommand::CreateParticleCommand(std::shared_ptr<EffectNode> &eff, s
 
 void CreateParticleCommand::execute()
 {
-	effect->getEffect()->addParticle(particle->getParticle(), position);
-	effect->getParticleNodes().insert(effect->getParticleNodes().begin() + position, particle);
+	effect.lock()->getEffect()->addParticle(particle->getParticle(), position);
+	effect.lock()->getParticleNodes().insert(effect.lock()->getParticleNodes().begin() + position, particle);
 }
 
 void CreateParticleCommand::undo()
 {
-	effect->getEffect()->removeParticle(position);
-	effect->getParticleNodes().erase(effect->getParticleNodes().begin() + position);
+	effect.lock()->getEffect()->removeParticle(position);
+	effect.lock()->getParticleNodes().erase(effect.lock()->getParticleNodes().begin() + position);
 }
 
 DeleteParticleCommand::DeleteParticleCommand(std::shared_ptr<EffectNode> &eff, std::shared_ptr<ParticleNode> &p, size_t pos) :
@@ -62,10 +62,10 @@ DeleteParticleCommand::DeleteParticleCommand(std::shared_ptr<EffectNode> &eff, s
 
 void DeleteParticleCommand::execute()
 {
-	effect->getEffect()->removeParticle(position);
-	for (int i = 0; i < effect->getEmitterNodes().size(); ++i)
+	effect.lock()->getEffect()->removeParticle(position);
+	for (int i = 0; i < effect.lock()->getEmitterNodes().size(); ++i)
 	{
-		EmitterNode &em = *effect->getEmitterNodes()[i];
+		EmitterNode &em = *effect.lock()->getEmitterNodes()[i];
 		size_t size = em.getParticles().size();
 		for (int j = 0; j < size; ++j)
 		{
@@ -80,20 +80,20 @@ void DeleteParticleCommand::execute()
 		}
 	}
 
-	effect->getParticleNodes().erase(effect->getParticleNodes().begin() + position);
+	effect.lock()->getParticleNodes().erase(effect.lock()->getParticleNodes().begin() + position);
 }
 
 void DeleteParticleCommand::undo()
 {
-	effect->getEffect()->addParticle(particle->getParticle(), position);
+	effect.lock()->getEffect()->addParticle(particle->getParticle(), position);
 	for (std::unordered_map<size_t, size_t>::iterator it = emitterParticles.begin(); it != emitterParticles.end(); ++it)
 	{
-		effect->getEmitterNodes()[(*it).first]->getParticles().insert
-		(effect->getEmitterNodes()[(*it).first]->getParticles().begin() + (*it).second,
+		effect.lock()->getEmitterNodes()[(*it).first]->getParticles().insert
+		(effect.lock()->getEmitterNodes()[(*it).first]->getParticles().begin() + (*it).second,
 			ParticleInstance(particle));
 	}
 
-	effect->getParticleNodes().insert( effect->getParticleNodes().begin() + position, particle);
+	effect.lock()->getParticleNodes().insert( effect.lock()->getParticleNodes().begin() + position, particle);
 }
 
 
@@ -105,14 +105,14 @@ AddParticleCommand::AddParticleCommand(std::shared_ptr<EmitterNode> &em, std::sh
 
 void AddParticleCommand::execute()
 {
-	emitter->getEmitter()->addParticle(particle->getParticle());
-	emitter->getParticles().insert(emitter->getParticles().begin() + position, ParticleInstance(particle));
+	emitter.lock()->getEmitter()->addParticle(particle->getParticle());
+	emitter.lock()->getParticles().insert(emitter.lock()->getParticles().begin() + position, ParticleInstance(particle));
 }
 
 void AddParticleCommand::undo()
 {
-	emitter->getEmitter()->removeParticle(particle->getParticle());
-	emitter->getParticles().erase(emitter->getParticles().begin() + position);
+	emitter.lock()->getEmitter()->removeParticle(particle->getParticle());
+	emitter.lock()->getParticles().erase(emitter.lock()->getParticles().begin() + position);
 }
 
 
@@ -124,12 +124,12 @@ RemoveParticleCommand::RemoveParticleCommand(std::shared_ptr<EmitterNode> &em, s
 
 void RemoveParticleCommand::execute()
 {
-	emitter->getEmitter()->removeParticle(particle->getParticle());
-	emitter->getParticles().erase(emitter->getParticles().begin() + position);
+	emitter.lock()->getEmitter()->removeParticle(particle->getParticle());
+	emitter.lock()->getParticles().erase(emitter.lock()->getParticles().begin() + position);
 }
 
 void RemoveParticleCommand::undo()
 {
-	emitter->getEmitter()->addParticle(particle->getParticle());
-	emitter->getParticles().insert(emitter->getParticles().begin() + position, ParticleInstance(particle));
+	emitter.lock()->getEmitter()->addParticle(particle->getParticle());
+	emitter.lock()->getParticles().insert(emitter.lock()->getParticles().begin() + position, ParticleInstance(particle));
 }

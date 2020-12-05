@@ -17,6 +17,8 @@ public:
 	static void loadTexture(const std::string& filepath, TextureSlot slot);
 	static void loadShader(const std::string& name, const std::string& vPath, const std::string& fPath);
 	static void disposeAll();
+	static void cleanModels();
+	static void cleanTextures();
 
 	static size_t getModelCount();
 	static size_t getTextureCount();

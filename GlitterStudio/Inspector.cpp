@@ -51,22 +51,67 @@ void Inspector::inspectAnimation(int index)
 
 		if (index >= 0 && index < animNode->getAnimationList()->size())
 		{
-			Glitter::Animation& animation = ( *animNode->getAnimationList() )[index];
-			addFloatProperty("Start", animation.getStartTime(), &animation, std::mem_fn(&Glitter::Animation::setStartTime));
-			addFloatProperty("End", animation.getEndTime(), &animation, std::mem_fn(&Glitter::Animation::setEndTime));
-			addComboBoxProperty("Repeat", Glitter::repeatTypeTable, Glitter::repeatTypeTableSize, animation.getRepeatType(),
-				&animation, std::mem_fn(&Glitter::Animation::setRepeatType));
+			static const char* animProperties[]{ "Start", "End", "Repeat Type", "Flags" };
 
-			addUIntProperty("Flags", animation.getRandomFlags(), &animation, std::mem_fn(&Glitter::Animation::setRandomFlags));
+			Glitter::Animation& animation = animNode->getAnimationList()->at(index);
 
+			ImGui::Columns(2, 0, false);
+			ImGui::SetColumnWidth(0, ImGui::GetWindowSize().x / 3.0f);
+
+			for (int i = 0; i < 4; ++i)
+			{
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text(animProperties[i]);
+			}
+
+			ImGui::NextColumn();
+			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+
+			float start		= animation.getStartTime();
+			float end		= animation.getEndTime();
+			int repeatType	= (int)animation.getRepeatType();
+			int flags		= animation.getRandomFlags();
+
+			if (ImGui::InputFloat("##Start", &start, 1, 5, 0, ImGuiInputTextFlags_EnterReturnsTrue))
+				animation.setStartTime(start);
+
+			if (ImGui::InputFloat("##End", &end, 1, 5, 0, ImGuiInputTextFlags_EnterReturnsTrue))
+				animation.setStartTime(end);
+
+			std::string preview = Glitter::glitterEnumToString(Glitter::repeatTypeTable, Glitter::repeatTypeTableSize, repeatType);
+			if (ImGui::BeginCombo("##repeat", preview.c_str()))
+			{
+				for (int n = 0; n < Glitter::repeatTypeTableSize; ++n)
+				{
+					const bool selected = repeatType == n;
+					if (ImGui::Selectable(Glitter::repeatTypeTable[n].c_str(), selected))
+					{
+						repeatType = n;
+						animation.setRepeatType((Glitter::RepeatType)repeatType);
+					}
+
+					if (selected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			if (ImGui::InputInt("##falgs", &flags, 1, 2, ImGuiInputTextFlags_EnterReturnsTrue))
+				animation.setRandomFlags(flags);
+
+			ImGui::PopItemWidth();
+			ImGui::NextColumn();
+			ImGui::Columns(1);
+			
 #ifdef _DEBUG
-			ImGui::Text("Current Value: %.3f", animNode->tryGetValue(animation.getType(), timeline.getCurrentFrame(), 0.0f));
+			float val = animationNode.lock()->tryGetValue(animation.getType(), timeline.getCurrentFrame());
+			ImGui::Text("Current value: %.2f", val);
 #endif // DEBUG
 
 		}
 		ImGui::TreePop();
 	}
-	endPropertyColumn();
 }
 
 void Inspector::inspectKey(int index)
@@ -155,7 +200,6 @@ void Inspector::update()
 			ImGui::TextWrapped("Select a node from the tree view to view its properties");
 		}
 	}
-
 	ImGui::End();
 
 	if (ImGui::Begin(animProperties, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
@@ -164,11 +208,13 @@ void Inspector::update()
 		{
 			auto animNode = animationNode.lock();
 
+#ifdef _DEBUG
 			if (ImGui::Button("Rebuild Animation Cache", ImVec2(ImGui::GetContentRegionAvail().x, 30)))
 			{
 				animNode->buildCache();
 				Logger::log(Message(MessageType::Normal, "Rebuilt animation cache."));
 			}
+#endif
 
 			std::vector<Glitter::Animation>& list = (*animNode->getAnimationList());
 			addListProperty("##Animations", list, selectedAnimation);

@@ -6,7 +6,7 @@
 class AddAnimationCommand : public ICommand
 {
 private:
-	std::shared_ptr<AnimationNode> animationNode;
+	std::weak_ptr<AnimationNode> animationNode;
 	Glitter::Animation anim;
 	size_t position;
 
@@ -16,12 +16,13 @@ public:
 	void execute() override;
 	void undo() override;
 	const char* getDescription() override { return "Add Animation"; }
+	bool isValid() override { return !animationNode.expired(); }
 };
 
 class RemoveAnimationCommand : public ICommand
 {
 private:
-	std::shared_ptr<AnimationNode> animationNode;
+	std::weak_ptr<AnimationNode> animationNode;
 	Glitter::Animation anim;
 	size_t position;
 
@@ -31,12 +32,13 @@ public:
 	void execute() override;
 	void undo() override;
 	const char* getDescription() override { return "Remove Animation"; }
+	bool isValid() override { return !animationNode.expired(); }
 };
 
 class AddKeyCommand : public ICommand
 {
 private:
-	std::shared_ptr<AnimationNode> animationNode;
+	std::weak_ptr<AnimationNode> animationNode;
 	size_t animIndex;
 	size_t keyPos;
 	Glitter::Key key;
@@ -47,12 +49,13 @@ public:
 	void execute() override;
 	void undo() override;
 	const char* getDescription() override { return "Add Key"; }
+	bool isValid() override { return !animationNode.expired(); }
 };
 
 class RemoveKeyCommand : public ICommand
 {
 private:
-	std::shared_ptr<AnimationNode> animationNode;
+	std::weak_ptr<AnimationNode> animationNode;
 	size_t animIndex;
 	size_t keyPos;
 	Glitter::Key key;
@@ -63,12 +66,13 @@ public:
 	void execute() override;
 	void undo() override;
 	const char* getDescription() override { return "Remove Key"; }
+	bool isValid() override { return !animationNode.expired(); }
 };
 
 class ChangeKeyCommand : public ICommand
 {
 private:
-	std::shared_ptr<AnimationNode> animationNode;
+	std::weak_ptr<AnimationNode> animationNode;
 	size_t animIndex;
 	size_t keyPos;
 	Glitter::Key newVal;
@@ -80,4 +84,5 @@ public:
 	void execute() override;
 	void undo() override;
 	const char* getDescription() override { return "Change Key Frame"; }
+	bool isValid() override { return !animationNode.expired(); }
 };

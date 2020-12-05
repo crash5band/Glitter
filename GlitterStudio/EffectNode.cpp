@@ -1,15 +1,15 @@
 #include "EffectNode.h"
 #include "UiHelper.h"
 
-EffectNode::EffectNode(std::shared_ptr<Glitter::GlitterEffect> &eff) :
-	effect{ eff }
+EffectNode::EffectNode(std::shared_ptr<Glitter::GlitterEffect> &effect) :
+	effect{ effect }
 {
-	animationNode = std::make_shared<AnimationNode>(&eff->getAnimations());
+	animationNode = std::make_shared<AnimationNode>(&effect->getAnimations());
 
-	for (auto& particle : eff->getParticles())
+	for (auto& particle : effect->getParticles())
 		particleNodes.push_back(std::make_shared<ParticleNode>(particle));
 
-	for (auto& emitter : eff->getEmitters())
+	for (auto& emitter : effect->getEmitters())
 		emitterNodes.emplace_back(std::make_shared<EmitterNode>(emitter, this));
 }
 
@@ -40,10 +40,10 @@ NodeType EffectNode::getType()
 
 void EffectNode::update(float time, Camera* camera)
 {
-	float effectTime = time - effect->getStartTime();
-	transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectTime);
-	transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectTime);
-	Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectTime);
+	float effectectTime = time - effect->getStartTime();
+	transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectectTime);
+	transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectectTime);
+	Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectectTime);
 
 
 	for (auto& particle : particleNodes)
@@ -61,19 +61,18 @@ void EffectNode::kill()
 
 void EffectNode::populateInspector()
 {
-	Glitter::GlitterEffect* eff = effect.get();
 	using Effect = Glitter::GlitterEffect;
 	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
 
 	if (ImGui::TreeNodeEx("Effect", treeFlags))
 	{
-		addTextProperty("Name", eff->getName(), eff, std::mem_fn(&Effect::setName));
-		addFloatProperty("Start", eff->getStartTime(), eff, std::mem_fn(&Effect::setStartTime));
-		addFloatProperty("Life", eff->getLifeTime(), eff, std::mem_fn(&Effect::setLifeTime));
+		addTextProperty("Name", effect->getName(), effect, std::mem_fn(&Effect::setName));
+		addFloatProperty("Start", effect->getStartTime(), effect, std::mem_fn(&Effect::setStartTime));
+		addFloatProperty("Life", effect->getLifeTime(), effect, std::mem_fn(&Effect::setLifeTime));
 
-		addColorProperty("Color", eff->getColor(), eff, std::mem_fn(&Effect::setColor));
-		addVector3Property("Translation", eff->getTranslation(), eff, std::mem_fn(&Effect::setTranslation));
-		addVector3Property("Rotation", eff->getRotation(), eff, std::mem_fn(&Effect::setRotation));
+		addColorProperty("Color", effect->getColor(), effect, std::mem_fn(&Effect::setColor));
+		addVector3Property("Translation", effect->getTranslation(), effect, std::mem_fn(&Effect::setTranslation));
+		addVector3Property("Rotation", effect->getRotation(), effect, std::mem_fn(&Effect::setRotation));
 
 		ImGui::TreePop();
 	}
@@ -81,8 +80,8 @@ void EffectNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Flags", treeFlags))
 	{
-		addFlagsProperty("Loop", eff->getFlags(), 1, eff, std::mem_fn(&Effect::setFlags));
-		ImGui::Text("Flags: %d", eff->getFlags());
+		addFlagsProperty("Loop", effect->getFlags(), 1, effect, std::mem_fn(&Effect::setFlags));
+		ImGui::Text("Flags: %d", effect->getFlags());
 
 		ImGui::TreePop();
 	}

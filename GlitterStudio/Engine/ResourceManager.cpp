@@ -84,3 +84,25 @@ void ResourceManager::disposeAll()
 	models.clear();
 	textures.clear();
 }
+
+void ResourceManager::cleanModels()
+{
+	for (std::vector<std::shared_ptr<ModelData>>::iterator it = models.begin(); it != models.end();)
+	{
+		if ((*it).use_count() < 2)
+			it = models.erase(it);
+		else
+			++it;
+	}
+}
+
+void ResourceManager::cleanTextures()
+{
+	for (std::vector<std::shared_ptr<TextureData>>::iterator it = textures.begin(); it != textures.end();)
+	{
+		if ((*it).use_count() < 2)
+			it = textures.erase(it);
+		else
+			++it;
+	}
+}

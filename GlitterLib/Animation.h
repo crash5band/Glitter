@@ -61,5 +61,16 @@ namespace Glitter
 		void read(tinyxml2::XMLElement* element);
 		void write(tinyxml2::XMLElement* element);
 
+		inline bool operator==(const Animation& anim)
+		{
+			return startTime == anim.startTime && endTime == anim.endTime && repeatType == anim.repeatType
+				&& randomFlags == anim.randomFlags;
+		}
+
+		inline bool operator!=(const Animation& anim)
+		{
+			return !(*this == anim);
+		}
+
 	};
 }

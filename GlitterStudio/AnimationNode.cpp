@@ -49,6 +49,7 @@ void AnimationNode::buildCache()
 					continue;
 
 				Glitter::Key k1 = anim.getKeys()[index++];
+
 				// color and integer animations have a random range in one direction only
 				float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ||
 					((size_t)anim.getType() >= 22) ? 0 : -k1.randomRange;
@@ -67,10 +68,13 @@ void AnimationNode::buildCache()
 					{
 						float value = 0;
 
-						// color and scale animations default to 1.0
+						// scale animations default to 1.0
+						// color animations default to 255
 						size_t type = (size_t)anim.getType();
-						if (type > 5 && type < 14)
-							value = 1;
+						if (type > 5 && type < 10)
+							value = 1.0f;
+						else if (type > 9 && type < 14)
+							value = 255.0f;
 
 						for (; frame < k1.time; ++frame)
 							cache[a].push_back(value);

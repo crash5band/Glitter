@@ -72,11 +72,9 @@ void AnimationTimeline::updateCurveEdit()
 	effectiveFrameWidth = frameWidth * zoom;
 	canvasPos -= timelinePosOffset;
 
-	// draw background
 	ImU32 bgColor = ImGui::GetColorU32(ImGuiCol_FrameBg);
 	ImGui::RenderFrame(boundaries.Min, boundaries.Max, bgColor, true, 1.0f);
 
-	// scroll bar
 	updateCurveScroll();
 
 	if (animation)
@@ -95,11 +93,11 @@ void AnimationTimeline::updateCurveEdit()
 
 	holdingTan = false;
 	drawList->PushClipRect(boundaries.Min, boundaries.Max, true);
+
 	updateTimelineContents();
 	updateTimelineKeys();
-
-	// control timeline and marker
 	updateMarker();
+
 	if (hovered)
 		timelinePosOffset.x -= io->MouseWheel * 25;
 
@@ -115,12 +113,6 @@ void AnimationTimeline::updateCurveScroll()
 	scrollbarPos = ImVec2(ImGui::GetCurrentWindow()->Pos.x, winY);
 	scrollbarSize = ImGui::GetCurrentWindow()->Size;
 	scrollBoundaries = ImRect(scrollbarPos, ImVec2(scrollbarPos.x + scrollbarSize.x, scrollbarPos.y + scrollHeight));
-
-	//ImGui::SetCursorScreenPos(scrollbarPos);
-	//if (ImGui::InvisibleButton("scroll_btn", ImVec2(scrollbarSize.x, scrollHeight)))
-	{
-		// TODO: make this work!
-	}
 
 	ImGui::RenderFrame(scrollBoundaries.Min, scrollBoundaries.Max, ImGui::GetColorU32(ImGuiCol_ScrollbarBg));
 
@@ -248,7 +240,6 @@ void AnimationTimeline::update(std::weak_ptr<AnimationNode> &node, size_t index)
 	this->animation = &(node.lock()->getAnimationList()->at(index));
 	animationIndex = index;
 	limitIndex = (size_t)getGraphType(animation->getType());
-	//window = ImGui::FindWindowByName("Animation Timeline");
 
 	updateControls();
 	updateCurveEdit();
@@ -321,8 +312,6 @@ void AnimationTimeline::updateMarker()
 
 void AnimationTimeline::updateTimelineContents()
 {
-	// precalculate minimum and maximum visible frames. While this approach is more performant, we might need to
-	// loop through all the frames for the horizontal scrollbar to work
 	int start = std::max((timelinePosOffset.x / effectiveFrameWidth) + frameStart, 0.0f);
 	int end = ((timelinePosOffset.x + canvasSize.x) / effectiveFrameWidth) + frameStart;
 
@@ -336,9 +325,9 @@ void AnimationTimeline::updateTimelineContents()
 		
 		ImU32 lineColor;
 		if (validFrame)
-			lineColor = boldFrame ? ImGui::GetColorU32(ImVec4(0.45, 0.45, 0.45, 0.9)) : ImGui::GetColorU32(ImVec4(0.35, 0.35, 0.35, 0.65));
+			lineColor = boldFrame ? ImGui::GetColorU32(ImVec4(0.50, 0.50, 0.50, 0.75)) : ImGui::GetColorU32(ImVec4(0.40, 0.40, 0.40, 0.45));
 		else
-			lineColor = ImGui::GetColorU32(ImVec4(0.2, 0.2, 0.2, 0.85f));
+			lineColor = ImGui::GetColorU32(ImVec4(0.2, 0.2, 0.2, 0.75f));
 		drawList->AddLine(ImVec2(x, y - canvasSize.y), ImVec2(x, y), lineColor, 0.80f);
 
 		if (boldFrame)
@@ -354,10 +343,10 @@ void AnimationTimeline::updateTimelineContents()
 			const float xPos{ canvasPos.x + timelinePosOffset.x };
 			const float yPos{ canvasPos.y + (0.25f * count * (canvasSize.y - 20.0f)) + 20.0f };
 
-			ImU32 lineColor = (count & 1) ? ImGui::GetColorU32(ImVec4(0.35, 0.35, 0.35, 0.65)) : ImGui::GetColorU32(ImVec4(0.45, 0.45, 0.45, 0.85));
+			ImU32 lineColor = (count & 1) ? ImGui::GetColorU32(ImVec4(0.35, 0.35, 0.35, 0.45)) : ImGui::GetColorU32(ImVec4(0.45, 0.45, 0.45, 0.75));
 			bool last{ count == 4 };
 			if (count && !last)
-				drawList->AddLine(ImVec2(xPos, yPos), ImVec2(xPos + canvasSize.x, yPos), lineColor, 0.85f);
+				drawList->AddLine(ImVec2(xPos, yPos), ImVec2(xPos + canvasSize.x, yPos), lineColor, 0.80f);
 			
 			float val = higherLimits[limitIndex] - (count * 0.25f) * (higherLimits[limitIndex] - lowerLimits[limitIndex]);
 			size_t length = snprintf(NULL, 0, "%.2f", val);
@@ -416,7 +405,6 @@ void AnimationTimeline::updateTimelineKeys()
 			ImGui::SetCursorScreenPos(ImVec2(x - 10.0f, y - 10.0f));
 			ImGui::InvisibleButton(std::string("##circle" + i).c_str(), ImVec2(20, 20));
 
-
 			// capture the initial state of the key once any of the buttons (key, or tangent handles) are active
 			// then push the initial and final state to the command's constructor
 			if (ImGui::IsItemActivated())
@@ -426,7 +414,7 @@ void AnimationTimeline::updateTimelineKeys()
 			{
 				ImGui::BeginTooltip();
 				ImGui::Text("Time: %.0f", keys[i].time);
-				ImGui::Text("Value: %.3f", keys[i].value);
+				ImGui::Text("Value: %.2f", keys[i].value);
 				ImGui::EndTooltip();
 
 				if (ImGui::IsMouseDragging(0))
@@ -444,8 +432,6 @@ void AnimationTimeline::updateTimelineKeys()
 
 			anyDeacvtivated |= ImGui::IsItemDeactivated();
 
-			// From here on this needs to be put into one or more methods due to its complexity.
-
 			ImVec2 circlePos = ImVec2(x - 50, y + keys[i].inParam * 10);
 			drawList->AddLine(ImVec2(x, y), circlePos, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 3);
 
@@ -461,8 +447,8 @@ void AnimationTimeline::updateTimelineKeys()
 				if (ImGui::IsItemActive())
 				{
 					ImGui::BeginTooltip();
-					ImGui::Text("InParam: %.3f", keys[i].inParam);
-					ImGui::Text("OutParam: %.3f", keys[i].outParam);
+					ImGui::Text("InParam: %.2f", keys[i].inParam);
+					ImGui::Text("OutParam: %.2f", keys[i].outParam);
 					ImGui::EndTooltip();
 
 					if (ImGui::IsMouseDragging(0))
@@ -491,8 +477,8 @@ void AnimationTimeline::updateTimelineKeys()
 				if (ImGui::IsItemActive())
 				{
 					ImGui::BeginTooltip();
-					ImGui::Text("InParam: %.3f", keys[i].inParam);
-					ImGui::Text("OutParam: %.3f", keys[i].outParam);
+					ImGui::Text("InParam: %.2f", keys[i].inParam);
+					ImGui::Text("OutParam: %.2f", keys[i].outParam);
 					ImGui::EndTooltip();
 
 					if (ImGui::IsMouseDragging(0))
@@ -509,9 +495,9 @@ void AnimationTimeline::updateTimelineKeys()
 			if (anyDeacvtivated && k != keys[i])
 			{
 				auto ptr = node.lock();
-				Glitter::Key temp = keys[i];
-				keys[i] = k;
-				k = temp;
+				Glitter::Key temp = k;
+				k = keys[i];
+				keys[i] = temp;
 				CommandManager::pushNew(new ChangeKeyCommand(ptr, animationIndex, i, k));
 			}
 

@@ -136,7 +136,7 @@ float AnimationNode::tryGetValue(Glitter::AnimationType type, float time, float 
 		end = values[(int)time + 1];
 
 	float ratio = time - (int)time;
-	return start + (ratio * (end - start));
+	return Utilities::lerp(start, end, ratio);
 }
 
 Glitter::Vector3 AnimationNode::tryGetTranslation(float time)

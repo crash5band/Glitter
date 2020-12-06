@@ -1,6 +1,8 @@
 #include "Editor.h"
 #include "IconsFontAwesome5.h"
 #include <stdio.h>
+#include <Windows.h>
+#include <sysinfoapi.h>
 
 void frameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -53,7 +55,6 @@ bool Editor::initImgui()
 
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io->ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard;
-	//io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io->ConfigWindowsMoveFromTitleBarOnly = true;
 
 	ImGui::StyleColorsDark();
@@ -64,7 +65,14 @@ bool Editor::initImgui()
 	fontConfig.MergeMode = true;
 	fontConfig.GlyphMinAdvanceX = 13.0f;
 	static const ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-	io->Fonts->AddFontFromFileTTF("c:/windows/fonts/segoeui.ttf", 18, NULL, io->Fonts->GetGlyphRangesDefault());
+
+	TCHAR windir[MAX_PATH];
+	GetWindowsDirectoryA(windir, MAX_PATH);
+
+	std::string fontDir = windir;
+	fontDir.append("/Fonts/segoeui.ttf");
+
+	io->Fonts->AddFontFromFileTTF(fontDir.c_str(), 18, NULL, io->Fonts->GetGlyphRangesDefault());
 	io->Fonts->AddFontFromFileTTF("Res/Fonts/fa-solid-900.ttf", 15.0f, &fontConfig, iconRanges);
 
 	return true;

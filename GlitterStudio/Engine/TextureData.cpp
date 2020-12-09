@@ -16,11 +16,6 @@ TextureData::TextureData()
 
 }
 
-TextureData::~TextureData()
-{
-	//glDeleteTextures(1, &ID);
-}
-
 std::string TextureData::getName() const
 {
 	return textureName;
@@ -54,6 +49,11 @@ int TextureData::getHeight() const
 void TextureData::use()
 {
 	glBindTexture(GL_TEXTURE_2D, ID);
+}
+
+void TextureData::dispose()
+{
+	glDeleteTextures(1, &ID);
 }
 
 void TextureData::reload(const std::string& path, TextureSlot slot)

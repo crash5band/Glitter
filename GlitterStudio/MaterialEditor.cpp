@@ -20,6 +20,17 @@ void MaterialEditor::remove(size_t pos)
 	materialNodes.erase(materialNodes.begin() + pos);
 }
 
+void MaterialEditor::clean()
+{
+	for (std::vector<std::shared_ptr<MaterialNode>>::iterator it = materialNodes.begin(); it != materialNodes.end();)
+	{
+		if ((*it).use_count() < 2)
+			it = materialNodes.erase(it);
+		else
+			++it;
+	}
+}
+
 void MaterialEditor::clear()
 {
 	materialNodes.clear();

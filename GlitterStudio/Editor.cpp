@@ -17,14 +17,19 @@ std::vector<DeltaTime> Editor::times;
 
 Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }
 {
+	char buf[_MAX_PATH];
+	GetModuleFileNameA(NULL, buf, _MAX_PATH);
+	appDir = Glitter::File::getFilePath(buf);
+	imguiINIDir = appDir + "imgui.ini";
+
 	initOpenGl();
 	initImgui();
 	setImguiStyle();
 	
 	reset();
 
-	ResourceManager::loadShader("BillboardParticle", "Res/Shaders/BillboardParticle.vert", "Res/Shaders/BillboardParticle.frag");
-	ResourceManager::loadShader("MeshParticle", "Res/Shaders/MeshParticle.vert", "Res/Shaders/MeshParticle.frag");
+	ResourceManager::loadShader("BillboardParticle", appDir + "/Res/Shaders/BillboardParticle.vert", appDir + "/Res/Shaders/BillboardParticle.frag");
+	ResourceManager::loadShader("MeshParticle", appDir + "/Res/Shaders/MeshParticle.vert", appDir + "/Res/Shaders/MeshParticle.frag");
 
 	inspector = new Inspector();
 	player = new GlitterPlayer();
@@ -108,13 +113,9 @@ void Editor::closeEffect(size_t index)
 {
 	effectNodes.erase(effectNodes.begin() + index);
 
+	MaterialEditor::clean();
 	ResourceManager::cleanModels();
 	ResourceManager::cleanTextures();
-}
-
-void Editor::closeMaterial(size_t index)
-{
-	// TODO: make it work lol
 }
 
 void Editor::saveEffect(bool saveAs)

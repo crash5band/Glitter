@@ -16,6 +16,7 @@ private:
 public:
 	static void add(std::shared_ptr<MaterialNode> &node);
 	static void remove(size_t pos);
+	static void clean();
 	static void clear();
 	static std::vector<std::shared_ptr<MaterialNode>> getNodes();
 	static int getSelection();

@@ -23,7 +23,6 @@ private:
 public:
 	TextureData();
 	TextureData(const std::string& path, TextureSlot slot);
-	~TextureData();
 
 	std::string getFullname() const;
 	std::string getName() const;
@@ -35,5 +34,6 @@ public:
 	void reload(const std::string& path, TextureSlot slot);
 	void read();
 	void use();
+	void dispose();
 };
 

@@ -101,7 +101,10 @@ void ResourceManager::cleanTextures()
 	for (std::vector<std::shared_ptr<TextureData>>::iterator it = textures.begin(); it != textures.end();)
 	{
 		if ((*it).use_count() < 2)
+		{
+			(*it)->dispose();
 			it = textures.erase(it);
+		}
 		else
 			++it;
 	}

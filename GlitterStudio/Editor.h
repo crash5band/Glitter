@@ -56,6 +56,8 @@ private:
 	ImGuiIO *io;
 	ImGuiID dockspaceID;
 
+	std::string appDir;
+	std::string imguiINIDir;
 	std::vector<std::shared_ptr<EffectNode>> effectNodes;
 	std::vector <std::weak_ptr<Glitter::Particle>> availableParticles;
 	Inspector* inspector;
@@ -88,7 +90,6 @@ public:
 	void reset();
 	bool openGlitterFile(const std::string& filename);
 	void closeEffect(size_t index);
-	void closeMaterial(size_t index);
 	void saveEffect(bool saveAs);
 	void saveMaterial(bool saveAs);
 	bool isNodeSelected(int index1, int index2);

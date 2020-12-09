@@ -52,8 +52,7 @@ void Inspector::inspectAnimation(int index)
 		if (index >= 0 && index < animNode->getAnimationList()->size())
 		{
 			static const char* animProperties[]{ "Start", "End", "Repeat Type", "Flags" };
-
-			Glitter::Animation& animation = animNode->getAnimationList()->at(index);
+			Glitter::Animation animation = animNode->getAnimationList()->at(index);
 
 			ImGui::Columns(2, 0, false);
 			ImGui::SetColumnWidth(0, ImGui::GetWindowSize().x / 3.0f);
@@ -76,7 +75,7 @@ void Inspector::inspectAnimation(int index)
 				animation.setStartTime(start);
 
 			if (ImGui::InputFloat("##End", &end, 1, 5, 0, ImGuiInputTextFlags_EnterReturnsTrue))
-				animation.setStartTime(end);
+				animation.setEndTime(end);
 
 			std::string preview = Glitter::glitterEnumToString(Glitter::repeatTypeTable, Glitter::repeatTypeTableSize, repeatType);
 			if (ImGui::BeginCombo("##repeat", preview.c_str()))
@@ -99,6 +98,9 @@ void Inspector::inspectAnimation(int index)
 
 			if (ImGui::InputInt("##falgs", &flags, 1, 2, ImGuiInputTextFlags_EnterReturnsTrue))
 				animation.setRandomFlags(flags);
+
+			if (animation != animNode->getAnimationList()->at(index))
+				CommandManager::pushNew(new ChangeAnimationCommand(animNode, index, animation));
 
 			ImGui::PopItemWidth();
 			ImGui::NextColumn();

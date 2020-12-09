@@ -35,6 +35,23 @@ public:
 	bool isValid() override { return !animationNode.expired(); }
 };
 
+class ChangeAnimationCommand : public ICommand
+{
+private:
+	std::weak_ptr<AnimationNode> animationNode;
+	Glitter::Animation oldValue;
+	Glitter::Animation newValue;
+	size_t position;
+
+public:
+	ChangeAnimationCommand(std::shared_ptr<AnimationNode>& node, size_t pos, Glitter::Animation& newValue);
+
+	void execute() override;
+	void undo() override;
+	const char* getDescription() override { return "Change Animation"; }
+	bool isValid() override { return !animationNode.expired(); }
+};
+
 class AddKeyCommand : public ICommand
 {
 private:

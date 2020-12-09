@@ -68,13 +68,17 @@ void AnimationNode::buildCache()
 					{
 						float value = 0;
 
-						// scale animations default to 1.0
-						// color animations default to 255
 						size_t type = (size_t)anim.getType();
 						if (type > 5 && type < 10)
+						{
+							// scale animations default to 1.0
 							value = 1.0f;
+						}
 						else if (type > 9 && type < 14)
+						{
+							// color animations default to 255
 							value = 255.0f;
+						}
 
 						for (; frame < k1.time; ++frame)
 							cache[a].push_back(value);

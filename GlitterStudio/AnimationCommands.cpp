@@ -36,6 +36,23 @@ void RemoveAnimationCommand::undo()
 	animationNode.lock()->buildCache();
 }
 
+ChangeAnimationCommand::ChangeAnimationCommand(std::shared_ptr<AnimationNode>& node, size_t pos, Glitter::Animation& val) :
+	animationNode{ node }, position{ pos }
+{
+	oldValue = node->getAnimationList()->at(pos);
+	newValue = val;
+}
+
+void ChangeAnimationCommand::execute()
+{
+	animationNode.lock()->getAnimationList()->at(position) = newValue;
+}
+
+void ChangeAnimationCommand::undo()
+{
+	animationNode.lock()->getAnimationList()->at(position) = oldValue;
+}
+
 AddKeyCommand::AddKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, int frame) :
 	animationNode{ node }, animIndex{ a }
 {

@@ -200,41 +200,44 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 	float emitterTime = time - emitter->getStartTime();
 	float emissionTime = round(emitterTime);
 
-	transform = baseTransform;
-	transform.position += getPosition(emitterTime);
-	transform.rotation += getRotation(emitterTime);
-	transform.rotation -= baseTransform.rotation;
-	transform.scale = getScaling(emitterTime);
-	changeDirection(emitter->getDirectionType(), camera);
-
-	emissionCount = emitter->getParticlesPerEmission();
-	int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, time, -1);
-	if (count > 0)
-		emissionCount = count;
-
-	emissionInterval = emitter->getEmissionInterval();
-	float interval = animationNode->tryGetValue(Glitter::AnimationType::EmissionInterval, time, -1.0f);
-	if (interval > 0.0f)
-		emissionInterval = interval;
-
-	emissionInterval = round(emissionInterval);
-	if ( ((emissionTime <= emitter->getLifeTime()) || (emitter->getFlags() & 1)) && emissionInterval > 0.5f )
+	if (emitterTime >= 0.0f)
 	{
-		if (emitter->getEmitCondition() == Glitter::EmitCondition::Time)
+		transform = baseTransform;
+		transform.position += getPosition(emitterTime);
+		transform.rotation += getRotation(emitterTime);
+		transform.rotation -= baseTransform.rotation;
+		transform.scale = getScaling(emitterTime);
+		changeDirection(emitter->getDirectionType(), camera);
+
+		emissionCount = emitter->getParticlesPerEmission();
+		int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, time, -1);
+		if (count > 0)
+			emissionCount = count;
+
+		emissionInterval = emitter->getEmissionInterval();
+		float interval = animationNode->tryGetValue(Glitter::AnimationType::EmissionInterval, time, -1.0f);
+		if (interval > 0.0f)
+			emissionInterval = interval;
+
+		emissionInterval = round(emissionInterval);
+		if (((emissionTime <= emitter->getLifeTime()) || (emitter->getFlags() & 1)) && emissionInterval > 0.5f)
 		{
-			if ( ((int)emissionTime % (int)emissionInterval == 0 || emissionTime == 0) && (emissionTime != lastEmissionTime) )
+			if (emitter->getEmitCondition() == Glitter::EmitCondition::Time)
 			{
-				lastEmissionTime = emissionTime;
-				emit(emitterTime, baseTransform);
+				if (((int)emissionTime % (int)emissionInterval == 0 || emissionTime == 0) && (emissionTime != lastEmissionTime))
+				{
+					lastEmissionTime = emissionTime;
+					emit(emitterTime, baseTransform);
+				}
 			}
-		}
-		else
-		{
-			float delta = transform.position.distance(lastEmissionPosition);
-			if (( (int)delta % (int)round(interval) == 0 ) && (lastEmissionPosition != transform.position))
+			else
 			{
-				emit(emitterTime, baseTransform);
-				lastEmissionPosition = transform.position;
+				float delta = transform.position.distance(lastEmissionPosition);
+				if (((int)delta % (int)round(interval) == 0) && (lastEmissionPosition != transform.position))
+				{
+					emit(emitterTime, baseTransform);
+					lastEmissionPosition = transform.position;
+				}
 			}
 		}
 	}

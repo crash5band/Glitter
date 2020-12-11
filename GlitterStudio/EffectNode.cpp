@@ -40,17 +40,17 @@ NodeType EffectNode::getType()
 
 void EffectNode::update(float time, Camera* camera)
 {
-	float effectectTime = time - effect->getStartTime();
-	transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectectTime);
-	transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectectTime);
-	Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectectTime);
+	float effectTime = time - effect->getStartTime();
+	transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectTime);
+	transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectTime);
+	Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectTime);
 
 
 	for (auto& particle : particleNodes)
 		particle->setBaseColor(color);
 
 	for (auto& emitter : emitterNodes)
-		emitter->update(time, camera, transform);
+		emitter->update(effectTime, camera, transform);
 }
 
 void EffectNode::kill()

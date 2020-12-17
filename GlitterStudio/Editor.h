@@ -101,9 +101,9 @@ public:
 	void frameTime();
 
 	bool effectMenu(int index);
-	void emitterMenu(int parent, int index);
-	void particleMenu(int parent, int index);
-	void instanceMenu(int effect, int parent, int index);
+	bool emitterMenu(int parent, int index);
+	bool particleMenu(int parent, int index);
+	bool instanceMenu(int effect, int parent, int index);
 	void availableParticlesMenu(int parent, int index);
 	void createEffect(const std::string& name);
 	void createMaterial(const std::string& name);

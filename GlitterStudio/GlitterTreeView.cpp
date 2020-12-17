@@ -56,7 +56,7 @@ void Editor::updateMenuBar()
 		{
 			if (selectedParent > -1 && selectedParent < effectNodes.size())
 			{
-				createEmitter(effectNodes[selectedParent], "Emitter");
+				createEmitter(effectNodes[selectedParent], "emitter");
 			}
 		}
 
@@ -64,7 +64,7 @@ void Editor::updateMenuBar()
 		{
 			if (selectedParent > -1 && selectedParent < effectNodes.size())
 			{
-				createParticle(effectNodes[selectedParent], "Particle");
+				createParticle(effectNodes[selectedParent], "particle");
 			}
 		}
 
@@ -169,7 +169,7 @@ bool Editor::effectMenu(int index)
 	return closed;
 }
 
-void Editor::emitterMenu(int parent, int index)
+bool Editor::emitterMenu(int parent, int index)
 {
 	if (ImGui::BeginPopupContextItem())
 	{
@@ -183,7 +183,11 @@ void Editor::emitterMenu(int parent, int index)
 		ImGui::Separator();
 		std::string str = ICON_FA_TRASH_ALT " Remove##" + std::to_string(parent + index);
 		if (ImGui::Selectable(str.c_str()))
+		{
 			removeEmitter(effectNodes[parent], index);
+			ImGui::EndPopup();
+			return true;
+		}
 
 		std::string hStr = "Hide All##" + std::to_string(parent + index);
 		std::string sStr = "Show All##" + std::to_string(parent + index);
@@ -195,23 +199,30 @@ void Editor::emitterMenu(int parent, int index)
 			effectNodes[parent]->getEmitterNodes()[index]->setVisibleAll(true);
 
 		ImGui::EndPopup();
+		return false;
 	}
 }
 
-void Editor::particleMenu(int parent, int index)
+bool Editor::particleMenu(int parent, int index)
 {
+	bool removed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
 		std::string str = ICON_FA_TRASH_ALT " Remove##" + std::to_string(parent + index);
 		if (ImGui::Selectable(str.c_str()))
+		{
 			removeParticle(effectNodes[parent], index);
+			removed = true;
+		}
 
 		ImGui::EndPopup();
+		return removed;
 	}
 }
 
-void Editor::instanceMenu(int effect, int parent, int index)
+bool Editor::instanceMenu(int effect, int parent, int index)
 {
+	bool removed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
 		std::string str = ICON_FA_TRASH_ALT " Remove##" + std::to_string(effect + parent + index);
@@ -219,9 +230,11 @@ void Editor::instanceMenu(int effect, int parent, int index)
 		{
 			std::shared_ptr<EmitterNode> node = effectNodes[effect]->getEmitterNodes()[parent];
 			removeParticleInstance(node, node->getParticles()[index].getReference(), index);
+			removed = true;
 		}
 
 		ImGui::EndPopup();
+		return removed;
 	}
 }
 
@@ -337,7 +350,14 @@ void Editor::updateGlitterTreeView()
 				cursorPos.x -= 20.0f;
 				nodeFlags = isNodeSelected(i, j) ? selectedParentFlags : parentNodeFlags;
 				bool emOpen = ImGui::TreeNodeEx((void*)(intptr_t)(i + j), nodeFlags, "%s %s", ICON_FA_CUBE, emitterNodes[j]->getEmitter()->getName().c_str());
-				emitterMenu(i, j);
+				
+				if (emitterMenu(i, j))
+				{
+					--j;
+					if (emOpen) ImGui::TreePop();
+
+					continue;
+				}
 				
 				if (i == showEffect && j == showEmitter)
 					availableParticlesMenu(i, j);
@@ -364,9 +384,13 @@ void Editor::updateGlitterTreeView()
 						for (size_t p = 0; p < emitterParticles.size(); ++p)
 						{
 							ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-
 							ImGui::TreeNodeEx((void*)(intptr_t)(i + (j + p + 1) * 100), childNodeFlags, "%s %s", ICON_FA_CIRCLE, emitterParticles[p].getParticle()->getName().c_str());
-							instanceMenu(i, j, p);
+							
+							if (instanceMenu(i, j, p))
+							{
+								--p;
+								continue;
+							}
 
 							std::string lbl(emitterParticles[p].isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
 							lbl.append("##" + std::to_string(i + (j + p + 1) * 100));
@@ -378,6 +402,7 @@ void Editor::updateGlitterTreeView()
 								emitterParticles[p].setVisible(!emitterParticles[p].isVisible());
 
 							ImGui::PopStyleColor(3);
+
 						}
 					}
 
@@ -391,7 +416,13 @@ void Editor::updateGlitterTreeView()
 			{
 				nodeFlags = isNodeSelected(i, emitterCount + k) ? selectedChildFlags : childNodeFlags;
 				ImGui::TreeNodeEx((void*)(intptr_t)(i + k + emitterNodes.size()), nodeFlags, "%s %s", ICON_FA_CERTIFICATE, particleNodes[k]->getParticle()->getName().c_str());
-				particleMenu(i, k);
+				
+				if (particleMenu(i, k))
+				{
+					--k;
+					continue;
+				}
+
 				setNodeSelected(i, emitterCount + k);
 			}
 

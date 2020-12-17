@@ -96,7 +96,7 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 	float rotX = Utilities::toRadians(transform.rotation.x);
 	float rotY = Utilities::toRadians(transform.rotation.y);
 	float rotZ = Utilities::toRadians(transform.rotation.z);
-	Glitter::Vector3 pos;
+
 	m3.fromEulerAnglesZYX(rotZ, rotY, rotX);
 	m4.makeTransform(transform.position, transform.scale, m3);
 
@@ -211,12 +211,12 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 
 		emissionCount = emitter->getParticlesPerEmission();
 		int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, time, -1);
-		if (count > 0)
+		if (count > -1)
 			emissionCount = count;
 
 		emissionInterval = emitter->getEmissionInterval();
 		float interval = animationNode->tryGetValue(Glitter::AnimationType::EmissionInterval, time, -1.0f);
-		if (interval > 0.0f)
+		if (interval > -1.0f)
 			emissionInterval = interval;
 
 		emissionInterval = round(emissionInterval);
@@ -224,7 +224,7 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 		{
 			if (emitter->getEmitCondition() == Glitter::EmitCondition::Time)
 			{
-				if (((int)emissionTime % (int)emissionInterval == 0 || emissionTime == 0) && (emissionTime != lastEmissionTime))
+				if (((fmodf(emissionTime, emissionInterval) == 0.0f) || emissionTime == 0) && (emissionTime != lastEmissionTime))
 				{
 					lastEmissionTime = emissionTime;
 					emit(emitterTime, baseTransform);
@@ -233,7 +233,7 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 			else
 			{
 				float delta = transform.position.distance(lastEmissionPosition);
-				if (((int)delta % (int)round(interval) == 0) && (lastEmissionPosition != transform.position))
+				if ((fmodf(delta, interval) <= 0.1f) && (lastEmissionPosition != transform.position))
 				{
 					emit(emitterTime, baseTransform);
 					lastEmissionPosition = transform.position;
@@ -299,7 +299,6 @@ void EmitterNode::populateInspector()
 		addComboBoxProperty("Condition", Glitter::emitConditionTable, Glitter::emitConditionTableSize,
 			emitter->getEmitCondition(), emitter, std::mem_fn(&Emitter::setEmitCondition));
 
-		// Emitters use the first 6 entries in DirectionType
 		addComboBoxProperty("Direction Type", Glitter::EdirectionTypeTable, Glitter::EdirectionTypeTableSize,
 			emitter->getDirectionType(), emitter, std::mem_fn(&Emitter::setDirectionType));
 
@@ -361,7 +360,6 @@ void EmitterNode::populateInspector()
 			ImGui::NextColumn();
 			ImGui::TreePop();
 		}
-		endPropertyColumn();
 		break;
 
 	case Glitter::EmitterType::Polygon:

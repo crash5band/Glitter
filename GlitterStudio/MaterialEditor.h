@@ -22,5 +22,7 @@ public:
 	static int getSelection();
 
 	static void update();
+	static void preview();
+	static bool materialMenu();
 };
 

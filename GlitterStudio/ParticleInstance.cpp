@@ -33,7 +33,7 @@ size_t ParticleInstance::getAliveCount() const
 void ParticleInstance::verifyPoolSize()
 {
 	// resize pool if MaxCount is changed
-	auto particle = reference->getParticle();
+	auto &particle = reference->getParticle();
 	size_t size = pool.size();
 
 	if (particle->getMaxCount() > size)
@@ -119,7 +119,7 @@ void ParticleInstance::changeDirection(Glitter::ParticleDirectionType type, Came
 void ParticleInstance::update(float time, Camera* camera, Transform& baseTransform, Transform& emitterTransform)
 {
 	verifyPoolSize();
-	auto particle = reference->getParticle();
+	auto &particle = reference->getParticle();
 	auto animNode = reference->getAnimationNode();
 
 	unsigned int maxUV = 0;
@@ -132,7 +132,7 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 	}
 
 	// We need the emitter's rotation here to be able to transform the particle's velocity
-	// according to the direction the emitter is facing if the flag 4 (emitter local) is enabled
+	// according to the direction the emitter is facing if flag 4 (emitter local) is enabled
 	float rX1 = Utilities::toRadians(baseTransform.rotation.x);
 	float rY1 = Utilities::toRadians(baseTransform.rotation.y);
 	float rZ1 = Utilities::toRadians(baseTransform.rotation.z);
@@ -159,15 +159,12 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 		if (p.dead)
 			continue;
 		
+		// calculate base parameters
 		p.velocity = p.direction + (p.acceleration * p.time);
 		p.transform = baseTransform;
 		Glitter::Vector3 basePos = p.basePos;
 
-		/*	
-			FLAGS: Emitter Local
-			if enabled, basePos holds the emitter's current position. The particle's velocity needs to be transformed to
-			the emitters rotation
-		*/
+		// Update Position
 		if (particle->getFlags() & 4)
 		{
 			basePos += -p.origin + emitterTransform.position + animNode->tryGetTranslation(p.time);
@@ -177,18 +174,17 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 		}
 
 		p.transform.position += basePos;
-		p.transform.rotation += p.rotation + animNode->tryGetRotation(p.time);
-		p.transform.scale *= animNode->tryGetScale(p.time);
-
 		m4.makeTransform(pos, baseTransform.scale, m3);
 		p.transform.position = (m4 * p.transform.position) + ((p.velocity + p.direactionAdd) * p.time);
 		if (!(particle->getFlags() & 4))
 			p.transform.position += animNode->tryGetTranslation(p.time);
 
-		p.color = particle->getColor() * reference->getBaseColor() * animNode->tryGetColor(p.time);
-
+		// Update Rotation
+		p.transform.rotation += p.rotation + animNode->tryGetRotation(p.time);
 		changeDirection(particle->getDirectionType(), camera, p.transform, emitterTransform.position);
 
+		// Update scale
+		p.transform.scale *= animNode->tryGetScale(p.time);
 		if (particle->getType() != Glitter::ParticleType::Mesh)
 		{
 			// FLAGS: Uniform Scale
@@ -198,6 +194,10 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 				p.transform.scale *= p.scale;
 		}
 
+		// Update Color
+		p.color = particle->getColor() * reference->getBaseColor() * animNode->tryGetColor(p.time);
+
+		// Update UVs
 		if (particle->getUVIndexType() == Glitter::UVIndexType::Fixed)
 		{
 			p.UVIndex = particle->getUVIndex();
@@ -238,7 +238,7 @@ void ParticleInstance::create(int n, float startTime, Glitter::EmissionDirection
 		if ((*it).dead)
 		{
 			ParticleStatus &p	= (*it);
-			auto particle		= reference->getParticle();
+			auto &particle		= reference->getParticle();
 			p.startTime			= startTime;
 			p.time				= 0.0f;
 			p.dead				= false;

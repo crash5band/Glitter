@@ -111,11 +111,13 @@ bool Editor::openGlitterFile(const std::string& filename)
 
 void Editor::closeEffect(size_t index)
 {
+	std::string effName = effectNodes.at(index)->getEffect()->getName();
 	effectNodes.erase(effectNodes.begin() + index);
 
 	MaterialEditor::clean();
 	ResourceManager::cleanModels();
 	ResourceManager::cleanTextures();
+	Logger::log(Message(MessageType::Normal, "Closed effect " + effName + "."));
 }
 
 void Editor::saveEffect(bool saveAs)

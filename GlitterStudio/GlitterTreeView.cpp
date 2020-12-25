@@ -24,7 +24,7 @@ void Editor::updateMenuBar()
 				openGlitterFile(name);
 		}
 
-		ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open Folder");
+		ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open Folder (Dummy)");
 		ImGui::Separator();
 
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save", "Ctrl + S"))
@@ -315,7 +315,7 @@ void Editor::setSelectedNode()
 
 void Editor::updateGlitterTreeView()
 {
-	ImGui::Begin(effWindow, NULL,ImGuiWindowFlags_NoBringToFrontOnFocus);
+	ImGui::Begin(effWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 2));

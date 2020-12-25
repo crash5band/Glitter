@@ -15,7 +15,7 @@ struct Message
 	std::string message;
 
 	Message(MessageType t, const std::string& msg) :
-		type{ type }, message{ msg }
+		type{ t }, message{ msg }
 	{
 
 	}

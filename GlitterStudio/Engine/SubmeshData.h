@@ -37,6 +37,7 @@ public:
 	SubmeshData(const std::vector<VertexData>& v, const std::vector<unsigned int>& i, TextureData &t, PirimitveType pirimitive);
 	~SubmeshData();
 
+	void dispose();
 	void appendVerticesTo(std::vector<VertexData>& list);
 	void draw(Shader* shader);
 };

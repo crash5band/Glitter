@@ -13,6 +13,12 @@ ModelData::ModelData()
 
 }
 
+void ModelData::dispose()
+{
+	for (auto& mesh : meshes)
+		mesh.dispose();
+}
+
 void ModelData::buildGensModel(Glitter::Model &model)
 {
 	std::vector<Glitter::Mesh*> gensMeshes = model.getMeshes();

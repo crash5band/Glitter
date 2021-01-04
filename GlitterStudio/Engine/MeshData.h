@@ -10,6 +10,7 @@ public:
 	MeshData();
 	MeshData(const std::vector<SubmeshData>& list);
 
+	void dispose();
 	void addSubmesh(SubmeshData &submesh);
 	void draw(Shader* shader);
 };

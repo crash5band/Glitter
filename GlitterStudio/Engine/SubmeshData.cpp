@@ -56,6 +56,13 @@ void SubmeshData::build()
 	glBindVertexArray(0);
 }
 
+void SubmeshData::dispose()
+{
+	glDeleteBuffers(1, &ebo);
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
+}
+
 void SubmeshData::appendVerticesTo(std::vector<VertexData>& list)
 {
 	list.insert(list.end(), vertices.begin(), vertices.end());

@@ -19,6 +19,7 @@ public:
 	ModelData(const std::string& path);
 	ModelData();
 
+	void dispose();
 	void buildGensModel(Glitter::Model &model);
 	void reload(const std::string& path);
 	void draw(Shader* shader);

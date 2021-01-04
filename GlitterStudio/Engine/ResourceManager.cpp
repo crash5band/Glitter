@@ -90,7 +90,10 @@ void ResourceManager::cleanModels()
 	for (std::vector<std::shared_ptr<ModelData>>::iterator it = models.begin(); it != models.end();)
 	{
 		if ((*it).use_count() < 2)
+		{
+			(*it)->dispose();
 			it = models.erase(it);
+		}
 		else
 			++it;
 	}

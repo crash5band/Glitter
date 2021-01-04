@@ -5,6 +5,7 @@
 #include "UiHelper.h"
 #include "UIFn.h"
 #include "Logger.h"
+#include "ResourceManager.h"
 
 std::vector<std::shared_ptr<MaterialNode>> MaterialEditor::materialNodes;
 int MaterialEditor::index = -1;
@@ -22,6 +23,7 @@ void MaterialEditor::remove(size_t pos)
 	if (materialNodes.at(pos).use_count() < 2)
 	{
 		materialNodes.erase(materialNodes.begin() + pos);
+		ResourceManager::cleanTextures();
 		Logger::log(Message(MessageType::Normal, "Closed material" + matName + "."));
 	}
 	else

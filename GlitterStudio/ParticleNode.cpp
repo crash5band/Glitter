@@ -61,10 +61,9 @@ void ParticleNode::initMesh()
 		return;
 
 	std::string materialPath = Glitter::File::getFilePath(materialNode->getMaterial()->getFilename());
-	if (particle->getType() == Glitter::ParticleType::Mesh)
+	if (particle->getType() == Glitter::ParticleType::Mesh && particle->getName().size())
 	{
-		ResourceManager::loadModel(materialPath + "\\" + particle->getMeshName() + ".model");
-		mesh = ResourceManager::getModel(particle->getMeshName() + ".model");
+		changeMesh(materialPath + "\\" + particle->getMeshName() + ".model");
 	}
 }
 

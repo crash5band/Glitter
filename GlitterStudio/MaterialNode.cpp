@@ -3,15 +3,15 @@
 #include "File.h"
 #include "FileGUI.h"
 #include "ResourceManager.h"
-#include <math.h>
 
 MaterialNode::MaterialNode(std::shared_ptr<Glitter::GlitterMaterial>& mat) :
 	material{ mat }
 {
 	const std::string path = Glitter::File::getFilePath(mat->getFilename());
-	const std::string texturePath(std::string(path) + mat->getTexture() + ".dds");
+	const std::string texturePath = std::string(path) + mat->getTexture() + ".dds";
 	texture = nullptr;
-	changeTexture(texturePath);
+	if (mat->getTexture().size())
+		changeTexture(texturePath);
 }
 
 std::shared_ptr<Glitter::GlitterMaterial> MaterialNode::getMaterial()

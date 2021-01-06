@@ -22,6 +22,10 @@ EmitterNode::EmitterNode(std::shared_ptr<Glitter::Emitter> &em, EffectNode* eff)
 				particleInstances.emplace_back(particleNodes[j]);
 		}
 	}
+
+	std::string root = Glitter::File::getFilePath(eff->getEffect()->getFilename());
+	if (em->getType() == Glitter::EmitterType::Mesh && em->getMeshName().size())
+		changeMesh(root + "\\" + em->getMeshName());
 }
 
 std::vector<ParticleInstance> &EmitterNode::getParticles()

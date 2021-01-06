@@ -27,6 +27,8 @@ private:
 	static std::vector<Message> mLog;
 
 public:
+	static bool hasNew;
+
 	static void show();
 	static void clear();
 	static void log(Message msg);

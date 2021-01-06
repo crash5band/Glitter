@@ -4,6 +4,7 @@
 #include <ctime>
 
 std::vector<Message> Logger::mLog;
+bool Logger::hasNew;
 
 void Logger::clear()
 {
@@ -22,6 +23,8 @@ void Logger::log(Message msg)
 	msgFull.append(msg.message);
 	msg.message = msgFull;
 	mLog.emplace_back(msg);
+
+	hasNew = true;
 }
 
 void Logger::show()
@@ -31,23 +34,37 @@ void Logger::show()
 		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, 25.0f)))
 			clear();
 
-		for (auto& msg : mLog)
+		ImGui::Separator();
+
+		if (ImGui::ListBoxHeader("", ImVec2(ImGui::GetContentRegionAvail())))
 		{
-			ImVec4 color(1.0f, 1.0f, 1.0f, 1.0f);
-			switch (msg.type)
+			for (auto& msg : mLog)
 			{
-			case MessageType::Warning:
-				color = ImVec4(0.95f, 0.8f, 0.04f, 1.0f);
-				break;
+				ImVec4 color(1.0f, 1.0f, 1.0f, 1.0f);
+				switch (msg.type)
+				{
+				case MessageType::Warning:
+					color = ImVec4(0.95f, 0.8f, 0.04f, 1.0f);
+					break;
 
-			case MessageType::Error:
-				color = ImVec4(0.95f, 0.23f, 0.05f, 1.0f);
-				break;
+				case MessageType::Error:
+					color = ImVec4(0.95f, 0.23f, 0.05f, 1.0f);
+					break;
+				}
+
+				ImGui::PushStyleColor(ImGuiCol_Text, color);
+				ImGui::TextWrapped(msg.message.c_str());
+				ImGui::PopStyleColor(1);
 			}
+		}
 
-			ImGui::PushStyleColor(ImGuiCol_Text, color);
-			ImGui::TextWrapped(msg.message.c_str());
-			ImGui::PopStyleColor(1);
+		ImGui::ListBoxFooter();
+
+		if (hasNew)
+		{
+			float scroll = ImGui::GetScrollMaxY();
+			ImGui::SetScrollY(scroll);
+			hasNew = false;
 		}
 	}
 

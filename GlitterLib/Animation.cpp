@@ -57,7 +57,7 @@ namespace Glitter
 
 	void Animation::setStartTime(float time)
 	{
-		if (time <= endTime)
+		if (time <= endTime && time >= 0.0f)
 		{
 			startTime = (int)time;
 			if (keys.size() && time > keys[0].time)
@@ -67,7 +67,7 @@ namespace Glitter
 
 	void Animation::setEndTime(float time)
 	{
-		if (time >= startTime)
+		if (time >= startTime && time >= 0.0f)
 		{
 			endTime = (int)time;
 			if (keys.size() && time < keys[keys.size() - 1].time)

@@ -11,6 +11,8 @@ void CommandManager::pushNew(ICommand* command)
 	command->execute();
 	undoStack.push(command);
 	clearRedo();
+
+	Logger::log(Message(MessageType::Normal, command->getDescription()));
 }
 
 void CommandManager::undo()

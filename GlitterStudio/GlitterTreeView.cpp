@@ -130,6 +130,12 @@ void Editor::updateMenuBar()
 		ImGui::EndMenu();
 	}
 
+	if (ImGui::BeginMenu("Help"))
+	{
+		if (ImGui::MenuItem("About", NULL))
+			about();
+	}
+
 	ImGui::PopStyleVar(1);
 	ImGui::EndMainMenuBar();
 }
@@ -316,9 +322,6 @@ void Editor::setSelectedNode()
 void Editor::updateGlitterTreeView()
 {
 	ImGui::Begin(effWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus);
-
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 2));
 	itemRowsBackground();
 
 	for (size_t i = 0; i < effectNodes.size(); ++i)
@@ -347,10 +350,16 @@ void Editor::updateGlitterTreeView()
 			for (size_t j = 0; j < emitterNodes.size(); ++j)
 			{
 				ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-				cursorPos.x -= 20.0f;
+				cursorPos.x -= btnSmall.x;
 				nodeFlags = isNodeSelected(i, j) ? selectedParentFlags : parentNodeFlags;
 				bool emOpen = ImGui::TreeNodeEx((void*)(intptr_t)(i + j), nodeFlags, "%s %s", ICON_FA_CUBE, emitterNodes[j]->getEmitter()->getName().c_str());
 				
+				/*
+					Returns true if an emitter is removed. In this case, we skip the current iteration,
+					subtract the emitter index by one (to counter the increase from skipping the iteration.
+					
+					Also need to make sure to call ImGui::TreePop() if the removed emitter node was open
+				*/ 
 				if (emitterMenu(i, j))
 				{
 					--j;
@@ -366,15 +375,11 @@ void Editor::updateGlitterTreeView()
 
 				std::string lbl(emitterNodes[j]->isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
 				lbl.append("##" + std::to_string(i + j));
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 				ImGui::SetCursorScreenPos(cursorPos);
-				if (ImGui::Button(lbl.c_str(), ImVec2(24, 24)))
+
+				if (transparentButton(lbl, ImVec2(24, 24)))
 					emitterNodes[j]->setVisible(!emitterNodes[j]->isVisible());
-
-				ImGui::PopStyleColor(3);
-
+					
 				if (emOpen)
 				{
 					// Emitter particles
@@ -394,15 +399,11 @@ void Editor::updateGlitterTreeView()
 
 							std::string lbl(emitterParticles[p].isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
 							lbl.append("##" + std::to_string(i + (j + p + 1) * 100));
-							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 							ImGui::SetCursorScreenPos(cursorPos);
-							if (ImGui::Button(lbl.c_str(), ImVec2(24, 24)))
+
+							if (transparentButton(lbl, ImVec2(24, 24)))
 								emitterParticles[p].setVisible(!emitterParticles[p].isVisible());
-
-							ImGui::PopStyleColor(3);
-
+								
 						}
 					}
 
@@ -430,7 +431,6 @@ void Editor::updateGlitterTreeView()
 		}
 	}
 
-	ImGui::PopStyleVar(2);
 	ImGui::End();
 	updateMenuBar();
 	setSelectedNode();

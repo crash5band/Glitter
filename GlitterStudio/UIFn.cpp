@@ -85,3 +85,14 @@ void initLayout(ImGuiID dockspaceID)
 		ImGui::DockBuilderFinish(mainID);
 	}
 }
+
+bool transparentButton(std::string& lbl, ImVec2 size)
+{
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
+	bool clicked = ImGui::Button(lbl.c_str(), size);
+
+	ImGui::PopStyleColor(3);
+	return clicked;
+}

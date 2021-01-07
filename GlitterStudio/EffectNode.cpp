@@ -38,6 +38,11 @@ NodeType EffectNode::getType()
 	return NodeType::Effect;
 }
 
+float EffectNode::getLife()
+{
+	return effect->getLifeTime();
+}
+
 void EffectNode::update(float time, Camera* camera)
 {
 	float effectTime = time - effect->getStartTime();

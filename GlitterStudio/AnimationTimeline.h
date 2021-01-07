@@ -24,6 +24,9 @@ private:
 	float zoom;
 	const float minZoom;
 	const float maxZoom;
+	const float keyRadiusIn;
+	const float keyRadiusOut;
+	const float heightOffset;
 	int currentFrame;
 	int selectedKey;
 	bool hovered;

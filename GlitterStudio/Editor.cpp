@@ -15,7 +15,7 @@ DebugWindows Editor::debugWindows;
 EditorSetting Editor::editorSettings;
 std::vector<DeltaTime> Editor::times;
 
-Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }
+Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, selectedChild{ -1 }
 {
 	char buf[_MAX_PATH];
 	GetModuleFileNameA(NULL, buf, _MAX_PATH);
@@ -25,8 +25,6 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }
 	initOpenGl();
 	initImgui();
 	setImguiStyle();
-	
-	reset();
 
 	ResourceManager::loadShader("BillboardParticle", appDir + "/Res/Shaders/BillboardParticle.vert", appDir + "/Res/Shaders/BillboardParticle.frag");
 	ResourceManager::loadShader("MeshParticle", appDir + "/Res/Shaders/MeshParticle.vert", appDir + "/Res/Shaders/MeshParticle.frag");
@@ -172,6 +170,11 @@ void Editor::saveMaterial(bool saveAs)
 	}
 }
 
+void Editor::about()
+{
+
+}
+
 void Editor::processInput()
 {
 	if (io->WantCaptureKeyboard)
@@ -245,7 +248,9 @@ void Editor::go()
 			resizeLayout(dockspaceID, screenWidth, screenHeight);
 			initLayout(dockspaceID);
 
-			//ImGui::ShowDemoWindow();
+#ifdef _DEBUG
+			ImGui::ShowDemoWindow();
+#endif
 
 			updateGlitterTreeView();
 			MaterialEditor::update();

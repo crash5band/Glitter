@@ -29,6 +29,11 @@ NodeType MaterialNode::getType()
 	return NodeType::Material;
 }
 
+float MaterialNode::getLife()
+{
+	return 0.0f;
+}
+
 void MaterialNode::changeTexture(const std::string& filepath)
 {
 	ResourceManager::loadTexture(filepath, TextureSlot::Diffuse);
@@ -46,7 +51,7 @@ void MaterialNode::populateInspector()
 		addTextProperty("Name", material->getName(), material, std::mem_fn(&Material::setName));
 
 		beginPropertyColumn("Texture");
-		if (ImGui::Button(texture.get() ? material->getTexture().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
+		if (ImGui::Button(texture.get() ? material->getTexture().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 		{
 			std::string name;
 			if (FileGUI::openFileGUI(FileType::Texture, name))

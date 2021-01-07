@@ -8,11 +8,14 @@
 #include <algorithm>
 
 AnimationTimeline::AnimationTimeline() :
-	zoom{ 2.5f }, minZoom{ 1.0f }, maxZoom{ 5.0f }, frameWidth{ 8 }, currentFrame{ 0 }, holdingTan{ false }
+	minZoom{ 1.0f }, maxZoom{ 5.0f }, frameWidth{ 8 }, keyRadiusIn{ 6.0f }, keyRadiusOut{ 8.0f }, heightOffset{ 20.0f }
 {
+	zoom = 2.5f;
+
 	io = &ImGui::GetIO();
 
-	frameStart = frameEnd = 0;
+	holdingTan = false;
+	frameStart = frameEnd = currentFrame = 0;
 	timelineMinOffset = ImVec2(-100, 0);
 	timelinePosOffset = ImVec2(timelineMinOffset.x, 0);
 
@@ -163,7 +166,7 @@ void AnimationTimeline::updateControls()
 	// Zoom //
 	float zoomPercent = zoom * 100.0f;
 
-	if (ImGui::Button(ICON_FA_SEARCH_MINUS, ImVec2(25, 25)))
+	if (ImGui::Button(ICON_FA_SEARCH_MINUS, btnNormal))
 		zoomPercent -= 50.0f;
 
 	ImGui::SameLine();
@@ -172,7 +175,7 @@ void AnimationTimeline::updateControls()
 	ImGui::SliderFloat("##zoom_slider", &zoomPercent, minZoom * 100.0f, maxZoom * 100.0f, "%.1f%%");
 
 	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_SEARCH_PLUS, ImVec2(25, 25)))
+	if (ImGui::Button(ICON_FA_SEARCH_PLUS, btnNormal))
 		zoomPercent += 50.0f;
 
 	zoom = zoomPercent / 100.0f;
@@ -182,19 +185,19 @@ void AnimationTimeline::updateControls()
 	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 	ImGui::SameLine();
 
-	if (ImGui::Button(ICON_FA_FAST_BACKWARD, ImVec2(30, 25)))
+	if (ImGui::Button(ICON_FA_FAST_BACKWARD, btnNormal))
 		firstKey();
 
 	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_BACKWARD, ImVec2(30, 25)))
+	if (ImGui::Button(ICON_FA_BACKWARD, btnNormal))
 		previousKey();
 
 	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_FORWARD, ImVec2(30, 25)))
+	if (ImGui::Button(ICON_FA_FORWARD, btnNormal))
 		nextKey();
 
 	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_FAST_FORWARD, ImVec2(30, 25)))
+	if (ImGui::Button(ICON_FA_FAST_FORWARD, btnNormal))
 		lastKey();
 
 	currentFrame = std::clamp(currentFrame, frameStart, frameEnd);
@@ -205,11 +208,11 @@ void AnimationTimeline::updateControls()
 	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 	ImGui::SameLine();
 
-	if (ImGui::Button(ICON_FA_PLUS_CIRCLE, ImVec2(30, 25)))
+	if (ImGui::Button(ICON_FA_PLUS_CIRCLE, btnNormal))
 		newKey();
 
 	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_MINUS_CIRCLE, ImVec2(30, 25)))
+	if (ImGui::Button(ICON_FA_MINUS_CIRCLE, btnNormal))
 		deleteKey();
 
 	// Limits //
@@ -341,7 +344,7 @@ void AnimationTimeline::updateTimelineContents()
 		while (count < 5)
 		{
 			const float xPos{ canvasPos.x + timelinePosOffset.x };
-			const float yPos{ canvasPos.y + (0.25f * count * (canvasSize.y - 20.0f)) + 20.0f };
+			const float yPos{ canvasPos.y + (0.25f * count * (canvasSize.y - heightOffset)) + heightOffset };
 
 			ImU32 lineColor = (count & 1) ? ImGui::GetColorU32(ImVec4(0.35, 0.35, 0.35, 0.45)) : ImGui::GetColorU32(ImVec4(0.45, 0.45, 0.45, 0.75));
 			bool last{ count == 4 };
@@ -361,7 +364,7 @@ void AnimationTimeline::updateTimelineContents()
 	}
 
 	// draw top horizontal line
-	drawList->AddLine(ImVec2(canvasPos.x + timelinePosOffset.x, canvasPos.y + 20), ImVec2(canvasPos.x + canvasSize.x + timelinePosOffset.x, canvasPos.y + 20),
+	drawList->AddLine(ImVec2(canvasPos.x + timelinePosOffset.x, canvasPos.y + heightOffset), ImVec2(canvasPos.x + canvasSize.x + timelinePosOffset.x, canvasPos.y + 20),
 		ImGui::GetColorU32(ImVec4(0.5, 0.5, 0.5, 0.85)), 2.0f);
 }
 
@@ -402,8 +405,8 @@ void AnimationTimeline::updateTimelineKeys()
 		{
 			bool hermite = keys[i].interpolationType == Glitter::InterpolationType::Hermite;
 			const ImU32 circleColor = hermite ? ImGui::GetColorU32(ImVec4(0.0, 0.0, 1.0, 0.75)) : ImGui::GetColorU32(ImVec4(1.0, 0.0, 0.0, 0.75));
-			ImGui::SetCursorScreenPos(ImVec2(x - 10.0f, y - 10.0f));
-			ImGui::InvisibleButton(std::string("##circle" + i).c_str(), ImVec2(20, 20));
+			ImGui::SetCursorScreenPos(ImVec2(x - (btnSmall.x / 2.0f), y - (btnSmall.y / 2.0f)));
+			ImGui::InvisibleButton(std::string("##circle" + i).c_str(), btnSmall);
 
 			// capture the initial state of the key once any of the buttons (key, or tangent handles) are active
 			// then push the initial and final state to the command's constructor
@@ -437,8 +440,8 @@ void AnimationTimeline::updateTimelineKeys()
 
 			if (Utilities::isWithinRange(circlePos.y, canvasPos.y, canvasPos.y + canvasSize.y + 10))
 			{
-				ImGui::SetCursorScreenPos(ImVec2(circlePos.x, circlePos.y - 10));
-				ImGui::InvisibleButton(std::string("tan_in" + std::to_string(i)).c_str(), ImVec2(20, 20));
+				ImGui::SetCursorScreenPos(ImVec2(circlePos.x, circlePos.y - (btnSmall.y / 2.0f)));
+				ImGui::InvisibleButton(std::string("tan_in" + std::to_string(i)).c_str(), btnSmall);
 
 				if (ImGui::IsItemActivated())
 					k = keys[i];
@@ -459,7 +462,7 @@ void AnimationTimeline::updateTimelineKeys()
 				}
 
 				anyDeacvtivated |= ImGui::IsItemDeactivated();
-				drawList->AddCircleFilled(circlePos, 6, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+				drawList->AddCircleFilled(circlePos, keyRadiusIn, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
 			}
 
 			circlePos = ImVec2(x + 50, y - keys[i].outParam * 10);
@@ -467,8 +470,8 @@ void AnimationTimeline::updateTimelineKeys()
 			
 			if (Utilities::isWithinRange(circlePos.y, canvasPos.y, canvasPos.y + canvasSize.y + 10))
 			{
-				ImGui::SetCursorScreenPos(ImVec2(circlePos.x - 10, circlePos.y - 10));
-				ImGui::InvisibleButton(std::string("tan_out" + std::to_string(i)).c_str(), ImVec2(20, 20));
+				ImGui::SetCursorScreenPos(ImVec2(circlePos.x - (btnSmall.x / 2.0f), circlePos.y - (btnSmall.y / 2.0f)));
+				ImGui::InvisibleButton(std::string("tan_out" + std::to_string(i)).c_str(), btnSmall);
 
 				if (ImGui::IsItemActivated())
 					k = keys[i];
@@ -489,7 +492,7 @@ void AnimationTimeline::updateTimelineKeys()
 				}
 
 				anyDeacvtivated |= ImGui::IsItemDeactivated();
-				drawList->AddCircleFilled(circlePos, 6, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+				drawList->AddCircleFilled(circlePos, keyRadiusIn, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
 			}
 
 			if (anyDeacvtivated && k != keys[i])
@@ -501,8 +504,8 @@ void AnimationTimeline::updateTimelineKeys()
 				CommandManager::pushNew(new ChangeKeyCommand(ptr, animationIndex, i, k));
 			}
 
-			drawList->AddCircleFilled(ImVec2(x, y), 8.0f, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
-			drawList->AddCircleFilled(ImVec2(x, y), 6.0f, circleColor, 12);
+			drawList->AddCircleFilled(ImVec2(x, y), keyRadiusOut, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+			drawList->AddCircleFilled(ImVec2(x, y), keyRadiusIn, circleColor, 12);
 		}
 
 		if (keys[i].time == currentFrame)
@@ -580,12 +583,12 @@ void AnimationTimeline::lastKey()
 float AnimationTimeline::valueToHeight(float val)
 {
 	const float percent = 1 - ((val - lowerLimits[limitIndex]) / (higherLimits[limitIndex] - lowerLimits[limitIndex]));
-	return canvasPos.y + (percent * (canvasSize.y - 20.0f)) + 20.0f;
+	return canvasPos.y + (percent * (canvasSize.y - heightOffset)) + heightOffset;
 }
 
 float AnimationTimeline::heightToValue(float height)
 {
-	const float percent = (height - canvasPos.y - 20.0f) / (canvasSize.y - 20.0f);
+	const float percent = (height - canvasPos.y - heightOffset) / (canvasSize.y - heightOffset);
 	return ((1 - percent) * (higherLimits[limitIndex] - lowerLimits[limitIndex])) + lowerLimits[limitIndex];
 }
 

@@ -57,7 +57,8 @@ void Inspector::inspectAnimation(int index)
 			ImGui::Columns(2, 0, false);
 			ImGui::SetColumnWidth(0, ImGui::GetWindowSize().x / 3.0f);
 
-			for (int i = 0; i < 4; ++i)
+			int i = 0;
+			for (; i < 2; ++i)
 			{
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text(animProperties[i]);
@@ -76,6 +77,23 @@ void Inspector::inspectAnimation(int index)
 
 			if (ImGui::InputFloat("##End", &end, 1, 5, 0, ImGuiInputTextFlags_EnterReturnsTrue))
 				animation.setEndTime(end);
+
+			ImGui::PopItemWidth();
+
+			ImGui::Columns(1, 0, false);
+			if (ImGui::Button("Set End As Life Time", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
+				animation.setEndTime(node.lock()->getLife());
+
+			ImGui::Separator();
+			ImGui::Columns(2, 0, false);
+			for (; i < 4; ++i)
+			{
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text(animProperties[i]);
+			}
+
+			ImGui::NextColumn();
+			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 
 			std::string preview = Glitter::glitterEnumToString(Glitter::repeatTypeTable, Glitter::repeatTypeTableSize, repeatType);
 			if (ImGui::BeginCombo("##repeat", preview.c_str()))
@@ -96,7 +114,7 @@ void Inspector::inspectAnimation(int index)
 				ImGui::EndCombo();
 			}
 
-			if (ImGui::InputInt("##falgs", &flags, 1, 2, ImGuiInputTextFlags_EnterReturnsTrue))
+			if (ImGui::InputInt("##flags", &flags, 1, 2, ImGuiInputTextFlags_EnterReturnsTrue))
 				animation.setRandomFlags(flags);
 
 			if (animation != animNode->getAnimationList()->at(index))
@@ -211,7 +229,7 @@ void Inspector::update()
 			auto animNode = animationNode.lock();
 
 #ifdef _DEBUG
-			if (ImGui::Button("Rebuild Animation Cache", ImVec2(ImGui::GetContentRegionAvail().x, 30)))
+			if (ImGui::Button("Rebuild Animation Cache", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 			{
 				animNode->buildCache();
 				Logger::log(Message(MessageType::Normal, "Rebuilt animation cache."));
@@ -245,7 +263,7 @@ void Inspector::update()
 			}
 
 			ImGui::SameLine();
-			if (ImGui::Button("Remove Animation", ImVec2(ImGui::GetContentRegionAvail().x, 30)))
+			if (ImGui::Button("Remove Animation", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 			{
 				CommandManager::pushNew(new RemoveAnimationCommand(animNode, selectedAnimation));
 			}

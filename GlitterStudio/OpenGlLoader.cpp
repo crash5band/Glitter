@@ -84,7 +84,7 @@ void Editor::setImguiStyle()
 	ImGuiStyle* style = &ImGui::GetStyle();
 
 	style->FramePadding.x = 5;
-	style->FramePadding.y = 4;
+	style->FramePadding.y = 3;
 	style->ItemSpacing.x = 10;
 	style->ItemSpacing.y = 3;
 	style->WindowPadding.x = 5;

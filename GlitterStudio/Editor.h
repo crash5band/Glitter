@@ -92,6 +92,7 @@ public:
 	void closeEffect(size_t index);
 	void saveEffect(bool saveAs);
 	void saveMaterial(bool saveAs);
+	void about();
 	bool isNodeSelected(int index1, int index2);
 	void setNodeSelected(int p, int c);
 	void setSelectedNode();

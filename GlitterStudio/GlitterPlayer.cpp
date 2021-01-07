@@ -1,6 +1,7 @@
 #include "GlitterPlayer.h"
 #include "Editor.h"
 #include "IconsFontAwesome5.h"
+#include "UiHelper.h"
 #include "ResourceManager.h"
 #include "Stopwatch.h"
 
@@ -104,17 +105,18 @@ void GlitterPlayer::update(float deltaT)
 {
 	if (ImGui::Begin(prevWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
 	{
-		//ImGui::Button(ICON_FA_VIDEO, ImVec2(30, 25));
-
-		if (ImGui::Button(ICON_FA_VIDEO " Reset", ImVec2(80, 25)))
+		if (ImGui::Button(ICON_FA_VIDEO " Reset", ImVec2(80, btnHeight)))
 			camera->reset();
 
 		ImGui::SameLine();
-		if (ImGui::Button(ICON_FA_STOP, ImVec2(30, 25)))
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+		if (ImGui::Button(ICON_FA_STOP, btnNormal))
 			stopPlayback();
 
 		ImGui::SameLine();
-		if (ImGui::Button(playing ? ICON_FA_PAUSE : ICON_FA_PLAY, ImVec2(50, 25)))
+		if (ImGui::Button(playing ? ICON_FA_PAUSE : ICON_FA_PLAY, btnWide))
 			togglePlayback();
 
 		ImGui::SameLine();
@@ -158,6 +160,9 @@ void GlitterPlayer::update(float deltaT)
 		ImGui::EndMainMenuBar();
 
 		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
 		ImGui::Text("Camera Pitch: %.2f, Yaw: %.2f", camera->getPitch(), camera->getYaw());
 		
 		updatePreview(deltaT);

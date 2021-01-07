@@ -36,6 +36,11 @@ std::shared_ptr<AnimationNode> ParticleNode::getAnimationNode()
 	return animationNode;
 }
 
+float ParticleNode::getLife()
+{
+	return particle->getLifeTime();
+}
+
 void ParticleNode::setMaterial(std::shared_ptr<MaterialNode>& matNode)
 {
 	materialNode = matNode;
@@ -142,7 +147,7 @@ void ParticleNode::populateInspector()
 		if (ImGui::TreeNodeEx("Mesh", defaultOpen))
 		{
 			beginPropertyColumn("Mesh");
-			if (ImGui::Button(mesh.get() ? particle->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
+			if (ImGui::Button(mesh.get() ? particle->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 			{
 				std::string name;
 				if (FileGUI::openFileGUI(FileType::Model, name))

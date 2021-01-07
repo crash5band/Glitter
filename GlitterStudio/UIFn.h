@@ -16,3 +16,4 @@ constexpr const char* logWindow = ICON_FA_CLIPBOARD " Log";
 void itemRowsBackground(float lineHeight = -1.0f, const ImColor& color = ImColor(55, 55, 55, 255));
 void resizeLayout(ImGuiID dockspaceID, int screenWidth, int screenHeight);
 void initLayout(ImGuiID dockspaceID);
+bool transparentButton(std::string& lbl, ImVec2 size);

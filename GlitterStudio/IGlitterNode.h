@@ -20,5 +20,6 @@ public:
 	virtual NodeType getType() = 0;
 	virtual void populateInspector() = 0;
 	virtual std::shared_ptr<AnimationNode> getAnimationNode() = 0;
+	virtual float getLife() = 0;
 };
 

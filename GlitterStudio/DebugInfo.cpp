@@ -52,26 +52,25 @@ void Editor::debugInfo()
 	{
 		if (ImGui::Begin(historyWindow, &Editor::debugWindows.historyViewOpen))
 		{
-			ImGui::Columns(2, "##history_cols", false);
+			ImGui::Columns(2, "##history_cols", true);
 			ImGui::SetColumnOffset(1, 0);
-			ImGui::SetColumnWidth(0, ImGui::GetWindowSize().x / 2.0f);
+			ImGui::SetColumnWidth(0, (ImGui::GetWindowSize().x / 2.0f) - (ImGui::GetStyle().WindowPadding.x / 2.0f));
 
 			std::stack<ICommand*> undo = CommandManager::getUndoHistory();
 			std::stack<ICommand*> redo = CommandManager::getRedoHistory();
 
-			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 			ImGui::Text("Undo (%d)", undo.size());
-			addStackView("##undo", undo);
+			addStackView("##undo", undo, 1.0f);
 
 			ImGui::NextColumn();
-			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+
 			ImGui::Text("Redo (%d)", redo.size());
-			addStackView("##redo", redo);
+			addStackView("##redo", redo, 1.0f);
 
 			ImGui::EndColumns();
 			ImGui::Separator();
 			
-			if (ImGui::Button("Clear All", ImVec2(ImGui::GetContentRegionAvail().x, 30)))
+			if (ImGui::Button("Clear All", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 				CommandManager::clearAll();
 		}
 

@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include "UiHelper.h"
 #include "UIFn.h"
 #include <sstream>
 #include <ctime>
@@ -31,41 +32,41 @@ void Logger::show()
 {
 	if (ImGui::Begin(logWindow))
 	{
-		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, 25.0f)))
+		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 			clear();
 
 		ImGui::Separator();
 
-		if (ImGui::ListBoxHeader("", ImVec2(ImGui::GetContentRegionAvail())))
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+		ImGui::BeginChild("Log Messages");
+
+		for (auto& msg : mLog)
 		{
-			for (auto& msg : mLog)
+			ImVec4 color(1.0f, 1.0f, 1.0f, 1.0f);
+			switch (msg.type)
 			{
-				ImVec4 color(1.0f, 1.0f, 1.0f, 1.0f);
-				switch (msg.type)
-				{
-				case MessageType::Warning:
-					color = ImVec4(0.95f, 0.8f, 0.04f, 1.0f);
-					break;
+			case MessageType::Warning:
+				color = ImVec4(0.95f, 0.8f, 0.04f, 1.0f);
+				break;
 
-				case MessageType::Error:
-					color = ImVec4(0.95f, 0.23f, 0.05f, 1.0f);
-					break;
-				}
-
-				ImGui::PushStyleColor(ImGuiCol_Text, color);
-				ImGui::TextWrapped(msg.message.c_str());
-				ImGui::PopStyleColor(1);
+			case MessageType::Error:
+				color = ImVec4(0.95f, 0.23f, 0.05f, 1.0f);
+				break;
 			}
-		}
 
-		ImGui::ListBoxFooter();
+			ImGui::PushStyleColor(ImGuiCol_Text, color);
+			ImGui::TextWrapped(msg.message.c_str());
+			ImGui::PopStyleColor(1);
+		}
 
 		if (hasNew)
 		{
-			float scroll = ImGui::GetScrollMaxY();
-			ImGui::SetScrollY(scroll);
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
 			hasNew = false;
 		}
+
+		ImGui::EndChild();
+		ImGui::PopStyleColor(1);
 	}
 
 	ImGui::End();

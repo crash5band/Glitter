@@ -10,6 +10,12 @@
 #include "Editor.h"
 #include <stack>
 
+static float btnHeight = 25.0f;
+static ImVec2 btnSmall = ImVec2(20.0f, 20.0f);
+static ImVec2 btnNormal = ImVec2(btnHeight, btnHeight);
+static ImVec2 btnWide = ImVec2(50.0f, btnHeight);
+
+
 static void beginPropertyColumn(const char* label)
 {
 	ImGui::Columns(2, 0, false);
@@ -225,10 +231,10 @@ static void addListProperty(const char* label, const std::vector<Glitter::Animat
 	}
 }
 
-static void addStackView(const char* label, std::stack<ICommand*>& items)
+static void addStackView(const char* label, std::stack<ICommand*>& items, float xRatio)
 {
 	const size_t itemCount = items.size();
-	if (ImGui::ListBoxHeader(label, itemCount, 5))
+	if (ImGui::ListBoxHeader(label, ImVec2(ImGui::GetContentRegionAvail().x * xRatio, ImGui::GetContentRegionAvail().y - btnHeight - 10.0f)))
 	{
 		for (int n = 0; n < itemCount; ++n)
 		{

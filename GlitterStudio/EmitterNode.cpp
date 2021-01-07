@@ -43,6 +43,11 @@ std::shared_ptr<AnimationNode> EmitterNode::getAnimationNode()
 	return animationNode;
 }
 
+float EmitterNode::getLife()
+{
+	return emitter->getLifeTime();
+}
+
 void EmitterNode::changeMesh(const std::string& filename)
 {
 	ResourceManager::loadModel(filename);
@@ -355,7 +360,7 @@ void EmitterNode::populateInspector()
 		if (ImGui::TreeNodeEx("Mesh", treeFlags))
 		{
 			beginPropertyColumn("Mesh");
-			if (ImGui::Button(mesh.get() ? emitter->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight())))
+			if (ImGui::Button(mesh.get() ? emitter->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 			{
 				std::string name;
 				if (FileGUI::openFileGUI(FileType::Model, name))

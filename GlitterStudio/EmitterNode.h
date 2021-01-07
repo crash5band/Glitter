@@ -32,6 +32,7 @@ public:
 	virtual NodeType getType() override;
 	virtual void populateInspector() override;
 	virtual std::shared_ptr<AnimationNode> getAnimationNode() override;
+	virtual float getLife() override;
 
 	void update(float time, Camera* camera, Transform& transform);
 	void emit(float time, Transform& baseTransform);

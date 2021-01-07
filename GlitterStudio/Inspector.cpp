@@ -186,12 +186,12 @@ void Inspector::inspectKey(int index)
 
 			addComboBoxProperty("##Interpolation_Type", Glitter::interpolationTypeTable, Glitter::interpolationTypeTableSize, key.interpolationType);
 
-			float tan[]{ key.inParam, key.outParam };
-			if (ImGui::InputFloat2("##Tangent", tan, 3, ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				key.inParam = tan[0];
-				key.outParam = tan[1];
-			}
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 2.0f);
+			ImGui::InputFloat("##TanIn", &key.inParam, 0.1f, 0.5f, 2, ImGuiInputTextFlags_EnterReturnsTrue);
+
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::InputFloat("##TanOut", &key.outParam, 0.1f, 0.5f, 2, ImGuiInputTextFlags_EnterReturnsTrue);
 
 			ImGui::InputFloat("##Random_Range", &key.randomRange, 1, 10, 2, ImGuiInputTextFlags_EnterReturnsTrue);
 

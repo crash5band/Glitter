@@ -134,6 +134,8 @@ void Editor::updateMenuBar()
 	{
 		if (ImGui::MenuItem("About", NULL))
 			about();
+
+		ImGui::EndMenu();
 	}
 
 	ImGui::PopStyleVar(1);

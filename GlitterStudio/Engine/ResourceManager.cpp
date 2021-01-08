@@ -66,7 +66,7 @@ void ResourceManager::loadTexture(const std::string& filepath, TextureSlot slot)
 void ResourceManager::loadShader(const std::string& name, const std::string& vPath, const std::string& fPath)
 {
 	shaders.emplace_back(std::make_shared<Shader>(name, vPath.c_str(), fPath.c_str()));
-	Logger::log(Message( MessageType::Normal, std::string("loaded shader " + name )));
+	//Logger::log(Message( MessageType::Normal, std::string("loaded shader " + name )));
 }
 
 size_t ResourceManager::getModelCount()

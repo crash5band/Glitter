@@ -18,29 +18,8 @@ void Editor::createMaterial(const std::string& name)
 	MaterialEditor::add(node);
 }
 
-/*unsigned int Editor::firstAvailableID(std::vector<unsigned int>& idList)
-{
-	unsigned int id = 0;
-	std::sort(idList.begin(), idList.end());
-	for (int i = 0; i < idList.size(); ++i)
-	{
-		if (idList[i] == id)
-			++id;
-		else
-			return id;
-	}
-
-	return id;
-}*/
-
 void Editor::createEmitter(effPtr eff, const std::string& name)
 {
-	/* get existing emitter IDs
-	size_t size = eff->getEmitterNodes().size();
-	std::vector<unsigned int> ids;
-	for (int i = 0; i < size; ++i)
-		ids.push_back(eff->getEmitterNodes()[i]->getEmitter()->getID());
-		*/
 	auto emitter = std::make_shared<Glitter::Emitter>(name);
 	auto emNode = std::make_shared<EmitterNode>(emitter, eff.get());
 	CommandManager::pushNew(new CreateEmitterCommand(eff, emNode, eff->getEmitterNodes().size()));
@@ -48,12 +27,6 @@ void Editor::createEmitter(effPtr eff, const std::string& name)
 
 void Editor::createParticle(effPtr eff, const std::string& name)
 {
-	// get existing particle IDs
-	/*size_t size = eff->getParticleNodes().size();
-	std::vector<unsigned int> ids;
-	for (int i = 0; i < size; ++i)
-		ids.push_back(eff->getParticleNodes()[i]->getParticle()->getID());
-		*/
 	auto p = std::make_shared<Glitter::Particle>(name);
 	auto pNode = std::make_shared<ParticleNode>(p);
 	CommandManager::pushNew(new CreateParticleCommand(eff, pNode, eff->getParticleNodes().size()));

@@ -70,7 +70,7 @@ void Editor::updateMenuBar()
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("New Material"))
-			createMaterial("Material");
+			createMaterial("material");
 
 		ImGui::EndMenu();
 	}

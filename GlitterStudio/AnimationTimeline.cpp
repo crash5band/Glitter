@@ -222,7 +222,8 @@ void AnimationTimeline::updateControls()
 
 	ImGui::Text("Lower/Higher Limit");
 	ImGui::SameLine();
-	static float lim[2]{ lowerLimits[limitIndex], higherLimits[limitIndex] };
+
+	float lim[2]{ lowerLimits[limitIndex], higherLimits[limitIndex] };
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 	if (ImGui::DragFloat2("##lim", lim, 1.0f, 0.0f, 0.0f, "%.2f"))
 	{

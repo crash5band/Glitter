@@ -21,8 +21,39 @@ void Inspector::setNode(std::shared_ptr<IGlitterNode> node)
 std::vector<std::string_view> Inspector::getAvailableAnimations()
 {
 	std::vector<std::string_view> newList;
-	for (size_t index = 0; index < Glitter::animationTypeTableSize; ++index)
-		newList.push_back(Glitter::animationTypeTable[index]);
+	NodeType type = node.lock()->getType();
+
+	// common: translation and rotation
+	for (size_t anim = 0; anim < 6; ++anim)
+		newList.emplace_back(Glitter::animationTypeTable[anim]);
+
+	// emitter, particle: scale
+	if (type != NodeType::Effect)
+	{
+		for (size_t anim = 6; anim < 10; ++anim)
+			newList.emplace_back(Glitter::animationTypeTable[anim]);
+	}
+
+	// effect, particle: color
+	if (type != NodeType::Emitter)
+	{
+		for (size_t anim = 10; anim < 14; ++anim)
+			newList.emplace_back(Glitter::animationTypeTable[anim]);
+	}
+
+	// particle only: uv
+	if (type == NodeType::Particle)
+	{
+		for (size_t anim = 14; anim < 22; ++anim)
+			newList.emplace_back(Glitter::animationTypeTable[anim]);
+	}
+
+	// emitter only: emission
+	if (type == NodeType::Emitter)
+	{
+		for (size_t anim = 22; anim < Glitter::animationTypeTableSize; ++anim)
+			newList.emplace_back(Glitter::animationTypeTable[anim]);
+	}
 
 	// remove existing animations
 	std::vector<Glitter::Animation> &anims = *animationNode.lock()->getAnimationList();
@@ -238,7 +269,7 @@ void Inspector::update()
 
 			std::vector<Glitter::Animation>& list = (*animNode->getAnimationList());
 			addListProperty("##Animations", list, selectedAnimation);
-			if (ImGui::Button("Add Animation", ImVec2(ImGui::GetContentRegionAvail().x / 2.0f, 30)))
+			if (ImGui::Button("Add Animation", ImVec2(ImGui::GetContentRegionAvail().x / 2.0f, btnHeight)))
 			{
 				available = getAvailableAnimations();
 				ImGui::OpenPopup("Add Animation");

@@ -7,7 +7,6 @@
 #include "Utilities.h"
 #include "Logger.h"
 #include <Windows.h>
-#include <winver.h>
 
 int Editor::screenWidth = 1366;
 int Editor::screenHeight = 768;
@@ -22,7 +21,6 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	GetModuleFileNameA(NULL, buf, _MAX_PATH);
 	appDir = Glitter::File::getFilePath(buf);
 	imguiINIDir = appDir + "imgui.ini";
-	aboutOpen = false;
 
 	initOpenGl();
 	initImgui();
@@ -218,7 +216,7 @@ void Editor::about()
 
 	if (ImGui::BeginPopupModal("About"))
 	{
-		ImGui::Text("Glitter Studio\nCopyright (C) Crash5b\n\n");
+		ImGui::Text("Glitter Studio\nCopyright (C) 2021 Crash5b\n\n");
 		ImGui::Separator();
 
 		ImGui::Columns(2, "about_cols", false);

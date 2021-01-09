@@ -40,7 +40,7 @@ bool Editor::initOpenGl()
 	glViewport(0, 0, 1366, 768);
 	glfwSwapInterval(1);
 	glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
-	glfwSetWindowSizeLimits(window, 1366, 768, GLFW_DONT_CARE, GLFW_DONT_CARE);
+	//glfwSetWindowSizeLimits(window, 1366, 768, GLFW_DONT_CARE, GLFW_DONT_CARE);
 	//glfwSetWindowAspectRatio(window, 16, 9);
 	//glDisable(GL_CULL_FACE);
 
@@ -126,4 +126,5 @@ void Editor::setImguiStyle()
 	colors[ImGuiCol_TitleBg] = ImVec4(0.13f, 0.13f, 0.13f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
+	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.35f);
 }

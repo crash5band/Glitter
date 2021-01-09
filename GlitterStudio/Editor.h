@@ -51,6 +51,7 @@ private:
 	static int screenWidth;
 	static int screenHeight;
 	const char* glslVersion = "#version 130";
+	bool aboutOpen;
 
 	GLFWwindow* window;
 	ImGuiIO *io;
@@ -100,6 +101,7 @@ public:
 	void updateGlitterTreeView();
 	void updateMenuBar();
 	void frameTime();
+	void getVersion(char* buffer);
 
 	bool effectMenu(int index);
 	bool emitterMenu(int parent, int index);

@@ -130,16 +130,22 @@ void Editor::updateMenuBar()
 		ImGui::EndMenu();
 	}
 
+	bool open = false;
 	if (ImGui::BeginMenu("Help"))
 	{
 		if (ImGui::MenuItem("About", NULL))
-			about();
+			open = true;
 
 		ImGui::EndMenu();
 	}
 
 	ImGui::PopStyleVar(1);
 	ImGui::EndMainMenuBar();
+
+	if (open)
+		ImGui::OpenPopup("About");
+
+	about();
 }
 
 bool Editor::isNodeSelected(int parentIndex, int childIndex)

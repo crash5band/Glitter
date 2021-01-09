@@ -7,7 +7,6 @@
 #include "Utilities.h"
 #include "Logger.h"
 #include <Windows.h>
-#include <winver.h>
 
 int Editor::screenWidth = 1366;
 int Editor::screenHeight = 768;

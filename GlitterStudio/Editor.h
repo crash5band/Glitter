@@ -51,7 +51,6 @@ private:
 	static int screenWidth;
 	static int screenHeight;
 	const char* glslVersion = "#version 130";
-	bool aboutOpen;
 
 	GLFWwindow* window;
 	ImGuiIO *io;

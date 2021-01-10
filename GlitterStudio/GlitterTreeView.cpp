@@ -89,7 +89,7 @@ void Editor::updateMenuBar()
 
 	if (ImGui::BeginMenu("Materials"))
 	{
-		if (ImGui::MenuItem(ICON_FA_FILE " Open"))
+		if (ImGui::MenuItem(ICON_FA_FILE " Open", "Alt + O"))
 		{
 			std::string name;
 			if (FileGUI::openFileGUI(FileType::Material, name))
@@ -97,7 +97,7 @@ void Editor::updateMenuBar()
 		}
 
 		ImGui::Separator();
-		if (ImGui::MenuItem(ICON_FA_SAVE " Save"))
+		if (ImGui::MenuItem(ICON_FA_SAVE " Save", "Ctrl + Shift + S"))
 			saveMaterial(false);
 
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save As"))
@@ -158,16 +158,15 @@ bool Editor::effectMenu(int index)
 	bool closed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::Selectable(ICON_FA_CUBE " Add Emitter"))
+		if (ImGui::MenuItem(ICON_FA_CUBE " Add Emitter"))
 			createEmitter(effectNodes[index], "emitter");
 
-		if (ImGui::Selectable(ICON_FA_CERTIFICATE " Add Particle"))
+		if (ImGui::MenuItem(ICON_FA_CERTIFICATE " Add Particle"))
 			createParticle(effectNodes[index], "particle");
 
-		if (ImGui::Selectable(ICON_FA_TIMES " Close"))
+		if (ImGui::MenuItem(ICON_FA_TIMES " Close"))
 		{
 			closeEffect(index);
-			selectedChild = selectedParent == index ? selectedChild : -1;
 			if (selectedParent == index)
 			{
 				selectedParent = -1;
@@ -187,7 +186,7 @@ bool Editor::emitterMenu(int parent, int index)
 {
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::Selectable(ICON_FA_CERTIFICATE " Add Particle"))
+		if (ImGui::MenuItem(ICON_FA_CERTIFICATE " Add Particle"))
 		{
 			showAvailableParticles = true;
 			showEffect = parent;
@@ -195,21 +194,17 @@ bool Editor::emitterMenu(int parent, int index)
 		}
 
 		ImGui::Separator();
-		std::string str = ICON_FA_TRASH_ALT " Remove##" + std::to_string(parent + index);
-		if (ImGui::Selectable(str.c_str()))
+		if (ImGui::MenuItem(ICON_FA_TRASH_ALT " Remove", "Del"))
 		{
 			removeEmitter(effectNodes[parent], index);
 			ImGui::EndPopup();
 			return true;
 		}
 
-		std::string hStr = "Hide All##" + std::to_string(parent + index);
-		std::string sStr = "Show All##" + std::to_string(parent + index);
-
-		if (ImGui::Selectable(hStr.c_str()))
+		if (ImGui::MenuItem(ICON_FA_EYE_SLASH " Hide All"))
 			effectNodes[parent]->getEmitterNodes()[index]->setVisibleAll(false);
 
-		if (ImGui::Selectable(sStr.c_str()))
+		if (ImGui::MenuItem(ICON_FA_EYE " Show All"))
 			effectNodes[parent]->getEmitterNodes()[index]->setVisibleAll(true);
 
 		ImGui::EndPopup();
@@ -222,8 +217,7 @@ bool Editor::particleMenu(int parent, int index)
 	bool removed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
-		std::string str = ICON_FA_TRASH_ALT " Remove##" + std::to_string(parent + index);
-		if (ImGui::Selectable(str.c_str()))
+		if (ImGui::MenuItem(ICON_FA_TRASH_ALT " Remove", "Del"))
 		{
 			removeParticle(effectNodes[parent], index);
 			removed = true;
@@ -239,8 +233,7 @@ bool Editor::instanceMenu(int effect, int parent, int index)
 	bool removed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
-		std::string str = ICON_FA_TRASH_ALT " Remove##" + std::to_string(effect + parent + index);
-		if (ImGui::Selectable(str.c_str()))
+		if (ImGui::MenuItem(ICON_FA_TRASH_ALT " Remove"))
 		{
 			std::shared_ptr<EmitterNode> node = effectNodes[effect]->getEmitterNodes()[parent];
 			removeParticleInstance(node, node->getParticles()[index].getReference(), index);
@@ -274,8 +267,8 @@ void Editor::availableParticlesMenu(int parent, int index)
 		{
 			for (size_t i = 0; i < count; ++i)
 			{
-				std::string lbl(ICON_FA_CERTIFICATE " " + availableParticles[i].lock()->getName() + "##" + std::to_string(i));
-				if (ImGui::Selectable(lbl.c_str()))
+				std::string pName(ICON_FA_CERTIFICATE " " + availableParticles[i].lock()->getName());
+				if (ImGui::MenuItem(pName.c_str()))
 				{
 					for (int j = 0; j < effectNodes[parent]->getParticleNodes().size(); ++j)
 					{
@@ -288,7 +281,7 @@ void Editor::availableParticlesMenu(int parent, int index)
 		}
 		else
 		{
-			ImGui::Selectable("None Available");
+			ImGui::MenuItem("None Available");
 		}
 
 		ImGui::EndPopup();
@@ -382,7 +375,6 @@ void Editor::updateGlitterTreeView()
 				setNodeSelected(i, j);
 
 				std::string lbl(emitterNodes[j]->isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
-				lbl.append("##" + std::to_string(i + j));
 				ImGui::SetCursorScreenPos(cursorPos);
 
 				if (transparentButton(lbl, ImVec2(24, 24)))

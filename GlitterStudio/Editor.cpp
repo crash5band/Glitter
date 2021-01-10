@@ -61,18 +61,17 @@ bool Editor::openGlitterFile(const std::string& filename)
 		auto effectNode = std::make_shared<EffectNode>(effect);
 		effectNodes.emplace_back(effectNode);
 
+		std::string filepath = Glitter::File::getFilePath(filename);
+
 		for (auto& particle : effect->getParticles())
-		{
-			std::string filepath = Glitter::File::getFilePath(filename);
 			openGlitterFile(filepath + particle->getMaterial() + ".gtm");
-		}
 
 		std::vector<std::shared_ptr<MaterialNode>> materials = MaterialEditor::getNodes();
 		for (auto& p : effectNode->getParticleNodes())
 		{
 			for (int i = 0; i < MaterialEditor::getNodes().size(); ++i)
 			{
-				if (Glitter::File::getFilePath(effect->getFilename()) == Glitter::File::getFilePath(materials[i]->getMaterial()->getFilename())
+				if (filepath == Glitter::File::getFilePath(materials[i]->getMaterial()->getFilename())
 					&& materials[i]->getMaterial()->getName() == p->getParticle()->getMaterial())
 					p->setMaterial(materials[i]);
 			}
@@ -85,10 +84,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 		for (std::vector<std::shared_ptr<MaterialNode>>::iterator it = materials.begin(); it != materials.end(); ++it)
 		{
 			if ((*it)->getMaterial()->getFilename() == filename)
-			{
-				exists = true;
-				break;
-			}
+				return true;
 		}
 		
 		if (!exists)
@@ -277,11 +273,43 @@ void Editor::processInput()
 			if (inputManager->isTapped(GLFW_KEY_SPACE))
 				player->stopPlayback();
 		}
+
+		if (inputManager->isDown(GLFW_KEY_LEFT_SHIFT) || inputManager->isDown(GLFW_KEY_RIGHT_SHIFT))
+		{
+			if (inputManager->isTapped(GLFW_KEY_S))
+				saveEffect(false);
+		}
 	}
 	else
 	{
 		if (inputManager->isTapped(GLFW_KEY_SPACE))
 			player->togglePlayback();
+
+		if (inputManager->isTapped(GLFW_KEY_DELETE))
+		{
+			if (selectedParent == -1)
+				return;
+			else
+			{
+				size_t emitterCount = effectNodes[selectedParent]->getEmitterNodes().size();
+				size_t particleCount = effectNodes[selectedParent]->getParticleNodes().size();
+
+				if (selectedChild >= 0 && selectedChild < emitterCount)
+					removeEmitter(effectNodes[selectedParent], selectedChild);
+				else if (selectedChild >= emitterCount && selectedChild < emitterCount + particleCount)
+					removeParticle(effectNodes[selectedParent], selectedChild - emitterCount);
+			}
+		}
+
+		if (inputManager->isDown(GLFW_KEY_LEFT_ALT) || inputManager->isDown(GLFW_KEY_RIGHT_ALT))
+		{
+			if (inputManager->isTapped(GLFW_KEY_O))
+			{
+				std::string name;
+				if (FileGUI::openFileGUI(FileType::Material, name))
+					openGlitterFile(name);
+			}
+		}
 	}
 }
 

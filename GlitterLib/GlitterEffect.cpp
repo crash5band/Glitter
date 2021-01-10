@@ -162,10 +162,9 @@ namespace Glitter
 			return;
 
 		std::vector<std::shared_ptr<Particle>>::iterator it = particles.begin() + index;
-		unsigned int particleId = (*it)->getID();
 		for (std::vector<std::shared_ptr<Emitter>>::iterator eIt = emitters.begin(); eIt != emitters.end(); ++eIt)
 		{
-			(*eIt)->removeParticleByID(particleId);
+			(*eIt)->removeParticle((*it));
 		}
 
 		particles.erase(it);

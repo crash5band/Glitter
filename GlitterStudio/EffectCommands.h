@@ -7,7 +7,7 @@ class CreateEmitterCommand : public ICommand
 {
 private:
 	std::weak_ptr<EffectNode> effect;
-	std::shared_ptr<EmitterNode> emitter;
+	std::weak_ptr<EmitterNode> emitter;
 	size_t position;
 
 public:
@@ -23,7 +23,7 @@ class DeleteEmitterCommand : public ICommand
 {
 private:
 	std::weak_ptr<EffectNode> effect;
-	std::shared_ptr<EmitterNode> emitter;
+	std::weak_ptr<EmitterNode> emitter;
 	size_t position;
 
 public:
@@ -39,7 +39,7 @@ class CreateParticleCommand : public ICommand
 {
 private:
 	std::weak_ptr<EffectNode> effect;
-	std::shared_ptr<ParticleNode> particle;
+	std::weak_ptr<ParticleNode> particle;
 	size_t position;
 
 public:
@@ -55,7 +55,7 @@ class DeleteParticleCommand : public ICommand
 {
 private:
 	std::weak_ptr<EffectNode> effect;
-	std::shared_ptr<ParticleNode> particle;
+	std::weak_ptr<ParticleNode> particle;
 	size_t position;
 	std::unordered_map<size_t, size_t> emitterParticles;
 
@@ -72,7 +72,7 @@ class AddParticleCommand : public ICommand
 {
 private:
 	std::weak_ptr<EmitterNode> emitter;
-	std::shared_ptr<ParticleNode> particle;
+	std::weak_ptr<ParticleNode> particle;
 	size_t position;
 
 public:
@@ -88,7 +88,7 @@ class RemoveParticleCommand : public ICommand
 {
 private:
 	std::weak_ptr<EmitterNode> emitter;
-	std::shared_ptr<ParticleNode> particle;
+	std::weak_ptr<ParticleNode> particle;
 	size_t position;
 
 public:

@@ -375,6 +375,7 @@ void Editor::updateGlitterTreeView()
 				setNodeSelected(i, j);
 
 				std::string lbl(emitterNodes[j]->isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
+				lbl.append("##eff_" + std::to_string(i) + "em_" + std::to_string(j));
 				ImGui::SetCursorScreenPos(cursorPos);
 
 				if (transparentButton(lbl, ImVec2(24, 24)))
@@ -389,7 +390,7 @@ void Editor::updateGlitterTreeView()
 						for (size_t p = 0; p < emitterParticles.size(); ++p)
 						{
 							ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-							ImGui::TreeNodeEx((void*)(intptr_t)(i + (j + p + 1) * 100), childNodeFlags, "%s %s", ICON_FA_CIRCLE, emitterParticles[p].getParticle()->getName().c_str());
+							ImGui::TreeNodeEx((void*)(intptr_t)(i + 1 + ((j + 1) * p)), childNodeFlags, "%s %s", ICON_FA_CIRCLE, emitterParticles[p].getParticle()->getName().c_str());
 							
 							if (instanceMenu(i, j, p))
 							{
@@ -398,7 +399,7 @@ void Editor::updateGlitterTreeView()
 							}
 
 							std::string lbl(emitterParticles[p].isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
-							lbl.append("##" + std::to_string(i + (j + p + 1) * 100));
+							lbl.append("##em_" + std::to_string(j) + "p_" + std::to_string(p));
 							ImGui::SetCursorScreenPos(cursorPos);
 
 							if (transparentButton(lbl, ImVec2(24, 24)))
@@ -416,7 +417,7 @@ void Editor::updateGlitterTreeView()
 			for (size_t k = 0; k < particleNodes.size(); ++k)
 			{
 				nodeFlags = isNodeSelected(i, emitterCount + k) ? selectedChildFlags : childNodeFlags;
-				ImGui::TreeNodeEx((void*)(intptr_t)(i + k + emitterNodes.size()), nodeFlags, "%s %s", ICON_FA_CERTIFICATE, particleNodes[k]->getParticle()->getName().c_str());
+				ImGui::TreeNodeEx((void*)(intptr_t)(i + 1 + k + emitterNodes.size()), nodeFlags, "%s %s", ICON_FA_CERTIFICATE, particleNodes[k]->getParticle()->getName().c_str());
 				
 				if (particleMenu(i, k))
 				{

@@ -809,6 +809,12 @@ namespace Glitter
 		if (type == ParticleType::Mesh)
 			BIXF::createChildValue(element, "MeshName", meshName);
 
+		if (type == ParticleType::Locus)
+		{
+			BIXF::createChildValue(element, "LocusHistorySize", locusHistorySize);
+			BIXF::createChildValue(element, "LocusHistorySizeRandom", locusHistorySizeRandom);
+		}
+
 		BIXF::createChildColor(element, "Color", color);
 		BIXF::createChildValue(element, "TextureIndex", textureIndex);
 

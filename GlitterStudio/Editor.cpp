@@ -50,7 +50,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 {
 	if (!Glitter::File::exists(filename))
 	{
-		Logger::log(Message( MessageType::Error, std::string("Failed to load %s. File does not exist", filename.c_str() )));
+		Logger::log(Message(MessageType::Error, "failed to load " + filename + ". File does not exist"));
 		return false;
 	}
 
@@ -268,14 +268,17 @@ void Editor::processInput()
 				if (FileGUI::openFileGUI(FileType::Effect, name))
 					openGlitterFile(name);
 			}
-			else if (inputManager->isTapped(GLFW_KEY_S))
-				saveEffect(false);
 
 			if (inputManager->isTapped(GLFW_KEY_SPACE))
 				player->stopPlayback();
 		}
 
 		if (inputManager->isDown(GLFW_KEY_LEFT_SHIFT) || inputManager->isDown(GLFW_KEY_RIGHT_SHIFT))
+		{
+			if (inputManager->isTapped(GLFW_KEY_S))
+				saveMaterial(false);
+		}
+		else
 		{
 			if (inputManager->isTapped(GLFW_KEY_S))
 				saveEffect(false);

@@ -280,7 +280,10 @@ void ParticleInstance::create(int n, float startTime, Glitter::EmissionDirection
 			// InitialRandom UVIndex Types
 			if ((size_t)particle->getUVIndexType() >= 1 && (size_t)particle->getUVIndexType() < 5)
 			{
-				Glitter::Vector2 uvSplit = reference->getMaterialNode()->getMaterial()->getSplit();
+				Glitter::Vector2 uvSplit = Glitter::Vector2(1.0f, 1.0f);
+				if (reference->getMaterialNode())
+					uvSplit = reference->getMaterialNode()->getMaterial()->getSplit();
+
 				unsigned int maxUV = (uvSplit.x * uvSplit.y) - 1;
 				p.UVIndex = Utilities::random(0, maxUV);
 			}

@@ -102,11 +102,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Dependecies\DirectXMath-master\Inc;..\GlitterLib;Engine;..\GlitterExternals\tinyxml2;..\GlitterExternals\half\include;..\Dependencies\glad\include;..\Dependencies\GLFW\include;..\Dependencies\gli;..\Dependencies\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependecies\DirectXMath-master\Inc;..\GlitterLib;Engine;..\GlitterExternals\tinyxml2;..\GlitterExternals\half\include;..\Dependencies\glad\include;..\Dependencies\GLFW\include;..\Dependencies\gli;..\Dependencies\stb_image;..\Dependencies\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
@@ -115,7 +115,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\Dependencies\GlitterLib\$(Configuration);..\Dependencies\GLFW\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;GlitterEngine.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,12 +142,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Dependecies\DirectXMath-master\Inc;..\GlitterLib;Engine;..\GlitterExternals\tinyxml2;..\GlitterExternals\half\include;..\Dependencies\glad\include;..\Dependencies\GLFW\include;..\Dependencies\gli;..\Dependencies\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependecies\DirectXMath-master\Inc;..\GlitterLib;Engine;..\GlitterExternals\tinyxml2;..\GlitterExternals\half\include;..\Dependencies\glad\include;..\Dependencies\GLFW\include;..\Dependencies\gli;..\Dependencies\stb_image;..\Dependencies\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Precise</FloatingPointModel>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
@@ -159,7 +159,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\Dependencies\GlitterLib\$(Configuration);..\Dependencies\GLFW\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;GlitterEngine.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
@@ -257,6 +257,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\glitter_icon.ico" />
+    <Image Include="..\glitter_icon.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

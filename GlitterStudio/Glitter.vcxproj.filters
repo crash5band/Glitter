@@ -285,4 +285,12 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\glitter_icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\glitter_icon.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

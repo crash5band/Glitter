@@ -1,14 +1,25 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "Editor.h"
 #include "IconsFontAwesome5.h"
 #include <stdio.h>
 #include <Windows.h>
 #include <sysinfoapi.h>
+#include <stb_image.h>
 
 void frameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 	if (width && height)
 		Editor::setScreenDimensions(width, height);
+}
+
+void loadIcon(std::string filepath, GLFWwindow* window)
+{
+	GLFWimage images[1];
+	images[0].pixels = stbi_load(filepath.c_str(), &images[0].width, &images[0].height, 0, 4); //rgba channels 
+	glfwSetWindowIcon(window, 1, images);
+	stbi_image_free(images[0].pixels);
 }
 
 bool Editor::initOpenGl()
@@ -40,6 +51,8 @@ bool Editor::initOpenGl()
 	glViewport(0, 0, 1366, 768);
 	glfwSwapInterval(1);
 	glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
+
+	loadIcon(appDir + "Res\\glitter_icon.png", window);
 	//glfwSetWindowSizeLimits(window, 1366, 768, GLFW_DONT_CARE, GLFW_DONT_CARE);
 	//glfwSetWindowAspectRatio(window, 16, 9);
 	//glDisable(GL_CULL_FACE);
@@ -54,7 +67,8 @@ bool Editor::initImgui()
 	io = &ImGui::GetIO();
 
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io->ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard;
+	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	//io->ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard;
 	io->ConfigWindowsMoveFromTitleBarOnly = true;
 	io->IniFilename = imguiINIDir.c_str();
 
@@ -71,10 +85,10 @@ bool Editor::initImgui()
 	GetWindowsDirectoryA(windir, MAX_PATH);
 
 	std::string fontDir = windir;
-	fontDir.append("/Fonts/segoeui.ttf");
+	fontDir.append("\\Fonts\\segoeui.ttf");
 
 	io->Fonts->AddFontFromFileTTF(fontDir.c_str(), 18, NULL, io->Fonts->GetGlyphRangesDefault());
-	io->Fonts->AddFontFromFileTTF(std::string(appDir + "/Res/Fonts/fa-solid-900.ttf").c_str(), 15.0f, &fontConfig, iconRanges);
+	io->Fonts->AddFontFromFileTTF(std::string(appDir + "Res\\Fonts\\fa-solid-900.ttf").c_str(), 15.0f, &fontConfig, iconRanges);
 
 	return true;
 }

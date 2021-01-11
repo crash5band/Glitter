@@ -208,8 +208,9 @@ bool Editor::emitterMenu(int parent, int index)
 			effectNodes[parent]->getEmitterNodes()[index]->setVisibleAll(true);
 
 		ImGui::EndPopup();
-		return false;
 	}
+
+	return false;
 }
 
 bool Editor::particleMenu(int parent, int index)
@@ -348,7 +349,7 @@ void Editor::updateGlitterTreeView()
 			std::vector<std::shared_ptr<EmitterNode>>& emitterNodes = effectNodes[i]->getEmitterNodes();
 			size_t emitterCount = emitterNodes.size();
 
-			for (size_t j = 0; j < emitterNodes.size(); ++j)
+			for (int j = 0; j < emitterNodes.size(); ++j)
 			{
 				ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 				cursorPos.x -= btnSmall.x;
@@ -387,7 +388,7 @@ void Editor::updateGlitterTreeView()
 					if (j < emitterNodes.size())
 					{
 						std::vector<ParticleInstance>& emitterParticles = emitterNodes[j]->getParticles();
-						for (size_t p = 0; p < emitterParticles.size(); ++p)
+						for (int p = 0; p < emitterParticles.size(); ++p)
 						{
 							ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 							ImGui::TreeNodeEx((void*)(intptr_t)(i + 1 + ((j + 1) * p)), childNodeFlags, "%s %s", ICON_FA_CIRCLE, emitterParticles[p].getParticle()->getName().c_str());
@@ -414,17 +415,12 @@ void Editor::updateGlitterTreeView()
 
 			// Particles
 			std::vector<std::shared_ptr<ParticleNode>>& particleNodes = effectNodes[i]->getParticleNodes();
-			for (size_t k = 0; k < particleNodes.size(); ++k)
+			for (int k = 0; k < particleNodes.size(); ++k)
 			{
 				nodeFlags = isNodeSelected(i, emitterCount + k) ? selectedChildFlags : childNodeFlags;
 				ImGui::TreeNodeEx((void*)(intptr_t)(i + 1 + k + emitterNodes.size()), nodeFlags, "%s %s", ICON_FA_CERTIFICATE, particleNodes[k]->getParticle()->getName().c_str());
 				
-				if (particleMenu(i, k))
-				{
-					--k;
-					continue;
-				}
-
+				particleMenu(i, k);
 				setNodeSelected(i, emitterCount + k);
 			}
 

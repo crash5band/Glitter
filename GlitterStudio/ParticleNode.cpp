@@ -162,8 +162,8 @@ void ParticleNode::populateInspector()
 	{
 		if (ImGui::TreeNodeEx("Locus Properties", defaultOpen))
 		{
-			addUIntProperty("Locus History Size", particle->getLocusHistorySize(), particle, std::mem_fn(&Particle::setLocusHistorySize));
-			addUIntProperty("Locus History Size Random", particle->getLocusHistorySize(), particle, std::mem_fn(&Particle::setLocusHistorySizeRandom));
+			addUIntProperty("History Size", particle->getLocusHistorySize(), particle, std::mem_fn(&Particle::setLocusHistorySize));
+			addUIntProperty("History Size Random", particle->getLocusHistorySizeRandom(), particle, std::mem_fn(&Particle::setLocusHistorySizeRandom));
 			ImGui::TreePop();
 		}
 		endPropertyColumn();

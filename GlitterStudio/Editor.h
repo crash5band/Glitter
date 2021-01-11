@@ -27,6 +27,7 @@ struct EditorSetting
 {
 	bool vsync;
 	bool colorWheel;
+	bool fpsCounter;
 };
 
 struct DeltaTime

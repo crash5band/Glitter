@@ -33,6 +33,7 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	player = new GlitterPlayer();
 	inputManager = new InputManager();
 	Editor::editorSettings.vsync = true;
+	Editor::editorSettings.fpsCounter = false;
 
 	dockspaceID = 39765;
 

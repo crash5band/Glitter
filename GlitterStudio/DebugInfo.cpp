@@ -43,11 +43,6 @@ void Editor::debugInfo()
 		ImGui::End();
 	}
 
-	ImGui::BeginMainMenuBar();
-	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-	ImGui::Text("%.3f ms (%.3f FPS)", frameDelta * 1000.0f, 1.0f / frameDelta);
-	ImGui::EndMainMenuBar();
-
 	if (Editor::debugWindows.historyViewOpen)
 	{
 		if (ImGui::Begin(historyWindow, &Editor::debugWindows.historyViewOpen))

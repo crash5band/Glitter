@@ -127,6 +127,9 @@ void Editor::updateMenuBar()
 		if (ImGui::MenuItem("Hue Wheel", NULL, Editor::editorSettings.colorWheel))
 			Editor::editorSettings.colorWheel ^= true;
 
+		if (ImGui::MenuItem("FPS Meter", NULL, Editor::editorSettings.fpsCounter))
+			Editor::editorSettings.fpsCounter ^= true;
+
 		ImGui::EndMenu();
 	}
 
@@ -137,6 +140,12 @@ void Editor::updateMenuBar()
 			open = true;
 
 		ImGui::EndMenu();
+	}
+
+	if (Editor::editorSettings.fpsCounter)
+	{
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::Text("%.3f ms (%.3f FPS)", frameDelta * 1000.0f, 1.0f / frameDelta);
 	}
 
 	ImGui::PopStyleVar(1);

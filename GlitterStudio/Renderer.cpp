@@ -271,7 +271,7 @@ void Renderer::drawPoolQuad(ParticleInstance& instance, Camera* camera)
 
 void Renderer::drawQuad(Transform& transform, Glitter::Vector3 pivot, Glitter::Color& color, unsigned int uvIndex, std::shared_ptr<TextureData> tex)
 {
-	if (numVertices >= maxVertices)
+	if (numVertices >= maxVertices || texID != tex->getID())
 	{
 		endBatch();
 		beginBatch();
@@ -282,12 +282,6 @@ void Renderer::drawQuad(Transform& transform, Glitter::Vector3 pivot, Glitter::C
 		texID = tex->getID();
 		glActiveTexture(GL_TEXTURE0);
 		tex->use();
-	}
-	else if (texID != tex->getID())
-	{
-		endBatch();
-		beginBatch();
-		texID = -1;
 	}
 
 	if (uvIndex >= uvCoords.size())

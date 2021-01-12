@@ -45,6 +45,17 @@ void CommandManager::redo()
 		return;
 
 	ICommand* command = redoStack.top();
+	while (!command->isValid())
+	{
+		redoStack.pop();
+		delete command;
+
+		if (redoStack.size())
+			command = redoStack.top();
+		else
+			return;
+	}
+
 	redoStack.pop();
 	command->execute();
 	undoStack.push(command);

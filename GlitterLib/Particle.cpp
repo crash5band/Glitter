@@ -524,12 +524,18 @@ namespace Glitter
 
 	void Particle::setLocusHistorySize(unsigned int size)
 	{
-		locusHistorySize = size;
+		if (size >= locusHistorySizeRandom)
+			locusHistorySize = size;
+		else
+			locusHistorySize = locusHistorySizeRandom;
 	}
 
 	void Particle::setLocusHistorySizeRandom(unsigned int size)
 	{
-		locusHistorySizeRandom = size;
+		if (size <= locusHistorySize)
+			locusHistorySizeRandom = size;
+		else
+			locusHistorySizeRandom = locusHistorySize;
 	}
 
 	void Particle::setColor(Color c)

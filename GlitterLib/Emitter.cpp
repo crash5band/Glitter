@@ -298,12 +298,16 @@ namespace Glitter
 	{
 		if (a <= endAngle)
 			startAngle = a;
+		else
+			startAngle = endAngle;
 	}
 
 	void Emitter::setEndAngle(float a)
 	{
 		if (a >= startAngle)
 			endAngle = a;
+		else
+			endAngle = startAngle;
 	}
 
 	void Emitter::setLatitude(float l)

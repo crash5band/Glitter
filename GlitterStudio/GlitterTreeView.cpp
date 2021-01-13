@@ -39,6 +39,13 @@ void Editor::updateMenuBar()
 			saveEffect(true);
 
 		ImGui::Separator();
+		if (ImGui::MenuItem("Close All Effects"))
+		{
+			for (size_t eff = 0; eff < effectNodes.size();)
+				closeEffect(eff);
+		}
+
+		ImGui::Separator();
 		if (ImGui::MenuItem(ICON_FA_TIMES " Quit"))
 			glfwSetWindowShouldClose(window, 1);
 
@@ -107,6 +114,10 @@ void Editor::updateMenuBar()
 
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save As"))
 			saveMaterial(true);
+
+		ImGui::Separator();
+		if (ImGui::MenuItem("Close All Materials"))
+			MaterialEditor::clear();
 
 		ImGui::EndMenu();
 	}

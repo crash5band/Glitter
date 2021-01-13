@@ -10,6 +10,7 @@
 #include "MaterialEditor.h"
 #include "CommandManager.h"
 #include "InputManager.h"
+#include "Stopwatch.h"
 #include "UIFn.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
@@ -86,6 +87,7 @@ public:
 	static EditorSetting editorSettings;
 	static std::vector<DeltaTime> times;
 	static void setScreenDimensions(int width, int height);
+	static void logTime(const char* name, const Stopwatch& t);
 
 	void go();
 	void reset();

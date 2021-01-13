@@ -80,18 +80,18 @@ void GlitterPlayer::updatePreview(float deltaT)
 				togglePlayback();
 		}
 
-		{
-			Stopwatch updateTimer("Update Effect");
-			selectedEffect->update(time, camera);
-		}
+		Stopwatch timer;
 
+		selectedEffect->update(time, camera);
 		time += deltaT * 60.0f * playbackSpeed * playing;
 
-		{
-			Stopwatch drawTimer("Draw Effect");
-			Glitter::Vector2 size(viewArea.Max.x - viewArea.Min.x, viewArea.Max.y - viewArea.Min.y);
-			renderer->drawEffect(selectedEffect, camera, size);
-		}
+		Editor::logTime("Update Effect", timer);
+		timer.reset();
+
+		Glitter::Vector2 size(viewArea.Max.x - viewArea.Min.x, viewArea.Max.y - viewArea.Min.y);
+		renderer->drawEffect(selectedEffect, camera, size);
+
+		Editor::logTime("Draw Effect", timer);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

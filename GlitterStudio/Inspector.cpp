@@ -4,7 +4,6 @@
 #include "UiHelper.h"
 #include "Logger.h"
 #include "AnimationCommands.h"
-#include "Stopwatch.h"
 
 Inspector::Inspector() : selectedAnimation{ -1 }
 {
@@ -243,7 +242,6 @@ void Inspector::update()
 	{
 		if (node.lock())
 		{
-			Stopwatch inspectorTime("Inspector");
 			node.lock()->populateInspector();
 		}
 		else
@@ -314,7 +312,6 @@ void Inspector::update()
 	{
 		if (animationNode.lock() && selectedAnimation >= 0 && selectedAnimation < animationNode.lock()->getAnimationList()->size())
 		{
-			Stopwatch timelineTimer("Curve Editor");
 			timeline.update(animationNode, selectedAnimation);
 		}
 		else

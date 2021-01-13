@@ -3,7 +3,6 @@
 #include "FileGUI.h"
 #include "ResourceManager.h"
 #include "MaterialEditor.h"
-#include "Stopwatch.h"
 #include "Utilities.h"
 #include "Logger.h"
 #include <Windows.h>
@@ -45,6 +44,11 @@ void Editor::setScreenDimensions(int width, int height)
 {
 	screenWidth = width;
 	screenHeight = height;
+}
+
+void Editor::logTime(const char* name, const Stopwatch& t)
+{
+	Editor::times.emplace_back(DeltaTime(name, t.elapsed()));
 }
 
 bool Editor::openGlitterFile(const std::string& filename)
@@ -107,6 +111,8 @@ bool Editor::openGlitterFile(const std::string& filename)
 
 void Editor::openFolder(const std::string& directory)
 {
+	Stopwatch timer;
+
 	std::vector<std::string> files;
 	for (const auto& file : std::filesystem::directory_iterator(directory))
 		if (file.path().extension().string() == ".gte")
@@ -114,6 +120,9 @@ void Editor::openFolder(const std::string& directory)
 
 	for (const std::string& file : files)
 		openGlitterFile(file);
+
+	Logger::log(Message(MessageType::Normal, "Finished loading directory" + directory + "in "
+		+ std::to_string(timer.elapsed() * 1000) + "ms."));
 }
 
 void Editor::closeEffect(size_t index)
@@ -349,32 +358,33 @@ void Editor::go()
 		glfwPollEvents();
 		frameTime();
 		times.clear();
-		{
-			Stopwatch mainTimer("Total");
 
-			glClearColor(0.1, 0.1, 0.1, 1.0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Stopwatch mainTimer;
 
-			inputManager->update(window);
-			processInput();
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+		inputManager->update(window);
+		processInput();
 
-			resizeLayout(dockspaceID, screenWidth, screenHeight);
-			initLayout(dockspaceID);
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		resizeLayout(dockspaceID, screenWidth, screenHeight);
+		initLayout(dockspaceID);
 
 #ifdef _DEBUG
-			ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow();
 #endif
 
-			updateGlitterTreeView();
-			MaterialEditor::update();
-			inspector->update();
-			player->update(frameDelta);
-			Logger::show();
-		}
+		updateGlitterTreeView();
+		MaterialEditor::update();
+		inspector->update();
+		player->update(frameDelta);
+		Logger::show();
+
+		logTime("Main Timer", mainTimer);
 
 		debugInfo();
 

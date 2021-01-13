@@ -7,14 +7,13 @@ private:
 	using clock_t = std::chrono::high_resolution_clock;
 	using second_t = std::chrono::duration<double, std::ratio<1> >;
 
-	std::chrono::time_point<clock_t> start;
-	const char* name;
+	std::chrono::time_point<clock_t> begin;
 
 public:
-	Stopwatch(const char* name);
+	Stopwatch();
 	~Stopwatch();
 
-	double elapsed();
+	double elapsed() const;
 	void reset();
 };
 

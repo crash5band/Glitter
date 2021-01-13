@@ -4,7 +4,6 @@
 /// <summary>
 /// This class is made static so we can change a particle's material from the material list here
 /// </summary>
-
 class MaterialEditor
 {
 private:

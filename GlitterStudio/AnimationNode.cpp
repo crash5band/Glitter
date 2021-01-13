@@ -111,6 +111,8 @@ void AnimationNode::buildCache()
 							index++;
 						}
 					}
+
+					break;
 				}
 				else
 				{
@@ -170,11 +172,11 @@ Glitter::Vector3 AnimationNode::tryGetRotation(float time)
 Glitter::Vector3 AnimationNode::tryGetScale(float time)
 {
 	Glitter::Vector3 scale;
-	scale.x = tryGetValue(Glitter::AnimationType::Sx, time, 1.0);
-	scale.y = tryGetValue(Glitter::AnimationType::Sy, time, 1.0);
-	scale.z = tryGetValue(Glitter::AnimationType::Sz, time, 1.0);
+	scale.x = tryGetValue(Glitter::AnimationType::Sx, time, 1.0f);
+	scale.y = tryGetValue(Glitter::AnimationType::Sy, time, 1.0f);
+	scale.z = tryGetValue(Glitter::AnimationType::Sz, time, 1.0f);
 
-	scale *= tryGetValue(Glitter::AnimationType::SAll, time, 1.0);
+	scale *= tryGetValue(Glitter::AnimationType::SAll, time, 1.0f);
 
 	return scale;
 }

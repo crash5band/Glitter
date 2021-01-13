@@ -1,6 +1,9 @@
 #pragma once
 #include "ModelData.h"
 
+/// <summary>
+/// Holds used models, textures and shaders and provides methods to load and retrive them.
+/// </summary>
 class ResourceManager
 {
 private:

@@ -69,6 +69,11 @@ int MaterialEditor::getSelection()
 	return index;
 }
 
+int MaterialEditor::count()
+{
+	return materialNodes.size();
+}
+
 void MaterialEditor::update()
 {
 	ImGuiTreeNodeFlags basicFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_FramePadding;
@@ -85,7 +90,7 @@ void MaterialEditor::update()
 			if (m == index)
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-			ImGui::TreeNodeEx((void*)(intptr_t)m, nodeFlags, "%s %s", ICON_FA_CUBE, materialNodes[m]->getMaterial()->getName().c_str());
+			ImGui::TreeNodeEx((void*)(intptr_t)m, nodeFlags, "%s %s", ICON_FA_SQUARE, materialNodes[m]->getMaterial()->getName().c_str());
 			if (ImGui::IsItemClicked())
 				index = m;
 

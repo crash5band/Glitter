@@ -19,6 +19,7 @@ public:
 	static void clear();
 	static std::vector<std::shared_ptr<MaterialNode>> getNodes();
 	static int getSelection();
+	static int count();
 
 	static void update();
 	static void preview();

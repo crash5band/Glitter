@@ -11,15 +11,12 @@ void Editor::frameTime()
 
 void Editor::debugInfo()
 {
-	if (Editor::debugWindows.performanceOpen)
+	if (Editor::debugWindows.statsOpen)
 	{
-		if (ImGui::Begin(debugWindow, &Editor::debugWindows.performanceOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
+		if (ImGui::Begin(statsWindow, &Editor::debugWindows.statsOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
 		{
-			if (ImGui::TreeNodeEx("I/O", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				ImGui::Text("Mouse: %.1f, %.1f", io->MousePos.x, io->MousePos.y);
-				ImGui::TreePop();
-			}
+			ImGui::Text("Effects: %d", effectNodes.size());
+			ImGui::Text("Materials: %d", MaterialEditor::count());
 
 			if (ImGui::TreeNodeEx("Resources", ImGuiTreeNodeFlags_DefaultOpen))
 			{

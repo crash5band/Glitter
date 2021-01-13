@@ -52,7 +52,7 @@ void resizeLayout(ImGuiID dockspaceID, int screenWidth, int screenHeight)
 	ImGui::DockBuilderSetNodeSize(dockspaceID, ImVec2(screenWidth, screenHeight - ImGui::GetFrameHeight()));
 }
 
-void initLayout(ImGuiID dockspaceID)
+void initLayout(ImGuiID dockspaceID, int width, int height)
 {
 	ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_CentralNode;
 	dockspaceID = ImGui::GetID("Dummy");
@@ -61,20 +61,21 @@ void initLayout(ImGuiID dockspaceID)
 	{
 		ImGui::DockBuilderRemoveNode(dockspaceID);
 		ImGui::DockBuilderAddNode(dockspaceID, dockNodeFlags);
+		ImGui::DockBuilderSetNodeSize(dockspaceID, ImVec2(width, height - ImGui::GetFrameHeight()));
 
 		ImGuiID mainBtmID, midID, midBtmID, rightID, rightBtmID, extraID;
 		ImGuiID mainID = dockspaceID;
 		ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Right, 0.77f, &midID, &mainID);
-		ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Down, 0.5f, &mainBtmID, &mainID);
+		ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Down, 0.6f, &mainBtmID, &mainID);
 		ImGui::DockBuilderSplitNode(midID, ImGuiDir_Right, 0.32f, &rightID, &midID);
 		ImGui::DockBuilderSplitNode(midID, ImGuiDir_Down, 0.35f, &midBtmID, &midID);
 		ImGui::DockBuilderSplitNode(rightID, ImGuiDir_Down, 0.35f, &rightBtmID, &rightID);
-		ImGui::DockBuilderSplitNode(mainBtmID, ImGuiDir_Down, 0.35f, &extraID, &mainBtmID);
+		ImGui::DockBuilderSplitNode(mainBtmID, ImGuiDir_Down, 0.4f, &extraID, &mainBtmID);
 
 		ImGui::DockBuilderDockWindow(effWindow, mainID);
 		ImGui::DockBuilderDockWindow(matWindow, mainBtmID);
 		ImGui::DockBuilderDockWindow(logWindow, extraID);
-		ImGui::DockBuilderDockWindow(debugWindow, extraID);
+		ImGui::DockBuilderDockWindow(statsWindow, extraID);
 		ImGui::DockBuilderDockWindow(historyWindow, extraID);
 		ImGui::DockBuilderDockWindow(prevWindow, midID);
 		ImGui::DockBuilderDockWindow(propertiesWindow, rightID);

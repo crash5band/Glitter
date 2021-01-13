@@ -102,7 +102,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 	}
 	else
 	{
-		Logger::log(Message( MessageType::Error, filename + std::string(" is not a supported file type" )));
+		Logger::log(Message(MessageType::Error, filename + " is not a supported file type."));
 		return false;
 	}
 
@@ -111,8 +111,6 @@ bool Editor::openGlitterFile(const std::string& filename)
 
 void Editor::openFolder(const std::string& directory)
 {
-	Stopwatch timer;
-
 	std::vector<std::string> files;
 	for (const auto& file : std::filesystem::directory_iterator(directory))
 		if (file.path().extension().string() == ".gte")
@@ -120,9 +118,6 @@ void Editor::openFolder(const std::string& directory)
 
 	for (const std::string& file : files)
 		openGlitterFile(file);
-
-	Logger::log(Message(MessageType::Normal, "Finished loading directory" + directory + "in "
-		+ std::to_string(timer.elapsed() * 1000) + "ms."));
 }
 
 void Editor::closeEffect(size_t index)
@@ -372,7 +367,7 @@ void Editor::go()
 		ImGui::NewFrame();
 
 		resizeLayout(dockspaceID, screenWidth, screenHeight);
-		initLayout(dockspaceID);
+		initLayout(dockspaceID, screenWidth, screenHeight);
 
 #ifdef _DEBUG
 		ImGui::ShowDemoWindow();

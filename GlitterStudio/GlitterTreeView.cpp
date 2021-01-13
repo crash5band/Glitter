@@ -91,6 +91,7 @@ void Editor::updateMenuBar()
 	{
 		ImGui::MenuItem("History View", NULL, &Editor::debugWindows.historyViewOpen);
 		ImGui::MenuItem("Active Particles", NULL, &Editor::debugWindows.particlesOpen);
+		ImGui::MenuItem("Stats Window", NULL, &Editor::debugWindows.statsOpen);
 
 		if (ImGui::MenuItem("Clear Log"))
 			Logger::clear();
@@ -125,8 +126,6 @@ void Editor::updateMenuBar()
 #ifdef _DEBUG
 	if (ImGui::BeginMenu("Debug"))
 	{
-		ImGui::MenuItem("Debug Info", NULL, &Editor::debugWindows.performanceOpen);
-
 		ImGui::Separator();
 		if (ImGui::MenuItem("Reset Editor", NULL))
 			reset();

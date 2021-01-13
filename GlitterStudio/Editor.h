@@ -20,7 +20,7 @@
 struct DebugWindows
 {
 	bool particlesOpen = false;
-	bool performanceOpen = false;
+	bool statsOpen = false;
 	bool historyViewOpen = false;
 };
 

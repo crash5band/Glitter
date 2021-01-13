@@ -31,6 +31,8 @@ void MaterialEditor::remove(size_t pos)
 		std::string warning = "Cannot close " + matName + ". The material is used by on open effect.";
 		Logger::log(Message(MessageType::Warning, warning));
 	}
+
+	index = -1;
 }
 
 void MaterialEditor::clean()
@@ -42,6 +44,7 @@ void MaterialEditor::clean()
 		{
 			std::string matName = (*it)->getMaterial()->getName();
 			it = materialNodes.erase(it);
+			index = -1;
 
 			Logger::log(Message(MessageType::Normal, "Closed material " + matName + "."));
 		}
@@ -53,6 +56,7 @@ void MaterialEditor::clean()
 void MaterialEditor::clear()
 {
 	materialNodes.clear();
+	index = -1;
 }
 
 std::vector<std::shared_ptr<MaterialNode>> MaterialEditor::getNodes()

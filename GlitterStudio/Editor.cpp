@@ -120,6 +120,7 @@ void Editor::closeEffect(size_t index)
 {
 	std::string effName = effectNodes.at(index)->getEffect()->getName();
 	effectNodes.erase(effectNodes.begin() + index);
+	selectedParent = selectedChild = -1;
 
 	MaterialEditor::clean();
 	ResourceManager::cleanModels();

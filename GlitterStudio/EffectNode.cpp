@@ -64,6 +64,17 @@ void EffectNode::kill()
 		emitter->kill();
 }
 
+void EffectNode::buildAnimations()
+{
+	animationNode->buildCache();
+	
+	for (auto& emitter : emitterNodes)
+		emitter->getAnimationNode()->buildCache();
+
+	for (auto& particle : particleNodes)
+		particle->getAnimationNode()->buildCache();
+}
+
 void EffectNode::populateInspector()
 {
 	using Effect = Glitter::GlitterEffect;

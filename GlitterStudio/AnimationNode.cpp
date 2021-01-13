@@ -4,7 +4,7 @@
 AnimationNode::AnimationNode(std::vector<Glitter::Animation>* list) :
 	animationList{ list }
 {
-	buildCache();
+
 }
 
 std::vector<Glitter::Animation>* AnimationNode::getAnimationList()

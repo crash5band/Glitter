@@ -22,6 +22,7 @@ public:
 
 	void update(float time, Camera* camera);
 	void kill();
+	void buildAnimations();
 	virtual NodeType getType() override;
 	virtual void populateInspector() override;
 	virtual std::shared_ptr<AnimationNode> getAnimationNode() override;

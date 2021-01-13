@@ -7,6 +7,7 @@
 #include "Utilities.h"
 #include "Logger.h"
 #include <Windows.h>
+#include <filesystem>
 
 int Editor::screenWidth = 1366;
 int Editor::screenHeight = 768;
@@ -102,6 +103,17 @@ bool Editor::openGlitterFile(const std::string& filename)
 	}
 
 	return true;
+}
+
+void Editor::openFolder(const std::string& directory)
+{
+	std::vector<std::string> files;
+	for (const auto& file : std::filesystem::directory_iterator(directory))
+		if (file.path().extension().string() == ".gte")
+			files.emplace_back(file.path().string());
+
+	for (const std::string& file : files)
+		openGlitterFile(file);
 }
 
 void Editor::closeEffect(size_t index)
@@ -246,8 +258,8 @@ void Editor::about()
 
 void Editor::processInput()
 {
-	if (io->WantCaptureKeyboard)
-		return;
+	//if (io->WantCaptureKeyboard)
+		//return;
 
 	if (inputManager->isDown(GLFW_KEY_LEFT_CONTROL) || inputManager->isDown(GLFW_KEY_RIGHT_CONTROL))
 	{

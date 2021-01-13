@@ -24,9 +24,14 @@ void Editor::updateMenuBar()
 				openGlitterFile(name);
 		}
 
-		ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open Folder (Dummy)");
-		ImGui::Separator();
+		if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open Folder"))
+		{
+			std::string dir;
+			if (FileGUI::openFolderGUI(dir))
+				openFolder(dir);
+		}
 
+		ImGui::Separator();
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save", "Ctrl + S"))
 			saveEffect(false);
 
@@ -340,6 +345,7 @@ void Editor::updateGlitterTreeView()
 		std::string effectName = effectNodes[i]->getEffect()->getName();
 		nodeFlags = isNodeSelected(i, -1) ? selectedParentFlags : parentNodeFlags;
 		bool open = ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, "");
+
 		if (effectMenu(i))
 		{
 			--i;
@@ -365,12 +371,6 @@ void Editor::updateGlitterTreeView()
 				nodeFlags = isNodeSelected(i, j) ? selectedParentFlags : parentNodeFlags;
 				bool emOpen = ImGui::TreeNodeEx((void*)(intptr_t)(i + j), nodeFlags, "%s %s", ICON_FA_CUBE, emitterNodes[j]->getEmitter()->getName().c_str());
 				
-				/*
-					Returns true if an emitter is removed. In this case, we skip the current iteration,
-					subtract the emitter index by one (to counter the increase from skipping the iteration.
-					
-					Also need to make sure to call ImGui::TreePop() if the removed emitter node was open
-				*/ 
 				if (emitterMenu(i, j))
 				{
 					--j;

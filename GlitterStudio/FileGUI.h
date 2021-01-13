@@ -17,6 +17,7 @@ private:
 	static const char* getFilters(FileType type);
 
 public:
+	static bool openFolderGUI(std::string& path);
 	static bool openFileGUI(FileType type, std::string& filename);
 	static bool saveFileGUI(FileType type, std::string& filename);
 };

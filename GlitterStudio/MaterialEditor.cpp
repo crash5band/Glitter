@@ -8,7 +8,7 @@
 #include "ResourceManager.h"
 
 std::vector<std::shared_ptr<MaterialNode>> MaterialEditor::materialNodes;
-int MaterialEditor::index = -1;
+int MaterialEditor::selection = -1;
 float MaterialEditor::texSize = 128.0f;
 bool MaterialEditor::showSplits = false;
 
@@ -25,14 +25,14 @@ void MaterialEditor::remove(size_t pos)
 		materialNodes.erase(materialNodes.begin() + pos);
 		ResourceManager::cleanTextures();
 		Logger::log(Message(MessageType::Normal, "Closed material" + matName + "."));
+
+		selection = -1;
 	}
 	else
 	{
 		std::string warning = "Cannot close " + matName + ". The material is used by on open effect.";
 		Logger::log(Message(MessageType::Warning, warning));
 	}
-
-	index = -1;
 }
 
 void MaterialEditor::clean()
@@ -44,7 +44,7 @@ void MaterialEditor::clean()
 		{
 			std::string matName = (*it)->getMaterial()->getName();
 			it = materialNodes.erase(it);
-			index = -1;
+			selection = -1;
 
 			Logger::log(Message(MessageType::Normal, "Closed material " + matName + "."));
 		}
@@ -56,7 +56,8 @@ void MaterialEditor::clean()
 void MaterialEditor::clear()
 {
 	materialNodes.clear();
-	index = -1;
+	ResourceManager::cleanTextures();
+	selection = -1;
 }
 
 std::vector<std::shared_ptr<MaterialNode>> MaterialEditor::getNodes()
@@ -66,12 +67,20 @@ std::vector<std::shared_ptr<MaterialNode>> MaterialEditor::getNodes()
 
 int MaterialEditor::getSelection()
 {
-	return index;
+	return selection;
 }
 
 int MaterialEditor::count()
 {
 	return materialNodes.size();
+}
+
+void MaterialEditor::select(int index)
+{
+	if (index >= 0 && index < MaterialEditor::count())
+		selection = index;
+	else
+		selection = MaterialEditor::count() - 1;
 }
 
 void MaterialEditor::update()
@@ -80,19 +89,27 @@ void MaterialEditor::update()
 	
 	if (ImGui::Begin(matWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 2));
 		itemRowsBackground();
-
 		for (size_t m = 0; m < materialNodes.size(); ++m)
 		{
 			ImGuiTreeNodeFlags nodeFlags = basicFlags;
-			if (m == index)
+			if (m == selection)
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 			ImGui::TreeNodeEx((void*)(intptr_t)m, nodeFlags, "%s %s", ICON_FA_SQUARE, materialNodes[m]->getMaterial()->getName().c_str());
-			if (ImGui::IsItemClicked())
-				index = m;
+			if (ImGui::IsItemActivated())
+				selection = m;
+
+			if (ImGui::IsItemHovered())
+			{
+				auto tex = materialNodes[m]->getTexture();
+				if (tex)
+				{
+					ImGui::BeginTooltip();
+					ImGui::Image((void*)tex->getID(), ImVec2(texSize, texSize), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1));
+					ImGui::EndTooltip();
+				}
+			}
 
 			if (materialMenu())
 			{
@@ -100,16 +117,15 @@ void MaterialEditor::update()
 				continue;
 			}
 		}
-
-		ImGui::PopStyleVar(2);
 	}
+
 	ImGui::End();
 
 	if (ImGui::Begin(matProperties, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
 	{
-		if (index > -1 && index < materialNodes.size() && materialNodes.size())
+		if (selection > -1 && selection < materialNodes.size() && materialNodes.size())
 		{
-			materialNodes[index]->populateInspector();
+			materialNodes[selection]->populateInspector();
 
 			ImGui::Separator();
 			if (ImGui::TreeNodeEx("Preview", ImGuiTreeNodeFlags_DefaultOpen))
@@ -125,12 +141,13 @@ void MaterialEditor::update()
 			ImGui::Text("Select a material to view its properties.");
 		}
 	}
+
 	ImGui::End();
 }
 
 void MaterialEditor::preview()
 {
-	auto tex = materialNodes[index]->getTexture();
+	auto tex = materialNodes[selection]->getTexture();
 	if (tex)
 	{
 		ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - 64);
@@ -144,7 +161,7 @@ void MaterialEditor::preview()
 
 		if (showSplits)
 		{
-			Glitter::Vector2 splits = materialNodes[index]->getMaterial()->getSplit();
+			Glitter::Vector2 splits = materialNodes[selection]->getMaterial()->getSplit();
 			const int x = splits.x;
 			const int y = splits.y;
 
@@ -180,7 +197,7 @@ bool MaterialEditor::materialMenu()
 	{
 		if (ImGui::Selectable(ICON_FA_TIMES " Close"))
 		{
-			remove(index);
+			remove(selection);
 			closed = true;
 		}
 

@@ -55,7 +55,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 {
 	if (!Glitter::File::exists(filename))
 	{
-		Logger::log(Message(MessageType::Error, "failed to load " + filename + ". File does not exist"));
+		Logger::log(Message(MessageType::Error, "Failed to load " + filename + ". File not found."));
 		return false;
 	}
 
@@ -90,7 +90,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 		for (std::vector<std::shared_ptr<MaterialNode>>::iterator it = materials.begin(); it != materials.end(); ++it)
 		{
 			if ((*it)->getMaterial()->getFilename() == filename)
-				return true;
+				return false;
 		}
 		
 		if (!exists)
@@ -113,8 +113,12 @@ void Editor::openFolder(const std::string& directory)
 {
 	std::vector<std::string> files;
 	for (const auto& file : std::filesystem::directory_iterator(directory))
-		if (file.path().extension().string() == ".gte")
+	{
+		std::string extension = file.path().extension().string();
+		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+		if (extension == ".gte")
 			files.emplace_back(file.path().string());
+	}
 
 	for (const std::string& file : files)
 		openGlitterFile(file);
@@ -132,10 +136,21 @@ void Editor::closeEffect(int index)
 	inspector->setNode(nullptr);
 	player->setEffect(nullptr);
 
+	cleanUp();
+	Logger::log(Message(MessageType::Normal, "Closed effect " + effName + "."));
+}
+
+void Editor::closeAllEffects()
+{
+	effectNodes.clear();
+	cleanUp();
+}
+
+void Editor::cleanUp()
+{
 	MaterialEditor::clean();
 	ResourceManager::cleanModels();
 	ResourceManager::cleanTextures();
-	Logger::log(Message(MessageType::Normal, "Closed effect " + effName + "."));
 }
 
 void Editor::saveEffect(int index, bool saveAs)
@@ -159,7 +174,7 @@ void Editor::saveEffect(int index, bool saveAs)
 			}
 		}
 
-		Logger::log(Message( MessageType::Normal, std::string("Saved effect " + name )));
+		Logger::log(Message(MessageType::Normal, "Saved effect " + name));
 	}
 }
 
@@ -185,7 +200,7 @@ void Editor::saveMaterial(int index, bool saveAs)
 			}
 		}
 
-		Logger::log(Message(MessageType::Normal, std::string("Saved material " + name )));
+		Logger::log(Message(MessageType::Normal, "Saved material " + name));
 	}
 }
 

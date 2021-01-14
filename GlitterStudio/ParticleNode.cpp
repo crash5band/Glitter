@@ -193,7 +193,22 @@ void ParticleNode::populateInspector()
 
 			ImGui::EndCombo();
 		}
-		ImGui::NextColumn();
+
+		endPropertyColumn();
+
+		if (ImGui::Button("Select In Materials View", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
+		{
+			if (materialNode)
+			{
+				for (int i = 0; i < MaterialEditor::count(); ++i)
+				{
+					if (materials[i] == materialNode)
+						MaterialEditor::select(i);
+				}
+			}
+		}
+
+		ImGui::Separator();
 
 		addUIntProperty("Texture Index", particle->getTextureIndex(), particle, std::mem_fn(&Particle::setTextureIndex));
 		addComboBoxProperty("UV Index Type", Glitter::uvIndexTypeTable, Glitter::uvIndexTypeTableSize, particle->getUVIndexType(),

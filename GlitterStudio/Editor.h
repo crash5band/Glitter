@@ -94,6 +94,8 @@ public:
 	bool openGlitterFile(const std::string& filename);
 	void openFolder(const std::string& directory);
 	void closeEffect(int index);
+	void closeAllEffects();
+	void cleanUp();
 	void saveEffect(int index, bool saveAs);
 	void saveMaterial(int index, bool saveAs);
 	void about();

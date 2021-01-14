@@ -145,6 +145,9 @@ void Editor::updateMenuBar()
 		if (ImGui::MenuItem("FPS Meter", NULL, Editor::editorSettings.fpsCounter))
 			Editor::editorSettings.fpsCounter ^= true;
 
+		if (ImGui::MenuItem("Hover Over Materials To Preview", NULL, Editor::editorSettings.matPreview))
+			Editor::editorSettings.matPreview ^= true;
+
 		ImGui::EndMenu();
 	}
 

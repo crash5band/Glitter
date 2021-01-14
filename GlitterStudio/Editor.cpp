@@ -34,6 +34,7 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	inputManager = new InputManager();
 	Editor::editorSettings.vsync = true;
 	Editor::editorSettings.fpsCounter = false;
+	Editor::editorSettings.matPreview = true;
 
 	dockspaceID = 39765;
 

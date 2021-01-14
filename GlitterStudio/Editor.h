@@ -28,6 +28,7 @@ struct EditorSetting
 {
 	bool vsync;
 	bool colorWheel;
+	bool matPreview;
 	bool fpsCounter;
 };
 

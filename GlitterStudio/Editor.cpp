@@ -120,11 +120,17 @@ void Editor::openFolder(const std::string& directory)
 		openGlitterFile(file);
 }
 
-void Editor::closeEffect(size_t index)
+void Editor::closeEffect(int index)
 {
+	if (index < 0 || index >= effectNodes.size())
+		return;
+
 	std::string effName = effectNodes.at(index)->getEffect()->getName();
 	effectNodes.erase(effectNodes.begin() + index);
 	selectedParent = selectedChild = -1;
+
+	inspector->setNode(nullptr);
+	player->setEffect(nullptr);
 
 	MaterialEditor::clean();
 	ResourceManager::cleanModels();
@@ -132,24 +138,24 @@ void Editor::closeEffect(size_t index)
 	Logger::log(Message(MessageType::Normal, "Closed effect " + effName + "."));
 }
 
-void Editor::saveEffect(bool saveAs)
+void Editor::saveEffect(int index, bool saveAs)
 {
-	if (selectedParent > -1)
+	if (index > -1 && index < effectNodes.size())
 	{
-		std::string name = effectNodes[selectedParent]->getEffect()->getFilename();
+		std::string name = effectNodes[index]->getEffect()->getFilename();
 		if (name.size() && !saveAs)
 		{
-			effectNodes[selectedParent]->getEffect()->write(name);
+			effectNodes[index]->getEffect()->write(name);
 		}
 		else
 		{
-			name = effectNodes[selectedParent]->getEffect()->getName();
+			name = effectNodes[index]->getEffect()->getName();
 			if (FileGUI::saveFileGUI(FileType::Effect, name))
 			{
 				if (Glitter::File::getFileExtension(name) != "gte")
 					name += ".gte";
 
-				effectNodes[selectedParent]->getEffect()->write(name);
+				effectNodes[index]->getEffect()->write(name);
 			}
 		}
 
@@ -157,11 +163,10 @@ void Editor::saveEffect(bool saveAs)
 	}
 }
 
-void Editor::saveMaterial(bool saveAs)
+void Editor::saveMaterial(int index, bool saveAs)
 {
 	std::vector<std::shared_ptr<MaterialNode>> nodes = MaterialEditor::getNodes();
-	int index = MaterialEditor::getSelection();
-	if (index > -1)
+	if (index > -1 && index < nodes.size())
 	{
 		std::string name = nodes[index]->getMaterial()->getFilename();
 		if (name.size() && !saveAs)
@@ -271,7 +276,7 @@ void Editor::processInput()
 		if (inputManager->isDown(GLFW_KEY_LEFT_ALT) || inputManager->isDown(GLFW_KEY_RIGHT_ALT))
 		{
 			if (inputManager->isTapped(GLFW_KEY_S))
-				saveEffect(true);
+				saveEffect(selectedParent, true);
 		}
 		else
 		{
@@ -293,12 +298,12 @@ void Editor::processInput()
 		if (inputManager->isDown(GLFW_KEY_LEFT_SHIFT) || inputManager->isDown(GLFW_KEY_RIGHT_SHIFT))
 		{
 			if (inputManager->isTapped(GLFW_KEY_S))
-				saveMaterial(false);
+				saveMaterial(MaterialEditor::getSelection(), false);
 		}
 		else
 		{
 			if (inputManager->isTapped(GLFW_KEY_S))
-				saveEffect(false);
+				saveEffect(selectedParent, false);
 		}
 	}
 	else
@@ -319,6 +324,8 @@ void Editor::processInput()
 					removeEmitter(effectNodes[selectedParent], selectedChild);
 				else if (selectedChild >= emitterCount && selectedChild < emitterCount + particleCount)
 					removeParticle(effectNodes[selectedParent], selectedChild - emitterCount);
+
+				selectedChild = -1;
 			}
 		}
 

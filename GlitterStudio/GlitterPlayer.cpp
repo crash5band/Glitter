@@ -43,7 +43,10 @@ void GlitterPlayer::setEffect(EffectNode* node)
 	if (node != selectedEffect)
 	{
 		selectedEffect = node;
-		selectedEffect->buildAnimations();
+
+		if (node)
+			selectedEffect->buildAnimations();
+
 		stopPlayback();
 		togglePlayback();
 		camera->reset();

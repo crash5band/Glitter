@@ -33,10 +33,10 @@ void Editor::updateMenuBar()
 
 		ImGui::Separator();
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save", "Ctrl + S"))
-			saveEffect(false);
+			saveEffect(selectedParent, false);
 
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save As", " Ctrl + Alt + S"))
-			saveEffect(true);
+			saveEffect(selectedParent, true);
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Effects"))
@@ -111,10 +111,10 @@ void Editor::updateMenuBar()
 
 		ImGui::Separator();
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save", "Ctrl + Shift + S"))
-			saveMaterial(false);
+			saveMaterial(MaterialEditor::getSelection(), false);
 
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save As"))
-			saveMaterial(true);
+			saveMaterial(MaterialEditor::getSelection(), true);
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Materials"))

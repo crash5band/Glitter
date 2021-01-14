@@ -93,9 +93,9 @@ public:
 	void reset();
 	bool openGlitterFile(const std::string& filename);
 	void openFolder(const std::string& directory);
-	void closeEffect(size_t index);
-	void saveEffect(bool saveAs);
-	void saveMaterial(bool saveAs);
+	void closeEffect(int index);
+	void saveEffect(int index, bool saveAs);
+	void saveMaterial(int index, bool saveAs);
 	void about();
 	bool isNodeSelected(int index1, int index2);
 	void setNodeSelected(int p, int c);

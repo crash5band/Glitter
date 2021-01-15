@@ -126,19 +126,21 @@ void GlitterPlayer::update(float deltaT)
 		ImGui::SameLine();
 		ImGui::Checkbox("Loop", &loop);
 
-		static const char* speeds[2]{ "0.50", "1.00"};
-		int selectedIndex = (int)(playbackSpeed / 0.5f) - 1;
+		static const char* speedsChar[]{"0.25x", "0.50x", "0.75x", "1.00x"};
+		static float speeds[]{ 0.25f, 0.5f, 0.75f, 1.0f };
+		int selectedIndex = (playbackSpeed * 4) - 1;
+
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 4.0f);
-		if (ImGui::BeginCombo("Playback Speed", speeds[selectedIndex]))
+		if (ImGui::BeginCombo("Playback Speed", speedsChar[selectedIndex]))
 		{
-			for (int i = 0; i < 2; ++i)
+			for (int i = 0; i < 4; ++i)
 			{
 				const bool selected = selectedIndex == i;
-				if (ImGui::Selectable(speeds[i], selected))
+				if (ImGui::Selectable(speedsChar[i], selected))
 				{
 					selectedIndex = i;
-					playbackSpeed = (i + 1) * 0.5f;
+					playbackSpeed = speeds[i];
 				}
 
 				if (selected)

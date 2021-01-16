@@ -21,20 +21,10 @@ void CommandManager::undo()
 		return;
 
 	ICommand* command = undoStack.top();
-	while (!command->isValid())
-	{
-		undoStack.pop();
-		delete command;
-
-		if (undoStack.size())
-			command = undoStack.top();
-		else
-			return;
-	}
 
 	undoStack.pop();
-	command->undo();
 	redoStack.push(command);
+	command->undo();
 
 	Logger::log(Message(MessageType::Normal, "Undo " + std::string(command->getDescription())));
 }
@@ -45,20 +35,10 @@ void CommandManager::redo()
 		return;
 
 	ICommand* command = redoStack.top();
-	while (!command->isValid())
-	{
-		redoStack.pop();
-		delete command;
-
-		if (redoStack.size())
-			command = redoStack.top();
-		else
-			return;
-	}
 
 	redoStack.pop();
-	command->execute();
 	undoStack.push(command);
+	command->execute();
 
 	Logger::log(Message(MessageType::Normal, "Redo " + std::string(command->getDescription())));
 }
@@ -89,4 +69,42 @@ void CommandManager::clearAll()
 	clearRedo();
 
 	Logger::log(Message(MessageType::Normal, "Clear Command History"));
+}
+
+void CommandManager::clean()
+{
+	std::stack<ICommand*> filteredUndo, filteredRedo;
+	while (undoStack.size())
+	{
+		ICommand* cmd = undoStack.top();
+		if (cmd->isValid())
+			filteredUndo.push(cmd);
+		else
+			delete cmd;
+
+		undoStack.pop();
+	}
+
+	while (filteredUndo.size())
+	{
+		undoStack.push(filteredUndo.top());
+		filteredUndo.pop();
+	}
+
+	while (redoStack.size())
+	{
+		ICommand* cmd = redoStack.top();
+		if (cmd->isValid())
+			filteredRedo.push(cmd);
+		else
+			delete cmd;
+
+		redoStack.pop();
+	}
+
+	while (filteredRedo.size())
+	{
+		redoStack.push(filteredRedo.top());
+		filteredRedo.pop();
+	}
 }

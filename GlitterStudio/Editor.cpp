@@ -144,11 +144,18 @@ void Editor::closeEffect(int index)
 void Editor::closeAllEffects()
 {
 	effectNodes.clear();
+	selectedParent = selectedChild = -1;
+
+	inspector->setNode(nullptr);
+	player->setEffect(nullptr);
 	cleanUp();
+
+	Logger::log(Message(MessageType::Normal, "Closed all effects."));
 }
 
 void Editor::cleanUp()
 {
+	CommandManager::clean();
 	MaterialEditor::clean();
 	ResourceManager::cleanModels();
 	ResourceManager::cleanTextures();

@@ -59,6 +59,7 @@ namespace Glitter
 	public:
 		Emitter();
 		Emitter(const std::string& n);
+		~Emitter() { animations.clear(); }
 
 		unsigned int getID() const;
 		std::string getName() const;

@@ -81,6 +81,7 @@ namespace Glitter
 	public:
 		Particle();
 		Particle(const std::string& name);
+		~Particle() { animations.clear(); }
 
 		unsigned int getID() const;
 		std::string getName() const;

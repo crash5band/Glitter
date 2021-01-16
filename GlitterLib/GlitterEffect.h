@@ -24,6 +24,7 @@ namespace Glitter
 	public:
 		GlitterEffect(const std::string& name, float life);
 		GlitterEffect(const std::string& filepath);
+		~GlitterEffect() { animations.clear(); }
 
 		std::string getName() const;
 		float getStartTime() const;

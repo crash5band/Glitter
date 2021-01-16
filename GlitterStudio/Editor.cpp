@@ -26,8 +26,9 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	initImgui();
 	setImguiStyle();
 
-	ResourceManager::loadShader("BillboardParticle", appDir + "/Res/Shaders/BillboardParticle.vert", appDir + "/Res/Shaders/BillboardParticle.frag");
-	ResourceManager::loadShader("MeshParticle", appDir + "/Res/Shaders/MeshParticle.vert", appDir + "/Res/Shaders/MeshParticle.frag");
+	const std::string shadersDir = appDir + "/Res/Shaders/";
+	ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle.vert", shadersDir + "BillboardParticle.frag");
+	ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle.vert", shadersDir + "MeshParticle.frag");
 
 	inspector = new Inspector();
 	player = new GlitterPlayer();
@@ -76,30 +77,26 @@ bool Editor::openGlitterFile(const std::string& filename)
 		std::vector<std::shared_ptr<MaterialNode>> materials = MaterialEditor::getNodes();
 		for (auto& p : effectNode->getParticleNodes())
 		{
-			for (int i = 0; i < MaterialEditor::getNodes().size(); ++i)
+			for (auto& m : materials)
 			{
-				if (filepath == Glitter::File::getFilePath(materials[i]->getMaterial()->getFilename())
-					&& materials[i]->getMaterial()->getName() == p->getParticle()->getMaterial())
-					p->setMaterial(materials[i]);
+				if (filepath == Glitter::File::getFilePath(m->getMaterial()->getFilename())
+					&& m->getMaterial()->getName() == p->getParticle()->getMaterial())
+					p->setMaterial(m);
 			}
 		}
 	}
 	else if (extension == "gtm")
 	{
-		bool exists = false;
 		std::vector<std::shared_ptr<MaterialNode>> materials = MaterialEditor::getNodes();
-		for (std::vector<std::shared_ptr<MaterialNode>>::iterator it = materials.begin(); it != materials.end(); ++it)
+		for (const auto& m : materials)
 		{
-			if ((*it)->getMaterial()->getFilename() == filename)
+			if (m->getMaterial()->getFilename() == filename)
 				return false;
 		}
-		
-		if (!exists)
-		{
-			auto material = std::make_shared<Glitter::GlitterMaterial>(filename);
-			auto materialNode = std::make_shared<MaterialNode>(material);
-			MaterialEditor::add(materialNode);
-		}
+
+		auto material = std::make_shared<Glitter::GlitterMaterial>(filename);
+		auto materialNode = std::make_shared<MaterialNode>(material);
+		MaterialEditor::add(materialNode);
 	}
 	else
 	{
@@ -399,9 +396,8 @@ void Editor::go()
 		resizeLayout(dockspaceID, screenWidth, screenHeight);
 		initLayout(dockspaceID, screenWidth, screenHeight);
 
-#ifdef _DEBUG
-		ImGui::ShowDemoWindow();
-#endif
+		if (debugWindows.imguiDemoOpen)
+			ImGui::ShowDemoWindow(&debugWindows.imguiDemoOpen);
 
 		updateGlitterTreeView();
 		MaterialEditor::update();

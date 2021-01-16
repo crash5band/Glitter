@@ -87,8 +87,8 @@ bool Editor::initImgui()
 	std::string fontDir = windir;
 	fontDir.append("\\Fonts\\segoeui.ttf");
 
-	io->Fonts->AddFontFromFileTTF(fontDir.c_str(), 18, NULL, io->Fonts->GetGlyphRangesDefault());
-	io->Fonts->AddFontFromFileTTF(std::string(appDir + "Res\\Fonts\\fa-solid-900.ttf").c_str(), 15.0f, &fontConfig, iconRanges);
+	io->Fonts->AddFontFromFileTTF(fontDir.c_str(), 16, NULL, io->Fonts->GetGlyphRangesDefault());
+	io->Fonts->AddFontFromFileTTF(std::string(appDir + "Res\\Fonts\\fa-solid-900.ttf").c_str(), 16.0f, &fontConfig, iconRanges);
 
 	return true;
 }

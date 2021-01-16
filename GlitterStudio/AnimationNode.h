@@ -3,6 +3,10 @@
 #include "MathGens.h"
 #include <unordered_map>
 
+constexpr float defaultValue = 0.0f;
+constexpr float defaultScale = 1.0f;
+constexpr float defaultColor = 255;
+
 class AnimationNode
 {
 private:

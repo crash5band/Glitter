@@ -293,9 +293,9 @@ void Renderer::drawQuad(Transform& transform, Glitter::Vector3 pivot, Glitter::C
 	pivot *= transform.scale;
 
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(transform.scale.x, transform.scale.y, transform.scale.z);
-	model *= DirectX::XMMatrixTranslation(-pivot.x, -pivot.y, -pivot.z);
+	model.r[3] = DirectX::XMVECTOR{ -pivot.x, -pivot.y, -pivot.z };
 	model *= DirectX::XMMatrixRotationRollPitchYaw(rotX, rotY, rotZ);
-	model *= DirectX::XMMatrixTranslation(transform.position.x + pivot.x, transform.position.y + pivot.y, transform.position.z + pivot.z);
+	model.r[3] = DirectX::XMVECTOR{ transform.position.x + pivot.x, transform.position.y + pivot.y, transform.position.z + pivot.z };
 	DirectX::XMVECTOR colorV{ color.r, color.g, color.b, color.a };
 
 	for (size_t i = 0; i < 4; ++i)

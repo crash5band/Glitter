@@ -52,18 +52,18 @@ void Editor::removeParticleInstance(emPtr em, std::shared_ptr<ParticleNode> p, s
 	CommandManager::pushNew(new RemoveParticleCommand(em, p, pos));
 }
 
-std::vector<std::weak_ptr<Glitter::Particle>> Editor::getAvailableParticles(effPtr eff, emPtr em)
+std::vector<std::weak_ptr<ParticleNode>> Editor::getAvailableParticles(effPtr eff, emPtr em)
 {
-	std::vector<pPtr> effectParticles = eff->getEffect()->getParticles();
-	std::vector<std::weak_ptr<Glitter::Particle>> emitterParticles = em->getEmitter()->getParticles();
-	std::vector<std::weak_ptr<Glitter::Particle>> list;
+	std::vector<std::shared_ptr<ParticleNode>> effectParticles = eff->getParticleNodes();
+	std::vector<ParticleInstance> emitterParticles = em->getParticles();
+	std::vector<std::weak_ptr<ParticleNode>> list;
 
 	for (size_t i = 0; i < effectParticles.size(); ++i)
 	{
 		bool found = false;
 		for (size_t j = 0; j < emitterParticles.size(); ++j)
 		{
-			if (emitterParticles[j].lock().get() == effectParticles[i].get())
+			if (emitterParticles[j].getReference() == effectParticles[i])
 			{
 				found = true;
 				break;

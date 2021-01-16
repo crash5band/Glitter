@@ -75,7 +75,9 @@ void MaterialNode::populateInspector()
 	{
 		Glitter::Shader &shader = material->getShader();
 
-		ImGui::InputText("Name", &shader.name);
+		beginPropertyColumn("Name");
+		ImGui::InputText("##shader_name", &shader.name);
+		endPropertyColumn();
 		
 		/*for (int i = 0; i < 4; ++i)
 		{

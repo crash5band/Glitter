@@ -17,12 +17,10 @@ void Logger::log(Message msg)
 	std::time_t time = std::time(0);
 	std::tm now = *std::localtime(&time);
 
-	std::stringstream str;
-	str << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec << " ";
+	std::stringstream msgFull;
+	msgFull << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec << " " << msg.message;
 
-	std::string msgFull(str.str());
-	msgFull.append(msg.message);
-	msg.message = msgFull;
+	msg.message = msgFull.str();
 	mLog.emplace_back(msg);
 
 	hasNew = true;
@@ -36,7 +34,6 @@ void Logger::show()
 			clear();
 
 		ImGui::Separator();
-
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 		ImGui::BeginChild("Log Messages");
 

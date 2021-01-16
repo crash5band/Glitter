@@ -126,6 +126,8 @@ void Editor::updateMenuBar()
 #ifdef _DEBUG
 	if (ImGui::BeginMenu("Debug"))
 	{
+		ImGui::MenuItem("Show ImGui Demo Window", NULL, &Editor::debugWindows.imguiDemoOpen);
+
 		ImGui::Separator();
 		if (ImGui::MenuItem("Reset Editor", NULL))
 			reset();
@@ -139,14 +141,9 @@ void Editor::updateMenuBar()
 		if (ImGui::MenuItem("VSync", NULL, Editor::editorSettings.vsync))
 			glfwSwapInterval(Editor::editorSettings.vsync ^= true);
 
-		if (ImGui::MenuItem("Hue Wheel", NULL, Editor::editorSettings.colorWheel))
-			Editor::editorSettings.colorWheel ^= true;
-
-		if (ImGui::MenuItem("FPS Meter", NULL, Editor::editorSettings.fpsCounter))
-			Editor::editorSettings.fpsCounter ^= true;
-
-		if (ImGui::MenuItem("Hover Over Materials To Preview", NULL, Editor::editorSettings.matPreview))
-			Editor::editorSettings.matPreview ^= true;
+		ImGui::MenuItem("Hue Wheel", NULL, &Editor::editorSettings.colorWheel);
+		ImGui::MenuItem("FPS Meter", NULL, &Editor::editorSettings.fpsCounter);
+		ImGui::MenuItem("Hover Over Materials To Preview", NULL, &Editor::editorSettings.matPreview);
 
 		ImGui::EndMenu();
 	}
@@ -213,11 +210,29 @@ bool Editor::emitterMenu(int parent, int index)
 {
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::MenuItem(ICON_FA_CERTIFICATE " Add Particle"))
+		if (ImGui::BeginMenu(ICON_FA_CERTIFICATE " Add Particle"))
 		{
-			showAvailableParticles = true;
-			showEffect = parent;
-			showEmitter = index;
+			std::shared_ptr<EmitterNode> em = effectNodes[parent]->getEmitterNodes().at(index);
+
+			availableParticles = getAvailableParticles(effectNodes[parent], em);
+			const size_t count = availableParticles.size();
+
+			ImGui::Text("Available Particles");
+			if (count)
+			{
+				for (size_t i = 0; i < count; ++i)
+				{
+					std::string pName(ICON_FA_CERTIFICATE " " + availableParticles[i].lock()->getParticle()->getName());
+					if (ImGui::MenuItem(pName.c_str()))
+						addParticleInstance(em, availableParticles[i].lock(), em->getParticles().size());
+				}
+			}
+			else
+			{
+				ImGui::MenuItem("None Available");
+			}
+
+			ImGui::EndMenu();
 		}
 
 		ImGui::Separator();
@@ -270,49 +285,6 @@ bool Editor::instanceMenu(int effect, int parent, int index)
 
 		ImGui::EndPopup();
 		return removed;
-	}
-}
-
-void Editor::availableParticlesMenu(int parent, int index)
-{
-	if (showAvailableParticles)
-	{
-		ImGui::OpenPopup("Available Particles##popup");
-		availableParticles = getAvailableParticles(effectNodes[parent], effectNodes[parent]->getEmitterNodes()[index]);
-		showAvailableParticles = false;
-	}
-
-	if (!effectNodes[parent]->getEmitterNodes().size() || index >= effectNodes[parent]->getEmitterNodes().size())
-		return;
-
-	std::shared_ptr<EmitterNode>& em = effectNodes[parent]->getEmitterNodes()[index];
-
-	if (ImGui::BeginPopup("Available Particles##popup"))
-	{
-		const size_t count = availableParticles.size();
-		ImGui::Text("Available Particles");
-		if (count)
-		{
-			for (size_t i = 0; i < count; ++i)
-			{
-				std::string pName(ICON_FA_CERTIFICATE " " + availableParticles[i].lock()->getName());
-				if (ImGui::MenuItem(pName.c_str()))
-				{
-					for (int j = 0; j < effectNodes[parent]->getParticleNodes().size(); ++j)
-					{
-						std::shared_ptr<ParticleNode> pNode = effectNodes[parent]->getParticleNodes()[j];
-						if (pNode->getParticle() == availableParticles[i].lock())
-							addParticleInstance(em, pNode, em->getParticles().size());
-					}
-				}
-			}
-		}
-		else
-		{
-			ImGui::MenuItem("None Available");
-		}
-
-		ImGui::EndPopup();
 	}
 }
 
@@ -374,16 +346,18 @@ void Editor::updateGlitterTreeView()
 		if (open)
 		{
 			// Emitters
-			std::vector<std::shared_ptr<EmitterNode>>& emitterNodes = effectNodes[i]->getEmitterNodes();
-			size_t emitterCount = emitterNodes.size();
+			float btnSize = ImGui::GetFrameHeightWithSpacing();
 
+			std::vector<std::shared_ptr<EmitterNode>>& emitterNodes = effectNodes[i]->getEmitterNodes();
 			for (int j = 0; j < emitterNodes.size(); ++j)
 			{
 				ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-				cursorPos.x -= btnSmall.x;
+				cursorPos.x -= btnSize * 0.75f;
+
 				nodeFlags = isNodeSelected(i, j) ? selectedParentFlags : parentNodeFlags;
 				bool emOpen = ImGui::TreeNodeEx((void*)(intptr_t)(i + j), nodeFlags, "%s %s", ICON_FA_CUBE, emitterNodes[j]->getEmitter()->getName().c_str());
-				
+				ImVec2 newCursorPos = ImGui::GetCursorPos();
+
 				if (emitterMenu(i, j))
 				{
 					--j;
@@ -392,17 +366,16 @@ void Editor::updateGlitterTreeView()
 					continue;
 				}
 				
-				if (i == showEffect && j == showEmitter)
-					availableParticlesMenu(i, j);
-
 				setNodeSelected(i, j);
 
 				std::string lbl(emitterNodes[j]->isVisible() ? ICON_FA_EYE : ICON_FA_EYE_SLASH);
 				lbl.append("##eff_" + std::to_string(i) + "em_" + std::to_string(j));
 				ImGui::SetCursorScreenPos(cursorPos);
 
-				if (transparentButton(lbl, ImVec2(24, 24)))
+				if (transparentButton(lbl, ImVec2(btnSize, btnSize)))
 					emitterNodes[j]->setVisible(!emitterNodes[j]->isVisible());
+
+				ImGui::SetCursorPos(newCursorPos);
 					
 				if (emOpen)
 				{
@@ -414,7 +387,8 @@ void Editor::updateGlitterTreeView()
 						{
 							ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 							ImGui::TreeNodeEx((void*)(intptr_t)(i + 1 + ((j + 1) * p)), childNodeFlags, "%s %s", ICON_FA_CIRCLE, emitterParticles[p].getParticle()->getName().c_str());
-							
+							ImVec2 newCursorPos = ImGui::GetCursorPos();
+
 							if (instanceMenu(i, j, p))
 							{
 								--p;
@@ -425,9 +399,10 @@ void Editor::updateGlitterTreeView()
 							lbl.append("##em_" + std::to_string(j) + "p_" + std::to_string(p));
 							ImGui::SetCursorScreenPos(cursorPos);
 
-							if (transparentButton(lbl, ImVec2(24, 24)))
+							if (transparentButton(lbl, ImVec2(btnSize, btnSize)))
 								emitterParticles[p].setVisible(!emitterParticles[p].isVisible());
-								
+
+							ImGui::SetCursorPos(newCursorPos);
 						}
 					}
 
@@ -439,11 +414,11 @@ void Editor::updateGlitterTreeView()
 			std::vector<std::shared_ptr<ParticleNode>>& particleNodes = effectNodes[i]->getParticleNodes();
 			for (int k = 0; k < particleNodes.size(); ++k)
 			{
-				nodeFlags = isNodeSelected(i, emitterCount + k) ? selectedChildFlags : childNodeFlags;
+				nodeFlags = isNodeSelected(i, emitterNodes.size() + k) ? selectedChildFlags : childNodeFlags;
 				ImGui::TreeNodeEx((void*)(intptr_t)(i + 1 + k + emitterNodes.size()), nodeFlags, "%s %s", ICON_FA_CERTIFICATE, particleNodes[k]->getParticle()->getName().c_str());
 				
 				particleMenu(i, k);
-				setNodeSelected(i, emitterCount + k);
+				setNodeSelected(i, emitterNodes.size() + k);
 			}
 
 			ImGui::TreePop();

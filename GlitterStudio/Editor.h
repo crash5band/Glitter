@@ -22,6 +22,7 @@ struct DebugWindows
 	bool particlesOpen = false;
 	bool statsOpen = false;
 	bool historyViewOpen = false;
+	bool imguiDemoOpen = false;
 };
 
 struct EditorSetting
@@ -48,7 +49,7 @@ class Editor
 {
 	using effPtr = std::shared_ptr<EffectNode>;
 	using emPtr = std::shared_ptr<EmitterNode>;
-	using pPtr = std::shared_ptr<Glitter::Particle>;
+	using pPtr = std::shared_ptr<ParticleNode>;
 
 private:
 	static int screenWidth;
@@ -61,16 +62,13 @@ private:
 
 	std::string appDir;
 	std::string imguiINIDir;
-	std::vector<std::shared_ptr<EffectNode>> effectNodes;
-	std::vector <std::weak_ptr<Glitter::Particle>> availableParticles;
+	std::vector<effPtr> effectNodes;
+	std::vector <std::weak_ptr<ParticleNode>> availableParticles;
 	Inspector* inspector;
 	GlitterPlayer* player;
 	InputManager* inputManager;
 	int selectedParent;
 	int selectedChild;
-	int showEffect;
-	int showEmitter;
-	bool showAvailableParticles;
 
 	float lastFrame;
 	float frameDelta;
@@ -113,15 +111,13 @@ public:
 	bool emitterMenu(int parent, int index);
 	bool particleMenu(int parent, int index);
 	bool instanceMenu(int effect, int parent, int index);
-	void availableParticlesMenu(int parent, int index);
 	void createEffect(const std::string& name);
 	void createMaterial(const std::string& name);
 	void createEmitter(effPtr eff, const std::string& name);
 	void createParticle(effPtr eff, const std::string& name);
 	void removeEmitter(effPtr eff, size_t index);
 	void removeParticle(effPtr eff, size_t index);
-	unsigned int firstAvailableID(std::vector<unsigned int>& idList);
-	void addParticleInstance(emPtr em, std::shared_ptr<ParticleNode> p, size_t pos);
-	void removeParticleInstance(emPtr em, std::shared_ptr<ParticleNode> p, size_t index);
-	std::vector<std::weak_ptr<Glitter::Particle> > getAvailableParticles(effPtr eff, emPtr em);
+	void addParticleInstance(emPtr em, pPtr p, size_t pos);
+	void removeParticleInstance(emPtr em, pPtr, size_t index);
+	std::vector<std::weak_ptr<ParticleNode> > getAvailableParticles(effPtr eff, emPtr em);
 };

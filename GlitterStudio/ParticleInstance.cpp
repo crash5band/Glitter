@@ -152,13 +152,17 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 	aliveCount = 0;
 	for (auto& p : pool)
 	{
-		p.time = time - p.startTime;
 		if (p.time > particle->getLifeTime() || p.time < 0.0f)
+		{
 			p.dead = true;
+			continue;
+		}
 
 		if (p.dead)
 			continue;
-		
+	
+		p.time = time - p.startTime;
+
 		// calculate base parameters
 		p.velocity = p.direction + (p.acceleration * p.time);
 		p.transform = baseTransform;

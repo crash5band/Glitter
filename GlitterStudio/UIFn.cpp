@@ -8,9 +8,8 @@ void itemRowsBackground(float lineHeight, const ImColor& color)
 
 	if (lineHeight < 0)
 	{
-		lineHeight = ImGui::GetFrameHeight();
+		lineHeight = ImGui::GetFrameHeightWithSpacing();
 	}
-	lineHeight += style.ItemSpacing.y;
 
 	float scrollOffsetH = ImGui::GetScrollX();
 	float scrollOffsetV = ImGui::GetScrollY();

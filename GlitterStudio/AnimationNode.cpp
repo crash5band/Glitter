@@ -46,14 +46,12 @@ void AnimationNode::buildCache()
 				size_t index = 0;
 
 				if (!keyCount)
-					continue;
+					break;
 
 				Glitter::Key k1 = anim.getKeys()[index++];
 
 				// color and integer animations have a random range in one direction only
-				float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ||
-					((size_t)anim.getType() >= 22) ? 0 : -k1.randomRange;
-
+				float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ? 0 : -k1.randomRange;
 				k1.value += Utilities::random(min, k1.randomRange);
 
 				if (keyCount > 1)
@@ -63,21 +61,19 @@ void AnimationNode::buildCache()
 
 					int frame = 0;
 
-					// fill frames before the first key with default value
+					// fill frames before the first key with default values
 					if (frame < k1.time)
 					{
-						float value = 0;
+						float value = defaultValue;
 
 						size_t type = (size_t)anim.getType();
 						if (type > 5 && type < 10)
 						{
-							// scale animations default to 1.0
-							value = 1.0f;
+							value = defaultScale;
 						}
 						else if (type > 9 && type < 14)
 						{
-							// color animations default to 255
-							value = 255.0f;
+							value = defaultColor;
 						}
 
 						for (; frame < k1.time; ++frame)
@@ -88,8 +84,8 @@ void AnimationNode::buildCache()
 					{
 						if (index < keyCount)
 						{
-							float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ||
-								((size_t)anim.getType() >= 22) ? 0 : -k2.randomRange;
+							// color animations have their random range in one direction only.
+							float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ? 0 : -k2.randomRange;
 
 							float value = k2.time != anim.getKeys()[index].time ? Utilities::random(min, k2.randomRange) : 0.0f;
 							k2 = anim.getKeys()[index];

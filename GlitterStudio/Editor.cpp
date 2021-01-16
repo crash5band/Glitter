@@ -109,6 +109,9 @@ bool Editor::openGlitterFile(const std::string& filename)
 
 void Editor::openFolder(const std::string& directory)
 {
+	if (!std::filesystem::exists(directory))
+		return;
+
 	std::vector<std::string> files;
 	for (const auto& file : std::filesystem::directory_iterator(directory))
 	{

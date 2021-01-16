@@ -10,7 +10,7 @@
 #include "Editor.h"
 #include <stack>
 
-static float btnHeight = 25.0f;
+constexpr float btnHeight = 25.0f;
 static ImVec2 btnSmall = ImVec2(20.0f, 20.0f);
 static ImVec2 btnNormal = ImVec2(btnHeight, btnHeight);
 static ImVec2 btnWide = ImVec2(50.0f, btnHeight);
@@ -43,7 +43,7 @@ static void addTextProperty(const char* label, std::string val, std::shared_ptr<
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit() && old != val)
+	if (ImGui::IsItemDeactivated() && old != val)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, val, func));
 }
 
@@ -60,7 +60,7 @@ static void addIntProperty(const char* label, int val, std::shared_ptr<T>& obj, 
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit() && old != val)
+	if (ImGui::IsItemDeactivated() && old != val)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, val, func));
 }
 
@@ -82,7 +82,7 @@ static void addUIntProperty(const char* label, unsigned int val, std::shared_ptr
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit() && old != num)
+	if (ImGui::IsItemDeactivated() && old != num)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, (unsigned int)num, func));
 }
 
@@ -99,7 +99,7 @@ static void addFloatProperty(const char* label, float val, std::shared_ptr<T>& o
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit() && old != val)
+	if (ImGui::IsItemDeactivated() && old != val)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, val, func));
 }
 
@@ -117,7 +117,7 @@ static void addVector2Property(const char* label, Glitter::Vector2 val, std::sha
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit())
+	if (ImGui::IsItemDeactivated() && old != val)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, Glitter::Vector2(v2[0], v2[1]), func));
 }
 
@@ -135,7 +135,7 @@ static void addVector3Property(const char* label, Glitter::Vector3 val, std::sha
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit() && old != val)
+	if (ImGui::IsItemDeactivated() && old != val)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, Glitter::Vector3(v3[0], v3[1], v3[2]), func));
 }
 
@@ -157,7 +157,7 @@ static void addColorProperty(const char* label, Glitter::Color val, std::shared_
 	if (ImGui::IsItemActivated())
 		old = val;
 
-	if (ImGui::IsItemDeactivatedAfterEdit() && old != val)
+	if (ImGui::IsItemDeactivated() && old != val)
 		CommandManager::pushNew(new ChangePropertyCommand(label, obj, old, Glitter::Color(v4[0], v4[1], v4[2], v4[3]), func));
 }
 

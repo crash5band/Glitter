@@ -399,6 +399,7 @@ void AnimationTimeline::updateTimelineKeys()
 
 		static Glitter::Key k;
 		bool anyDeacvtivated = false;
+		bool editing = false;
 
 		// Only draw keys when they are within the canvas area
 		if (Utilities::isWithinRange(x, canvasPos.x + timelinePosOffset.x - 10, canvasPos.x + timelinePosOffset.x + canvasSize.x + 10)
@@ -431,6 +432,8 @@ void AnimationTimeline::updateTimelineKeys()
 					keys[i].time = currentFrame;
 					keys[i].value = std::clamp(heightToValue(y), lowerLimits[limitIndex], higherLimits[limitIndex]);
 					animation->verifyKeyOrder(i);
+
+					editing = true;
 				}
 			}
 
@@ -459,6 +462,8 @@ void AnimationTimeline::updateTimelineKeys()
 					{
 						onHandleDrag(keys[i], i, circlePos);
 						keys[i].inParam = (circlePos.y - y) / 10.0f;
+
+						editing = true;
 					}
 				}
 
@@ -489,6 +494,8 @@ void AnimationTimeline::updateTimelineKeys()
 					{
 						onHandleDrag(keys[i], i, circlePos);
 						keys[i].outParam = -(circlePos.y - y) / 10.0f;
+
+						editing = true;
 					}
 				}
 
@@ -496,7 +503,7 @@ void AnimationTimeline::updateTimelineKeys()
 				drawList->AddCircleFilled(circlePos, keyRadiusIn, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
 			}
 
-			if (k != keys[i])
+			if (k != keys[i] && editing)
 			{
 				node.lock()->buildCache();
 				if (anyDeacvtivated)

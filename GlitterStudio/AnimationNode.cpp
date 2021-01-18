@@ -127,7 +127,7 @@ float AnimationNode::tryGetValue(Glitter::AnimationType type, float time, float 
 
 	Glitter::Animation* anim = find(type);
 	if (anim->getRepeatType() == Glitter::RepeatType::Repeat)
-		time = (int)time % (int)anim->getEndTime();
+		time = (int)anim->getEndTime() == 0 ? 0 : (int)time % (int)anim->getEndTime();
 
 	if (time >= values.size() || time < 0)
 		return values[values.size() - 1];

@@ -140,14 +140,17 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 	float rY2 = Utilities::toRadians(emitterTransform.rotation.y);
 	float rZ2 = Utilities::toRadians(emitterTransform.rotation.z);
 
+	Glitter::Vector3 pos;
+
 	Glitter::Matrix3 m3;
 	Glitter::Matrix3 m3L;
 	Glitter::Matrix4 m4;
 	Glitter::Matrix4 m4L;
-	m3.fromEulerAnglesZYX(rZ1, rY1, rX1);
-	m3L.fromEulerAnglesZYX(rZ2, rY2, rX2);
 
-	Glitter::Vector3 pos;
+	m3.fromEulerAnglesYXZ(rZ1, rY1, rX1);
+	m3L.fromEulerAnglesYXZ(rZ2, rY2, rX2);
+	m4.makeTransform(pos, baseTransform.scale, m3);
+	m4L.makeTransform(pos, baseTransform.scale, m3L);
 
 	aliveCount = 0;
 	for (auto& p : pool)
@@ -172,14 +175,11 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 		if (particle->getFlags() & 4)
 		{
 			basePos += -p.origin + emitterTransform.position + animNode->tryGetTranslation(p.time);
-
-			m4L.makeTransform(pos, baseTransform.scale, m3L);
 			p.velocity = m4L * p.velocity;
 		}
 
 		p.transform.position += basePos;
-		m4.makeTransform(pos, baseTransform.scale, m3);
-		p.transform.position = (m4 * p.transform.position) + ((p.velocity + p.direactionAdd) * p.time);
+		p.transform.position = (m4 * p.transform.position) + ((p.velocity + p.directionAdd) * p.time);
 		if (!(particle->getFlags() & 4))
 			p.transform.position += animNode->tryGetTranslation(p.time);
 
@@ -270,7 +270,7 @@ void ParticleInstance::create(int n, float startTime, Glitter::EmissionDirection
 
 			dirAdd.normalise();
 			p.direction		= direction * speed;
-			p.direactionAdd = dirAdd * speed;
+			p.directionAdd = dirAdd * speed;
 			p.basePos		= basePos[count];
 			p.acceleration	= (accel - deceleration + particle->getGravitationalAccel()) / 3600.0f;
 			p.scale			= Utilities::randomize(particle->getSize(),	particle->getSizeRandom());	

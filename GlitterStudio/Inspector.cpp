@@ -78,7 +78,6 @@ void Inspector::inspectAnimation(int index)
 	if (ImGui::TreeNodeEx("Animation Properties", ImGuiTreeNodeFlags_DefaultOpen))
 	{	
 		auto animNode = animationNode.lock();
-
 		if (index >= 0 && index < animNode->getAnimationList()->size())
 		{
 			static const char* animProperties[]{ "Start", "End", "Repeat Type", "Flags" };

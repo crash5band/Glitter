@@ -10,7 +10,7 @@ struct ParticleStatus
 	Glitter::Vector3 basePos;
 	Glitter::Vector3 origin;
 	Glitter::Vector3 direction;
-	Glitter::Vector3 direactionAdd;
+	Glitter::Vector3 directionAdd;
 	Glitter::Vector3 velocity;
 	Glitter::Vector3 acceleration;
 	Glitter::Vector3 rotation;

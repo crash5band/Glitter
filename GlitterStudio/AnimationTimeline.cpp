@@ -503,17 +503,16 @@ void AnimationTimeline::updateTimelineKeys()
 				drawList->AddCircleFilled(circlePos, keyRadiusIn, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
 			}
 
-			if (k != keys[i] && editing)
-			{
+			if (editing && k != keys[i])
 				node.lock()->buildCache();
-				if (anyDeacvtivated)
-				{
-					auto ptr = node.lock();
-					Glitter::Key temp = k;
-					k = keys[i];
-					keys[i] = temp;
-					CommandManager::pushNew(new ChangeKeyCommand(ptr, animationIndex, i, k));
-				}
+
+			if (anyDeacvtivated && k != keys[i])
+			{
+				auto ptr = node.lock();
+				Glitter::Key temp = k;
+				k = keys[i];
+				keys[i] = temp;
+				CommandManager::pushNew(new ChangeKeyCommand(ptr, animationIndex, i, k));
 			}
 
 			drawList->AddCircleFilled(ImVec2(x, y), keyRadiusOut, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);

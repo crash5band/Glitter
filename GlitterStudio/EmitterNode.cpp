@@ -7,7 +7,7 @@
 #include "ResourceManager.h"
 
 EmitterNode::EmitterNode(std::shared_ptr<Glitter::Emitter> &em, EffectNode* eff) :
-	emitter{ em }, lastEmissionTime{ -1 }, visible{ true }
+	emitter{ em }, lastEmissionTime{ -1 }, lastRotIncrement{ 0.0f }, visible{ true }
 {
 	animationNode = std::make_shared<AnimationNode>(&em->getAnimations());
 
@@ -62,8 +62,7 @@ Glitter::Vector3 EmitterNode::getPosition(float time)
 
 Glitter::Vector3 EmitterNode::getRotation(float time)
 {
-	// TODO: Account for RotationAdd and RotationAddRandom
-	return emitter->getRotation() + animationNode->tryGetRotation(time);
+	return emitter->getRotation() + rotationAdd + animationNode->tryGetRotation(time);
 }
 
 Glitter::Vector3 EmitterNode::getScaling(float time)
@@ -207,24 +206,35 @@ void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, Camera* ca
 void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 {
 	float emitterTime = time - emitter->getStartTime();
+	float emitterLife = emitter->getFlags() & 1 ? fmodf(emitterTime, emitter->getLifeTime()) : emitterTime;
 	float emissionTime = round(emitterTime);
 
+	if (round(emitterTime) == 0)
+	{
+		rotationAdd = Glitter::Vector3();
+	}
+	else if ((int)emitterTime % ((int)emitter->getLifeTime() + 1) == 0 && round(emitterTime) != round(lastRotIncrement))
+	{
+		rotationAdd += Utilities::randomize(emitter->getRotationAdd(), emitter->getRotationAddRandom());
+		lastRotIncrement = emitterLife;
+	}
+
+	// emitter has started
 	if (emitterTime >= 0.0f)
 	{
 		transform = baseTransform;
-		transform.position += getPosition(emitterTime);
-		transform.rotation += getRotation(emitterTime);
-		transform.rotation -= baseTransform.rotation;
-		transform.scale = getScaling(emitterTime);
+		transform.position += getPosition(emitterLife);
+		transform.rotation += getRotation(emitterLife);
+		transform.scale = getScaling(emitterLife);
 		changeDirection(emitter->getDirectionType(), camera);
 
 		emissionCount = emitter->getParticlesPerEmission();
-		int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, time, -1);
+		int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, emitterLife, -1);
 		if (count > -1)
 			emissionCount = count;
 
 		emissionInterval = emitter->getEmissionInterval();
-		float interval = animationNode->tryGetValue(Glitter::AnimationType::EmissionInterval, time, -1.0f);
+		float interval = animationNode->tryGetValue(Glitter::AnimationType::EmissionInterval, emitterLife, -1.0f);
 		if (interval > -1.0f)
 			emissionInterval = interval;
 

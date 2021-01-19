@@ -46,16 +46,21 @@ float EffectNode::getLife()
 void EffectNode::update(float time, Camera* camera)
 {
 	float effectTime = time - effect->getStartTime();
-	transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectTime);
-	transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectTime);
-	Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectTime);
+	float effectLife = fmodf(effectTime, effect->getLifeTime() + 1);
 
+	// effect started playing
+	if (effectTime >= 0.0f)
+	{
+		transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectLife);
+		transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectLife);
+		Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectLife);
 
-	for (auto& particle : particleNodes)
-		particle->setBaseColor(color);
+		for (auto& particle : particleNodes)
+			particle->setBaseColor(color);
 
-	for (auto& emitter : emitterNodes)
-		emitter->update(effectTime, camera, transform);
+		for (auto& emitter : emitterNodes)
+			emitter->update(effectTime, camera, transform);
+	}
 }
 
 void EffectNode::kill()

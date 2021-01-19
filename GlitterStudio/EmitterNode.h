@@ -21,7 +21,9 @@ private:
 	int emissionCount;
 	float emissionInterval;
 	float lastEmissionTime;
+	float lastRotIncrement;
 	Glitter::Vector3 lastEmissionPosition;
+	Glitter::Vector3 rotationAdd;
 
 public:
 	EmitterNode(std::shared_ptr<Glitter::Emitter> &em, EffectNode* parent);

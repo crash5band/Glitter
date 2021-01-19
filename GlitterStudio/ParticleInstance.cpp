@@ -141,14 +141,13 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 	float rZ2 = Utilities::toRadians(emitterTransform.rotation.z);
 
 	Glitter::Vector3 pos;
-
 	Glitter::Matrix3 m3;
 	Glitter::Matrix3 m3L;
 	Glitter::Matrix4 m4;
 	Glitter::Matrix4 m4L;
 
-	m3.fromEulerAnglesYXZ(rZ1, rY1, rX1);
-	m3L.fromEulerAnglesYXZ(rZ2, rY2, rX2);
+	m3.fromEulerAnglesZYX(rZ1, rY1, rX1);
+	m3L.fromEulerAnglesZYX(rZ2, rY2, rX2);
 	m4.makeTransform(pos, baseTransform.scale, m3);
 	m4L.makeTransform(pos, baseTransform.scale, m3L);
 

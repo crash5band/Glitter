@@ -8,10 +8,7 @@ struct ParticleStatus
 	Transform transform;
 	Glitter::Color color;
 	Glitter::Vector3 basePos;
-	Glitter::Vector3 origin;
 	Glitter::Vector3 direction;
-	Glitter::Vector3 directionAdd;
-	Glitter::Vector3 velocity;
 	Glitter::Vector3 acceleration;
 	Glitter::Vector3 rotation;
 	Glitter::Vector3 scale;

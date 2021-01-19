@@ -165,7 +165,10 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 				return;
 			}
 
-			basePos = m4 * basePos;
+			if (!(particle.getReference()->getParticle()->getFlags() & 4))
+			{
+				basePos = m4 * basePos;
+			}
 			basePositions.emplace_back(basePos);
 		}
 
@@ -213,10 +216,10 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 	{
 		rotationAdd = Glitter::Vector3();
 	}
-	else if ((int)emitterTime % ((int)emitter->getLifeTime() + 1) == 0 && round(emitterTime) != round(lastRotIncrement))
+	else if (((int)emitterTime % ((int)emitter->getLifeTime() + 1) == 0) && ((int)emitterTime != (int)lastRotIncrement))
 	{
 		rotationAdd += Utilities::randomize(emitter->getRotationAdd(), emitter->getRotationAddRandom());
-		lastRotIncrement = emitterLife;
+		lastRotIncrement = (int)emitterLife;
 	}
 
 	// emitter has started

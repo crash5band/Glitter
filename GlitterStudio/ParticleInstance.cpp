@@ -145,11 +145,13 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 	Glitter::Matrix3 m3L;
 	Glitter::Matrix4 m4;
 	Glitter::Matrix4 m4L;
+	Glitter::Matrix4 m4LW;
 
 	m3.fromEulerAnglesZYX(rZ1, rY1, rX1);
 	m3L.fromEulerAnglesZYX(rZ2, rY2, rX2);
 	m4.makeTransform(pos, baseTransform.scale, m3);
-	m4L.makeTransform(pos, baseTransform.scale, m3L);
+	m4L.makeTransform(emitterTransform.position, emitterTransform.scale, m3L);
+	m4LW.makeTransform(pos, baseTransform.scale, m3L);
 
 	aliveCount = 0;
 	for (auto& p : pool)
@@ -166,19 +168,20 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 		p.time = time - p.startTime;
 
 		// calculate base parameters
-		p.velocity = p.direction + (p.acceleration * p.time);
 		p.transform = baseTransform;
 		Glitter::Vector3 basePos = p.basePos;
+		Glitter::Vector3 velocity = (p.direction + (p.acceleration * p.time));
 
 		// Update Position
 		if (particle->getFlags() & 4)
 		{
-			basePos += -p.origin + emitterTransform.position + animNode->tryGetTranslation(p.time);
-			p.velocity = m4L * p.velocity;
+			// transform particle's basePos with emitter rotation. since this is done every update, it 'follows' the emitter
+			basePos = (m4L * basePos) + animNode->tryGetTranslation(p.time);
+			velocity = m4LW * velocity;
 		}
 
 		p.transform.position += basePos;
-		p.transform.position = (m4 * p.transform.position) + ((p.velocity + p.directionAdd) * p.time);
+		p.transform.position = (m4 * p.transform.position) + (velocity * p.time);
 		if (!(particle->getFlags() & 4))
 			p.transform.position += animNode->tryGetTranslation(p.time);
 
@@ -245,7 +248,6 @@ void ParticleInstance::create(int n, float startTime, Glitter::EmissionDirection
 			p.startTime			= startTime;
 			p.time				= 0.0f;
 			p.dead				= false;
-			p.origin			= origin;
 
 			float speed					= Utilities::randomize(particle->getSpeed(), particle->getSpeedRandom());
 			float deceleration			= Utilities::randomize(particle->getDeceleration(),	particle->getDecelerationRandom());
@@ -268,8 +270,7 @@ void ParticleInstance::create(int n, float startTime, Glitter::EmissionDirection
 			}
 
 			dirAdd.normalise();
-			p.direction		= direction * speed;
-			p.directionAdd = dirAdd * speed;
+			p.direction		= (direction * speed) + (dirAdd * speed);
 			p.basePos		= basePos[count];
 			p.acceleration	= (accel - deceleration + particle->getGravitationalAccel()) / 3600.0f;
 			p.scale			= Utilities::randomize(particle->getSize(),	particle->getSizeRandom());	

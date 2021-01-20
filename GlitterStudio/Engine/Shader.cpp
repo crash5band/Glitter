@@ -95,43 +95,57 @@ void Shader::compile(const char* vertexPath, const char* fragmentPath)
 	glDeleteShader(fragment);
 }
 
+GLint Shader::getUniformLoc(const std::string& name)
+{
+	auto it = locMap.find(name);
+	if (it == locMap.end())
+	{
+		GLint loc = glGetUniformLocation(ID, name.c_str());
+		locMap.insert(std::pair<std::string, GLint>(name, loc));
+		return loc;
+	}
+	else
+	{
+		return it->second;
+	}
+}
+
 void Shader::use()
 {
 	glUseProgram(ID);
 }
 
-void Shader::setBool(const std::string& name, bool value) const
+void Shader::setBool(const std::string& name, bool value)
 {
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+	glUniform1i(getUniformLoc(name), (int)value);
 }
 
-void Shader::setInt(const std::string& name, int value) const
+void Shader::setInt(const std::string& name, int value)
 {
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+	glUniform1i(getUniformLoc(name), value);
 }
 
-void Shader::setFloat(const std::string& name, float value) const
+void Shader::setFloat(const std::string& name, float value)
 {
-	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	glUniform1f(getUniformLoc(name), value);
 }
 
-void Shader::setVec2(const std::string& name, DirectX::XMVECTOR value) const
+void Shader::setVec2(const std::string& name, DirectX::XMVECTOR value)
 {
-	glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, (GLfloat*)&value);
+	glUniform2fv(getUniformLoc(name), 1, (GLfloat*)&value);
 }
 
-void Shader::setVec3(const std::string& name, DirectX::XMVECTOR value) const
+void Shader::setVec3(const std::string& name, DirectX::XMVECTOR value)
 {
-	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, (GLfloat*)&value);
+	glUniform3fv(getUniformLoc(name), 1, (GLfloat*)&value);
 }
 
-void Shader::setVec4(const std::string& name, DirectX::XMVECTOR value) const
+void Shader::setVec4(const std::string& name, DirectX::XMVECTOR value)
 {
-	glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, (GLfloat*)&value);
+	glUniform4fv(getUniformLoc(name), 1, (GLfloat*)&value);
 }
 
-void Shader::setMatrix4(const std::string& name, DirectX::XMMATRIX value) const
+void Shader::setMatrix4(const std::string& name, DirectX::XMMATRIX value)
 {
-	auto loc = glGetUniformLocation(ID, name.c_str());
-	glUniformMatrix4fv(loc, 1, GL_FALSE, (GLfloat*)&value.r->m128_f32[0]);
+	glUniformMatrix4fv(getUniformLoc(name), 1, GL_FALSE, (GLfloat*)&value.r->m128_f32[0]);
 }

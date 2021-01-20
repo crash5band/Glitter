@@ -1,8 +1,8 @@
 #pragma once
-
 #include <glad/glad.h>
 #include "..\Dependencies\DirectXMath-master\Inc\DirectXMath.h"
 #include <string>
+#include <unordered_map>
 
 class Shader
 {
@@ -10,8 +10,10 @@ private:
 	unsigned int ID;
 	unsigned int uloc;
 	std::string name;
+	std::unordered_map<std::string, GLint> locMap;
 
 	void compile(const char* vSource, const char* fSource);
+	GLint getUniformLoc(const std::string& name);
 
 public:	
 	Shader(const std::string& name, const char* v, const char* f);
@@ -20,11 +22,11 @@ public:
 	std::string getName() const;
 	void use();
 
-	void setBool(const std::string& name, bool value) const;
-	void setInt(const std::string& name, int value) const;
-	void setFloat(const std::string& name, float value) const;
-	void setVec2(const std::string& name, DirectX::XMVECTOR v) const;
-	void setVec3(const std::string& name, DirectX::XMVECTOR v) const;
-	void setVec4(const std::string& name, DirectX::XMVECTOR v) const;
-	void setMatrix4(const std::string& name, DirectX::XMMATRIX m) const;
+	void setBool(const std::string& name, bool value);
+	void setInt(const std::string& name, int value);
+	void setFloat(const std::string& name, float value);
+	void setVec2(const std::string& name, DirectX::XMVECTOR v);
+	void setVec3(const std::string& name, DirectX::XMVECTOR v);
+	void setVec4(const std::string& name, DirectX::XMVECTOR v);
+	void setMatrix4(const std::string& name, DirectX::XMMATRIX m);
 };

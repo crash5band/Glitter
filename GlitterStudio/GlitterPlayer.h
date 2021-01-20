@@ -5,6 +5,7 @@
 #include "RenderTarget.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "Stopwatch.h"
 
 class GlitterPlayer
 {
@@ -17,6 +18,7 @@ private:
 	bool loop;
 	bool mouseInViewArea;
 	ImRect viewArea;
+	Stopwatch timer;
 	EffectNode* selectedEffect;
 	RenderTarget* preview;
 	Camera* camera;

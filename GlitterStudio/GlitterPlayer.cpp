@@ -3,7 +3,6 @@
 #include "IconsFontAwesome5.h"
 #include "UiHelper.h"
 #include "ResourceManager.h"
-#include "Stopwatch.h"
 
 constexpr float windowOffset = 73.0f;
 
@@ -83,7 +82,7 @@ void GlitterPlayer::updatePreview(float deltaT)
 				togglePlayback();
 		}
 
-		Stopwatch timer;
+		timer.reset();
 
 		selectedEffect->update(time, camera);
 		time += deltaT * 60.0f * playbackSpeed * playing;

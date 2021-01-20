@@ -94,7 +94,6 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 
 	std::vector<Glitter::Vector3> basePositions;
 	Glitter::Vector3 basePos;
-
 	Glitter::Matrix3 m3;
 	Glitter::Matrix4 m4;
 
@@ -119,14 +118,11 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 			}
 			else if (emitter->getType() == Glitter::EmitterType::Cylinder)
 			{
-				float angle = Utilities::random(emitter->getStartAngle(), emitter->getEndAngle());
-				angle = Utilities::toRadians(angle);
-
-				float height = emitter->getHeight() / 2;
-				float randomHeight = Utilities::random(-height, height);
+				float angle = Utilities::toRadians(Utilities::random(emitter->getStartAngle(), emitter->getEndAngle()));
+				float height = Utilities::randomize(0, emitter->getHeight() / 2);
 
 				basePos.x = cos(angle) * emitter->getRadius();
-				basePos.y = randomHeight;
+				basePos.y = height;
 				basePos.z = sin(angle) * emitter->getRadius();
 
 				emitDir = emitter->getEmissionDirectionType();

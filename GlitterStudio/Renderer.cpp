@@ -11,13 +11,13 @@ Renderer::Renderer() :
 	size_t offset = 0;
 	for (size_t index = 0; index < maxIndices; index += 6)
 	{
-		indices[index + 0] = (offset + 0);
-		indices[index + 1] = (offset + 1);
-		indices[index + 2] = (offset + 2);
+		indices[index + 0] = offset + 0;
+		indices[index + 1] = offset + 1;
+		indices[index + 2] = offset + 2;
 
-		indices[index + 3] = (offset + 2);
-		indices[index + 4] = (offset + 3);
-		indices[index + 5] = (offset + 0);
+		indices[index + 3] = offset + 2;
+		indices[index + 4] = offset + 3;
+		indices[index + 5] = offset + 0;
 
 		offset += 4;
 	}
@@ -27,6 +27,8 @@ Renderer::Renderer() :
 
 	billboardShader		= ResourceManager::getShader("BillboardParticle");
 	meshParticleShader	= ResourceManager::getShader("MeshParticle");
+
+	// set different blending modes here so that setBlendMode does not return early
 	blendMode = Glitter::BlendMode::Zero;
 	setBlendMode(Glitter::BlendMode::Add);
 }
@@ -186,7 +188,6 @@ void Renderer::endBatch()
 {
 	size_t size = (uint8_t*)bufferCurrent - (uint8_t*)bufferBase;
 	glBindVertexArray(vao);
-
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, size, buffer);
 	
@@ -322,7 +323,6 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 				continue;
 
 			std::shared_ptr<ParticleNode> node = instance.getReference();
-
 			if (node->getMaterialNode())
 			{
 				Glitter::BlendMode mode = node->getParticle()->getBlendMode();
@@ -330,7 +330,6 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 					mode = node->getMaterialNode()->getMaterial()->getBlendMode();
 				
 				setBlendMode(mode);
-
 				if (node->getParticle()->getType() == Glitter::ParticleType::Mesh)
 				{
 					if (node->getMesh())

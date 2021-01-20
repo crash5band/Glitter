@@ -10,7 +10,6 @@
 #include "MaterialEditor.h"
 #include "CommandManager.h"
 #include "InputManager.h"
-#include "Stopwatch.h"
 #include "UIFn.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
@@ -67,6 +66,7 @@ private:
 	Inspector* inspector;
 	GlitterPlayer* player;
 	InputManager* inputManager;
+	Stopwatch mainTimer;
 	int selectedParent;
 	int selectedChild;
 

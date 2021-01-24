@@ -34,7 +34,7 @@ bool Editor::initOpenGl()
 	window = glfwCreateWindow(1366, 768, "Glitter Studio", NULL, NULL);
 	if (window == NULL)
 	{
-		printf("FATAL: failed to create opengl window\n");
+		MessageBox(NULL, "Failed to create GLFW Window.\n", NULL, MB_OK);
 		glfwTerminate();
 		return false;
 	}
@@ -44,7 +44,7 @@ bool Editor::initOpenGl()
 	// GLAD initializtion
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		printf("FATAL: failed to fetch gl procedures\n");
+		MessageBox(NULL, "Failed to load OpenGL procedures.\n", NULL, MB_OK);
 		return false;
 	}
 

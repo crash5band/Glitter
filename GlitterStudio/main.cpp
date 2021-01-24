@@ -2,6 +2,7 @@
 #include <exception>
 #include <filesystem>
 #include "Editor.h"
+#include <Windows.h>
 
 int main(int argc, char* argv[])
 {
@@ -22,7 +23,7 @@ int main(int argc, char* argv[])
 	}
 	catch (std::exception e)
 	{
-		printf("%s", e.what());
+		MessageBox(NULL, e.what(), "Glitter Studio", MB_OK);
 	}
 	
 	return 0;

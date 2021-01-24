@@ -112,6 +112,8 @@ void Editor::openFolder(const std::string& directory)
 	if (!std::filesystem::exists(directory))
 		return;
 
+	Logger::log(Message(MessageType::Normal, "Looking for GTE files in " + directory + "..."));
+
 	std::vector<std::string> files;
 	for (const auto& file : std::filesystem::directory_iterator(directory))
 	{
@@ -120,6 +122,8 @@ void Editor::openFolder(const std::string& directory)
 		if (extension == ".gte")
 			files.emplace_back(file.path().string());
 	}
+
+	Logger::log(Message(MessageType::Normal, "Found " + std::to_string(files.size()) + " GTE files."));
 
 	for (const std::string& file : files)
 		openGlitterFile(file);
@@ -313,9 +317,6 @@ void Editor::processInput()
 				if (FileGUI::openFileGUI(FileType::Effect, name))
 					openGlitterFile(name);
 			}
-
-			if (inputManager->isTapped(GLFW_KEY_SPACE))
-				player->stopPlayback();
 		}
 
 		if (inputManager->isDown(GLFW_KEY_LEFT_SHIFT) || inputManager->isDown(GLFW_KEY_RIGHT_SHIFT))
@@ -331,9 +332,6 @@ void Editor::processInput()
 	}
 	else
 	{
-		if (inputManager->isTapped(GLFW_KEY_SPACE))
-			player->togglePlayback();
-
 		if (inputManager->isTapped(GLFW_KEY_DELETE))
 		{
 			if (selectedParent == -1)

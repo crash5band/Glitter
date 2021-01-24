@@ -223,10 +223,10 @@ void Renderer::getUVCoords(std::shared_ptr<MaterialNode> mat)
 		float bottom = ((y * h) + h) / tex->getHeight();
 
 		std::array<DirectX::XMVECTOR, 4> arr;
-		arr[0] = DirectX::XMVECTOR{ right, top };
-		arr[1] = DirectX::XMVECTOR{ right, bottom };
-		arr[2] = DirectX::XMVECTOR{ left, bottom };
-		arr[3] = DirectX::XMVECTOR{ left, top };
+		arr[0] = DirectX::XMVECTOR{ left, top };
+		arr[1] = DirectX::XMVECTOR{ left, bottom };
+		arr[2] = DirectX::XMVECTOR{ right, bottom };
+		arr[3] = DirectX::XMVECTOR{ right, top };
 		uvCoords.emplace_back(arr);
 	}
 }

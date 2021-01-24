@@ -24,7 +24,7 @@ void MaterialEditor::remove(size_t pos)
 	{
 		materialNodes.erase(materialNodes.begin() + pos);
 		ResourceManager::cleanTextures();
-		Logger::log(Message(MessageType::Normal, "Closed material" + matName + "."));
+		Logger::log(Message(MessageType::Normal, "Closed material " + matName + "."));
 
 		selection = -1;
 	}
@@ -111,7 +111,7 @@ void MaterialEditor::update()
 				}
 			}
 
-			if (materialMenu())
+			if (materialMenu(m))
 			{
 				--m;
 				continue;
@@ -190,14 +190,17 @@ void MaterialEditor::preview()
 	}
 }
 
-bool MaterialEditor::materialMenu()
+bool MaterialEditor::materialMenu(int index)
 {
+	if (index < 0 || index >= materialNodes.size())
+		return false;
+
 	bool closed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::Selectable(ICON_FA_TIMES " Close"))
+		if (ImGui::MenuItem(ICON_FA_TIMES " Close"))
 		{
-			remove(selection);
+			remove(index);
 			closed = true;
 		}
 

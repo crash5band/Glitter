@@ -38,6 +38,12 @@ void Editor::updateMenuBar()
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save As", " Ctrl + Alt + S"))
 			saveEffect(selectedParent, true);
 
+		if (ImGui::MenuItem(ICON_FA_SAVE " Save All"))
+		{
+			for (int e = 0; e < effectNodes.size(); ++e)
+				saveEffect(e, false);
+		}
+
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Effects"))
 		{
@@ -116,6 +122,12 @@ void Editor::updateMenuBar()
 		if (ImGui::MenuItem(ICON_FA_SAVE " Save As"))
 			saveMaterial(MaterialEditor::getSelection(), true);
 
+		if (ImGui::MenuItem(ICON_FA_SAVE " Save All"))
+		{
+			for (int m = 0; m < MaterialEditor::count(); ++m)
+				saveMaterial(m, false);
+		}
+
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Materials"))
 			MaterialEditor::clear();
@@ -188,6 +200,16 @@ bool Editor::effectMenu(int index)
 		if (ImGui::MenuItem(ICON_FA_CERTIFICATE " Add Particle"))
 			createParticle(effectNodes[index], "particle");
 
+		ImGui::Separator();
+		ImGui::Separator();
+		if (ImGui::MenuItem(ICON_FA_SAVE " Save"))
+			saveEffect(index, false);
+
+		if (ImGui::MenuItem(ICON_FA_SAVE " Save As"))
+			saveEffect(index, true);
+
+		ImGui::Separator();
+		ImGui::Separator();
 		if (ImGui::MenuItem(ICON_FA_TIMES " Close"))
 		{
 			closeEffect(index);

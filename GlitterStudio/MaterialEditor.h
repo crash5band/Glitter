@@ -25,6 +25,6 @@ public:
 
 	static void update();
 	static void preview();
-	static bool materialMenu();
+	static bool materialMenu(int index);
 };
 

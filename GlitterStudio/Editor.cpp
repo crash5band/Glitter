@@ -170,9 +170,10 @@ void Editor::saveEffect(int index, bool saveAs)
 	if (index > -1 && index < effectNodes.size())
 	{
 		std::string name = effectNodes[index]->getEffect()->getFilename();
+		bool ok = false;
 		if (name.size() && !saveAs)
 		{
-			effectNodes[index]->getEffect()->write(name);
+			ok = true;
 		}
 		else
 		{
@@ -182,11 +183,30 @@ void Editor::saveEffect(int index, bool saveAs)
 				if (Glitter::File::getFileExtension(name) != "gte")
 					name += ".gte";
 
-				effectNodes[index]->getEffect()->write(name);
+				ok = true;
 			}
 		}
 
-		Logger::log(Message(MessageType::Normal, "Saved effect " + name));
+		if (ok)
+		{
+			effectNodes[index]->getEffect()->write(name);
+			Logger::log(Message(MessageType::Normal, "Saved effect " + name));
+
+			// save materials used by effect's particles
+			auto particles = effectNodes[index]->getParticleNodes();
+			auto materials = MaterialEditor::getNodes();
+			for (auto& particle : particles)
+			{
+				for (int m = 0; m < materials.size(); ++m)
+				{
+					if (particle->getMaterialNode())
+					{
+						if (particle->getMaterialNode()->getMaterial()->getName() == materials[m]->getMaterial()->getName())
+							saveMaterial(m, false);
+					}
+				}
+			}
+		}
 	}
 }
 

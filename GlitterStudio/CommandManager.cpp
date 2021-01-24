@@ -87,7 +87,12 @@ void CommandManager::clean()
 
 	while (filteredUndo.size())
 	{
-		undoStack.push(filteredUndo.top());
+		ICommand* cmd = filteredUndo.top();
+		if (cmd->isValid())
+			undoStack.push(cmd);
+		else
+			delete cmd;
+
 		filteredUndo.pop();
 	}
 
@@ -104,7 +109,12 @@ void CommandManager::clean()
 
 	while (filteredRedo.size())
 	{
-		redoStack.push(filteredRedo.top());
+		ICommand* cmd = filteredRedo.top();
+		if (cmd->isValid())
+			redoStack.push(cmd);
+		else
+			delete cmd;
+
 		filteredRedo.pop();
 	}
 }

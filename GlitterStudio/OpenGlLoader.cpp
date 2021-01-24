@@ -34,7 +34,7 @@ bool Editor::initOpenGl()
 	window = glfwCreateWindow(1366, 768, "Glitter Studio", NULL, NULL);
 	if (window == NULL)
 	{
-		MessageBox(NULL, "Failed to create GLFW Window.\n", NULL, MB_OK);
+		MessageBox(NULL, "Failed to create GLFW Window.\n", NULL, MB_OK | MB_ICONERROR);
 		glfwTerminate();
 		return false;
 	}
@@ -44,7 +44,7 @@ bool Editor::initOpenGl()
 	// GLAD initializtion
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		MessageBox(NULL, "Failed to load OpenGL procedures.\n", NULL, MB_OK);
+		MessageBox(NULL, "Failed to load OpenGL procedures.\n", NULL, MB_OK | MB_ICONERROR);
 		return false;
 	}
 

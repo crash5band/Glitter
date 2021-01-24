@@ -155,7 +155,7 @@ void Inspector::inspectAnimation(int index)
 			
 #ifdef _DEBUG
 			float val = animationNode.lock()->tryGetValue(animation.getType(), timeline.getCurrentFrame());
-			ImGui::Text("Current value: %.2f", val);
+			ImGui::Text("Current value: %g", val);
 #endif // DEBUG
 
 		}
@@ -194,14 +194,14 @@ void Inspector::inspectKey(int index)
 			ImGui::NextColumn();
 			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 
-			if (ImGui::InputFloat("##Time", &key.time, 1, 10, 0, ImGuiInputTextFlags_EnterReturnsTrue))
+			if (ImGui::InputFloat("##Time", &key.time, 1, 10, "%g", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				key.time = std::clamp((int)key.time, (int)animation.getStartTime(), (int)animation.getEndTime());
 				animation.verifyKeyOrder(keyIndex);
 				timeline.setCurrentFrame(key.time);
 			}
 
-			if (ImGui::InputFloat("##Value", &key.value, 1, 10, 2, ImGuiInputTextFlags_EnterReturnsTrue))
+			if (ImGui::InputFloat("##Value", &key.value, 1, 10, "%g", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				if (timeline.getGraphType(animation.getType()) == AnimationTimeline::AnimationGraphType::Color)
 				{
@@ -216,13 +216,13 @@ void Inspector::inspectKey(int index)
 			addComboBoxProperty("##Interpolation_Type", Glitter::interpolationTypeTable, Glitter::interpolationTypeTableSize, key.interpolationType);
 
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 2.0f);
-			ImGui::InputFloat("##TanIn", &key.inParam, 0.1f, 0.5f, 2, ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::InputFloat("##TanIn", &key.inParam, 0.1f, 0.5f, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::InputFloat("##TanOut", &key.outParam, 0.1f, 0.5f, 2, ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::InputFloat("##TanOut", &key.outParam, 0.1f, 0.5f, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 
-			ImGui::InputFloat("##Random_Range", &key.randomRange, 1, 10, 2, ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::InputFloat("##Random_Range", &key.randomRange, 1, 10, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 
 			if (key != keys[keyIndex])
 				CommandManager::pushNew(new ChangeKeyCommand(animNode, selectedAnimation, keyIndex, key));

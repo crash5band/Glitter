@@ -2221,12 +2221,30 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data
     PushID(label);
     PushMultiItemsWidths(components, CalcItemWidth());
     size_t type_size = GDataTypeInfo[data_type].Size;
+
+    const char* lbl[3];
+    if (components == 2)
+    {
+        lbl[0] = "U: ";
+        lbl[1] = "V: ";
+    }
+    else
+    {
+        lbl[0] = "X: ";
+        lbl[1] = "Y: ";
+        lbl[2] = "Z: ";
+    }
+
     for (int i = 0; i < components; i++)
     {
         PushID(i);
         if (i > 0)
             SameLine(0, g.Style.ItemInnerSpacing.x);
-        value_changed |= DragScalar("", data_type, p_data, v_speed, p_min, p_max, format, power);
+
+        std::string f = lbl[i];
+        f.append(format);
+
+        value_changed |= DragScalar("", data_type, p_data, v_speed, p_min, p_max, f.c_str(), power);
         PopID();
         PopItemWidth();
         p_data = (void*)((char*)p_data + type_size);

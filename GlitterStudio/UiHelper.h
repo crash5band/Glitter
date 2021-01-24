@@ -92,7 +92,7 @@ static void addFloatProperty(const char* label, float val, std::shared_ptr<T>& o
 	static float old;
 
 	beginPropertyColumn(label);
-	if (ImGui::InputFloat(std::string("##").append(label).c_str(), &val, 1.0f, 5.0f, 2))
+	if (ImGui::InputFloat(std::string("##").append(label).c_str(), &val, 1.0f, 5.0f, "%g"))
 		func(obj.get(), val);
 
 	ImGui::NextColumn();
@@ -110,7 +110,7 @@ static void addVector2Property(const char* label, Glitter::Vector2 val, std::sha
 	static Glitter::Vector2 old;
 
 	beginPropertyColumn(label);
-	if (ImGui::DragFloat2(std::string("##").append(label).c_str(), v2, 0.1f))
+	if (ImGui::DragFloat2(std::string("##").append(label).c_str(), v2, 0.1f, 0.0f, 0.0f, "%g"))
 		func(obj.get(), Glitter::Vector2(v2[0], v2[1]));
 
 	ImGui::NextColumn();
@@ -128,7 +128,7 @@ static void addVector3Property(const char* label, Glitter::Vector3 val, std::sha
 	static Glitter::Vector3 old;
 
 	beginPropertyColumn(label);
-	if (ImGui::DragFloat3(std::string("##").append(label).c_str(), v3, 0.1f))
+	if (ImGui::DragFloat3(std::string("##").append(label).c_str(), v3, 0.1f, 0.0f, 0.0f, "%g"))
 		func(obj.get(), Glitter::Vector3(v3[0], v3[1], v3[2]));
 
 	ImGui::NextColumn();

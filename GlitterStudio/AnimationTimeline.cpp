@@ -419,7 +419,10 @@ void AnimationTimeline::updateTimelineKeys()
 			{
 				ImGui::BeginTooltip();
 				ImGui::Text("Time: %.0f", keys[i].time);
-				ImGui::Text("Value: %.2f", keys[i].value);
+				ImGui::Text("Value: %.3f", keys[i].value);
+				ImGui::Text("InParam: %.3f,", keys[i].inParam);
+				ImGui::SameLine();
+				ImGui::Text("OutParam: %.3f", keys[i].outParam);
 				ImGui::EndTooltip();
 
 				if (ImGui::IsMouseDragging(0))
@@ -454,8 +457,8 @@ void AnimationTimeline::updateTimelineKeys()
 				if (ImGui::IsItemActive())
 				{
 					ImGui::BeginTooltip();
-					ImGui::Text("InParam: %.2f", keys[i].inParam);
-					ImGui::Text("OutParam: %.2f", keys[i].outParam);
+					ImGui::Text("InParam: %.3f", keys[i].inParam);
+					ImGui::Text("OutParam: %.3f", keys[i].outParam);
 					ImGui::EndTooltip();
 
 					if (ImGui::IsMouseDragging(0))
@@ -486,8 +489,8 @@ void AnimationTimeline::updateTimelineKeys()
 				if (ImGui::IsItemActive())
 				{
 					ImGui::BeginTooltip();
-					ImGui::Text("InParam: %.2f", keys[i].inParam);
-					ImGui::Text("OutParam: %.2f", keys[i].outParam);
+					ImGui::Text("InParam: %.3f", keys[i].inParam);
+					ImGui::Text("OutParam: %.3f", keys[i].outParam);
 					ImGui::EndTooltip();
 
 					if (ImGui::IsMouseDragging(0))

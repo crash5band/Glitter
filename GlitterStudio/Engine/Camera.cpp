@@ -3,17 +3,17 @@
 
 Camera::Camera(CameraMode _mode, DirectX::XMVECTOR pos) :
 	position{ pos }, front{ DirectX::XMVECTOR{0.0f, 0.0f, -1.0f, 1.0f} }, speed{ defaultSpeed }, sensitivity{ defaultSensitivity }, fovy{ defaultZoom },
-	worldUp{ DirectX::XMVECTOR{0.0f, 1.0f, 0.0f, 1.0f} }, yaw{ 90 }, pitch{ 0 }, mode{ _mode }
+	worldUp{ DirectX::XMVECTOR{0.0f, 1.0f, 0.0f, 1.0f} }, yaw{ defaultYaw }, pitch{ defaultPitch }, mode{ _mode }
 {
 	defaultRadius = 5.0f;
 	radius = defaultRadius;
 
 	if (_mode == CameraMode::Orbit)
 	{
-		position = DirectX::XMVECTOR{ 0.0f, 0.0f, -radius, 1.0f };
+		position = DirectX::XMVECTOR{ 0, 0, -radius, 1 };
 	}
 
-	target = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 0.0f };
+	target = DirectX::XMVECTOR{ 0 };
 	defaultPosition = position;
 	updateCameraVectors();
 
@@ -26,7 +26,7 @@ void Camera::reset()
 	position	= defaultPosition;
 	yaw			= defaultYaw;
 	pitch		= defaultPitch;
-	fovy		= 45;
+	fovy		= defaultZoom;
 	updateCameraVectors();
 }
 

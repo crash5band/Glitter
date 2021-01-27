@@ -7,6 +7,10 @@ constexpr size_t maxVertices	= 10000;
 constexpr size_t maxIndices		= 15000;
 constexpr size_t maxQuads		= 2500;
 
+constexpr float gridSize		= 10.0f;
+constexpr float gridSpacing		= 0.5f;
+constexpr int gridVertexCount	= (((gridSize * 2) / gridSpacing) + 1) * 4;
+
 struct VertexBuffer
 {
 	DirectX::XMVECTOR position;
@@ -22,14 +26,14 @@ private:
 	size_t numQuads;
 	VertexBuffer* bufferBase;
 	VertexBuffer* bufferCurrent;
-	unsigned int vao;
-	unsigned int vbo;
-	unsigned int ebo;
+	VertexBuffer* gridBuffer;
+	unsigned int vao, vbo, ebo, gVao, gVbo;
 	int texID;
 	bool batchStarted;
 
 	std::shared_ptr<Shader> billboardShader;
 	std::shared_ptr<Shader> meshParticleShader;
+	std::shared_ptr<Shader> gridShader;
 
 	VertexBuffer buffer[maxVertices];
 	std::array<unsigned int, maxIndices> indices;
@@ -40,6 +44,7 @@ private:
 	Glitter::BlendMode blendMode;
 
 	void initQuad();
+	void initGrid();
 	void resetVPos();
 	void drawPoolQuad(ParticleInstance& instance, Camera* camera);
 	void drawPoolMesh(ParticleInstance& instance, Camera* camera);
@@ -54,6 +59,7 @@ public:
 	void configureShader(std::shared_ptr<Shader>& shader, Camera* camera, Glitter::Vector2 size);
 	void setBlendMode(Glitter::BlendMode mode);
 	void beginBatch();
+	void drawGrid(Camera* camera, const Glitter::Vector2& viewportSize);
 	void drawEffect(EffectNode* eff, Camera* camera, const Glitter::Vector2 &viewportSize);
 	void drawQuad(Transform &transform, Glitter::Vector3 pivot, Glitter::Color &color, unsigned int uvIndex, std::shared_ptr<TextureData> tex);
 	void flush();

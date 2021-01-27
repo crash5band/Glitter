@@ -4,15 +4,14 @@
 #include "UiHelper.h"
 #include "ResourceManager.h"
 
-constexpr float windowOffset = 73.0f;
-
 GlitterPlayer::GlitterPlayer() :
-	firstFrame{ 0 }, lastFrame{ 0 }, time{ 0.0f }, playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, mouseInViewArea{ false }
+	playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, mouseInViewArea{ false }
 {
-	selectedEffect = nullptr;
-	preview = new RenderTarget(1920, 1080);
-	camera = new Camera(CameraMode::Orbit);
-	renderer = new Renderer();
+	time = maxTime	= 0;
+	selectedEffect	= nullptr;
+	preview			= new RenderTarget(1920, 1080);
+	camera			= new Camera(CameraMode::Orbit);
+	renderer		= new Renderer();
 }
 
 GlitterPlayer::~GlitterPlayer()
@@ -31,7 +30,7 @@ void GlitterPlayer::togglePlayback()
 void GlitterPlayer::stopPlayback()
 {
 	playing = false;
-	time = 0.0f;
+	time	= 0.0f;
 
 	if (selectedEffect)
 		selectedEffect->kill();
@@ -48,34 +47,41 @@ void GlitterPlayer::setEffect(EffectNode* node)
 
 		stopPlayback();
 		togglePlayback();
-		camera->reset();
+		//camera->reset();
 	}
 }
 
 bool GlitterPlayer::isEffectLoop()
 {
+	if (!selectedEffect)
+		return false;
+
 	return selectedEffect->getEffect()->getFlags() & 1;
 }
 
 void GlitterPlayer::updatePreview(float deltaT)
 {
-	viewArea = ImRect(ImGui::GetCursorScreenPos(), ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowSize().x,
-		ImGui::GetCursorScreenPos().y + ImGui::GetWindowSize().y - windowOffset));
+	viewArea = ImRect(ImGui::GetCursorScreenPos(), ImGui::GetCursorScreenPos() + ImGui::GetContentRegionAvail());
+	mouseInViewArea = ImGui::IsMouseHoveringRect(viewArea.Min, viewArea.Max, false);
 
-	mouseInViewArea = ImGui::IsMouseHoveringRect(viewArea.Min, viewArea.Max);
 	if (mouseInViewArea && ImGui::IsWindowFocused())
 	{
-		ImGuiIO &io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 		camera->update(io.MouseDown[0], io.MouseDown[1], io.MouseDelta.x, io.MouseDelta.y, io.MouseWheel);
 	}
 
+	Glitter::Vector2 size(viewArea.Max.x - viewArea.Min.x, viewArea.Max.y - viewArea.Min.y);
+
 	preview->use();
 	preview->clear();
+
+	if (drawGrid)
+		renderer->drawGrid(camera, size);
+
 	if (selectedEffect)
 	{
-		firstFrame = selectedEffect->getEffect()->getStartTime();
-		lastFrame = firstFrame + selectedEffect->getEffect()->getLifeTime() + 60.0f;
-		if (time > lastFrame && !isEffectLoop())
+		maxTime = selectedEffect->getEffect()->getStartTime() + selectedEffect->getEffect()->getLifeTime() + 60.0f;
+		if (time > maxTime && !isEffectLoop())
 		{
 			stopPlayback();
 			if (loop)
@@ -90,9 +96,7 @@ void GlitterPlayer::updatePreview(float deltaT)
 		Editor::logTime("Update Effect", timer);
 		timer.reset();
 
-		Glitter::Vector2 size(viewArea.Max.x - viewArea.Min.x, viewArea.Max.y - viewArea.Min.y);
 		renderer->drawEffect(selectedEffect, camera, size);
-
 		Editor::logTime("Draw Effect", timer);
 	}
 
@@ -100,13 +104,13 @@ void GlitterPlayer::updatePreview(float deltaT)
 	glDisable(GL_DEPTH_TEST);
 
 	auto texture = preview->getTexture();
-	ImGui::Image((void*)texture, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y - windowOffset), ImVec2(1, 1), ImVec2(0, 0),
+	ImGui::Image((void*)texture, ImGui::GetContentRegionAvail(), ImVec2(1, 1), ImVec2(0, 0),
 		ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 0.85));
 }
 
 void GlitterPlayer::update(float deltaT)
 {
-	if (ImGui::Begin(prevWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus))
+	if (ImGui::Begin(prevWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		if (ImGui::Button(ICON_FA_VIDEO " Reset", ImVec2(80, btnHeight)))
 			camera->reset();
@@ -124,6 +128,8 @@ void GlitterPlayer::update(float deltaT)
 
 		ImGui::SameLine();
 		ImGui::Checkbox("Loop", &loop);
+		ImGui::SameLine();
+		ImGui::Checkbox("Grid", &drawGrid);
 
 		static const char* speedsChar[]{"0.25x", "0.50x", "0.75x", "1.00x"};
 		static float speeds[]{ 0.25f, 0.5f, 0.75f, 1.0f };
@@ -157,8 +163,8 @@ void GlitterPlayer::update(float deltaT)
 			if (ImGui::MenuItem("Stop"))
 				stopPlayback();
 
-			if (ImGui::MenuItem("Loop", NULL, loop))
-				loop ^= true;
+			ImGui::MenuItem("Loop", NULL, &loop);
+			ImGui::MenuItem("Show Grid", NULL, &drawGrid);
 
 			ImGui::EndMenu();
 		}

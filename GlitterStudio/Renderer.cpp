@@ -22,11 +22,13 @@ Renderer::Renderer() :
 		offset += 4;
 	}
 
+	initGrid();
 	initQuad();
 	bufferBase = buffer;
 
 	billboardShader		= ResourceManager::getShader("BillboardParticle");
 	meshParticleShader	= ResourceManager::getShader("MeshParticle");
+	gridShader			= ResourceManager::getShader("Grid");
 
 	// set different blending modes here so that setBlendMode does not return early
 	blendMode = Glitter::BlendMode::Zero;
@@ -38,6 +40,9 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ebo);
 	glDeleteVertexArrays(1, &vao);
+
+	glDeleteBuffers(1, &gVbo);
+	glDeleteVertexArrays(1, &gVao);
 }
 
 void Renderer::bindShader(std::shared_ptr<Shader>& s)
@@ -117,7 +122,7 @@ void Renderer::initQuad()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexBuffer), (void*)offsetof(VertexBuffer, uv));
 
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
@@ -152,13 +157,13 @@ void Renderer::setBlendMode(Glitter::BlendMode mode)
 	switch (mode)
 	{
 	case Glitter::BlendMode::Multiply:
-		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-		glBlendEquation(GL_FUNC_SUBTRACT);
+		glBlendFuncSeparate(GL_DST_COLOR, GL_ZERO, GL_SRC_ALPHA, GL_DST_ALPHA);
+		glBlendEquation(GL_FUNC_ADD);
 		break;
 
 	case Glitter::BlendMode::Subtract:
-		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-		glBlendEquation(GL_FUNC_SUBTRACT);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_DST_ALPHA, GL_SRC_ALPHA, GL_DST_ALPHA);
+		glBlendEquationSeparate(GL_FUNC_SUBTRACT, GL_FUNC_ADD);
 		break;
 
 	case Glitter::BlendMode::Typical:
@@ -358,4 +363,59 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 
 	if (batchStarted)
 		endBatch();
+}
+
+void Renderer::initGrid()
+{
+	int v = 0;
+	gridBuffer = new VertexBuffer[gridVertexCount];
+	for (float x = -gridSize; x <= gridSize; x += gridSpacing)
+	{
+		DirectX::XMVECTOR xColor{ 0.5f, 0.5f, 0.5f, 0.8f };
+		DirectX::XMVECTOR zColor(xColor);
+		if (x == 0)
+		{
+			xColor = DirectX::XMVECTOR{ 0.8f, 0.0f, 0.0f, 0.8f };
+			zColor = DirectX::XMVECTOR{ 0.0f, 0.8f, 0.0f, 0.8f };
+		}
+		else if (abs(x) - abs((int)x) == 0.5f)
+		{
+			xColor = DirectX::XMVECTOR{ 0.2f, 0.2f, 0.2f, 0.8f };
+			zColor = DirectX::XMVECTOR{ 0.2f, 0.2f, 0.2f, 0.8f };
+		}
+
+		gridBuffer[v].position = DirectX::XMVECTOR{ x, 0.0f, -gridSize};
+		gridBuffer[v++].color = xColor;
+		gridBuffer[v].position = DirectX::XMVECTOR{ x, 0.0f, gridSize};
+		gridBuffer[v++].color = xColor;
+
+		gridBuffer[v].position = DirectX::XMVECTOR{ -gridSize, 0.0f, x};
+		gridBuffer[v++].color = zColor;
+		gridBuffer[v].position = DirectX::XMVECTOR{ gridSize, 0.0f, x};
+		gridBuffer[v++].color = zColor;
+	}
+
+	glGenVertexArrays(1, &gVao);
+	glBindVertexArray(gVao);
+
+	glGenBuffers(1, &gVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, gVbo);
+
+	glBufferData(GL_ARRAY_BUFFER, gridVertexCount * sizeof(VertexBuffer), gridBuffer, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexBuffer), (void*)offsetof(VertexBuffer, position));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBuffer), (void*)offsetof(VertexBuffer, color));
+
+	glBindVertexArray(0);
+}
+
+void Renderer::drawGrid(Camera* camera, const Glitter::Vector2& viewportSize)
+{
+	configureShader(gridShader, camera, viewportSize);
+
+	glBindVertexArray(gVao);
+	glDrawArrays(GL_LINES, 0, gridVertexCount);
 }

@@ -29,6 +29,7 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	const std::string shadersDir = appDir + "/Res/Shaders/";
 	ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle.vert", shadersDir + "BillboardParticle.frag");
 	ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle.vert", shadersDir + "MeshParticle.frag");
+	ResourceManager::loadShader("Grid", shadersDir + "GridShader.vert", shadersDir + "GridShader.frag");
 
 	inspector = new Inspector();
 	player = new GlitterPlayer();

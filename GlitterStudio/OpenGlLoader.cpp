@@ -53,6 +53,7 @@ bool Editor::initOpenGl()
 	glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
 	loadIcon(appDir + "Res\\glitter_icon.png", window);
+	glLineWidth(2.0f);
 	//glfwSetWindowSizeLimits(window, 1366, 768, GLFW_DONT_CARE, GLFW_DONT_CARE);
 	//glfwSetWindowAspectRatio(window, 16, 9);
 	//glDisable(GL_CULL_FACE);

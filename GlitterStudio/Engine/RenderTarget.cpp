@@ -18,7 +18,7 @@ RenderTarget::~RenderTarget()
 
 void RenderTarget::clear()
 {
-	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	GLbitfield clearBits = GL_COLOR_BUFFER_BIT;
 	if (depthTesting) clearBits |= GL_DEPTH_BUFFER_BIT;

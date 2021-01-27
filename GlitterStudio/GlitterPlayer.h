@@ -11,12 +11,12 @@ class GlitterPlayer
 {
 private:
 	float time;
-	float firstFrame;
-	float lastFrame;
+	float maxTime;
 	float playbackSpeed;
 	bool playing;
 	bool loop;
 	bool mouseInViewArea;
+	bool drawGrid;
 	ImRect viewArea;
 	Stopwatch timer;
 	EffectNode* selectedEffect;

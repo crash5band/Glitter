@@ -46,10 +46,7 @@ void Editor::updateMenuBar()
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Effects"))
-		{
-			for (size_t eff = 0; eff < effectNodes.size();)
-				closeEffect(eff);
-		}
+			closeAllEffects();
 
 		ImGui::Separator();
 		if (ImGui::MenuItem(ICON_FA_TIMES " Quit"))
@@ -130,7 +127,7 @@ void Editor::updateMenuBar()
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Materials"))
-			MaterialEditor::clear();
+			MaterialEditor::clean();
 
 		ImGui::EndMenu();
 	}
@@ -298,6 +295,21 @@ bool Editor::instanceMenu(int effect, int parent, int index)
 	bool removed = false;
 	if (ImGui::BeginPopupContextItem())
 	{
+		if (ImGui::MenuItem(ICON_FA_CERTIFICATE " Select Particle"))
+		{
+			std::shared_ptr<ParticleNode> node = effectNodes[effect]->getEmitterNodes().at(parent)->getParticles().at(index).getReference();
+			std::vector<std::shared_ptr<ParticleNode>> particles = effectNodes[effect]->getParticleNodes();
+			for (int p = 0; p < particles.size(); ++p)
+			{
+				if (particles[p] == node)
+				{
+					selectedParent	= effect;
+					selectedChild	= effectNodes[effect]->getEmitterNodes().size() + p;
+					break;
+				}
+			}
+		}
+
 		if (ImGui::MenuItem(ICON_FA_TRASH_ALT " Remove"))
 		{
 			std::shared_ptr<EmitterNode> node = effectNodes[effect]->getEmitterNodes()[parent];

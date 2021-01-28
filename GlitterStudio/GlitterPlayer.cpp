@@ -36,6 +36,12 @@ void GlitterPlayer::stopPlayback()
 		selectedEffect->kill();
 }
 
+void GlitterPlayer::replay()
+{
+	stopPlayback();
+	togglePlayback();
+}
+
 void GlitterPlayer::setEffect(EffectNode* node)
 {
 	if (node != selectedEffect)
@@ -127,9 +133,8 @@ void GlitterPlayer::update(float deltaT)
 			togglePlayback();
 
 		ImGui::SameLine();
-		ImGui::Checkbox("Loop", &loop);
-		ImGui::SameLine();
-		ImGui::Checkbox("Grid", &drawGrid);
+		if (ImGui::Button(ICON_FA_REDO_ALT, btnNormal))
+			replay();
 
 		static const char* speedsChar[]{"0.25x", "0.50x", "0.75x", "1.00x"};
 		static float speeds[]{ 0.25f, 0.5f, 0.75f, 1.0f };
@@ -154,6 +159,13 @@ void GlitterPlayer::update(float deltaT)
 			ImGui::EndCombo();
 		}
 
+		ImGui::SameLine();
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+		ImGui::Checkbox("Loop", &loop);
+		ImGui::SameLine();
+		ImGui::Checkbox("Grid", &drawGrid);
+
 		ImGui::BeginMainMenuBar();
 		if (ImGui::BeginMenu("View"))
 		{
@@ -169,12 +181,6 @@ void GlitterPlayer::update(float deltaT)
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
-
-		ImGui::SameLine();
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-		ImGui::SameLine();
-
-		ImGui::Text("Camera Pitch: %.2f, Yaw: %.2f", camera->getPitch(), camera->getYaw());
 		
 		updatePreview(deltaT);
 	}

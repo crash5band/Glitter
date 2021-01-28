@@ -163,22 +163,21 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 			continue;
 	
 		p.time = time - p.startTime;
-
 		p.transform = baseTransform;
 		Glitter::Vector3 basePos = p.basePos;
 		Glitter::Vector3 velocity = (p.direction + (p.acceleration * p.time));
+		Glitter::Vector3 animT = animNode->tryGetTranslation(p.time);
 
 		// Update Position
 		if (particle->getFlags() & 4)
 		{
 			// transform particle's basePos with emitter rotation. since this is done every update, it 'follows' the emitter
-			basePos = (m4Local * basePos) + animNode->tryGetTranslation(p.time);
+			basePos = m4Local * basePos;
 			velocity = m4LocalOrigin * velocity;
+			animT = m4LocalOrigin * animT;
 		}
 
-		p.transform.position = (m4 * (p.transform.position + basePos)) + (velocity * p.time);
-		if (!(particle->getFlags() & 4))
-			p.transform.position += animNode->tryGetTranslation(p.time);
+		p.transform.position = (m4 * (p.transform.position + basePos + animT)) + (velocity * p.time);
 
 		// Update Rotation
 		p.transform.rotation += p.rotation + animNode->tryGetRotation(p.time);

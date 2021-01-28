@@ -1,5 +1,4 @@
 #pragma once
-#include "EffectNode.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "RenderTarget.h"
@@ -32,6 +31,7 @@ public:
 	void updatePreview(float deltaT);
 	void togglePlayback();
 	void stopPlayback();
+	void replay();
 	void setEffect(EffectNode* node);
 	bool isEffectLoop();
 };

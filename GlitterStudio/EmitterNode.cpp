@@ -224,6 +224,7 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 		transform = baseTransform;
 		transform.position += getPosition(emitterLife);
 		transform.rotation += getRotation(emitterLife);
+		transform.rotation -= baseTransform.rotation;
 		transform.scale = getScaling(emitterLife);
 		changeDirection(emitter->getDirectionType(), camera);
 

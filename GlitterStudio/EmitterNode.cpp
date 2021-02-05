@@ -93,19 +93,12 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 		return;
 
 	std::vector<Glitter::Vector3> basePositions;
+	Glitter::Vector3 origin;
 	Glitter::Vector3 basePos;
-	Glitter::Matrix3 m3;
 	Glitter::Matrix4 m4;
+	m4.makeTransform(origin, transform.scale, transform.rotation);
 
 	Glitter::EmissionDirectionType emitDir = Glitter::EmissionDirectionType::ParticleVelocity;
-	Glitter::EmitterDirectionType dirType = emitter->getDirectionType();
-
-	float rotX = Utilities::toRadians(transform.rotation.x);
-	float rotY = Utilities::toRadians(transform.rotation.y);
-	float rotZ = Utilities::toRadians(transform.rotation.z);
-
-	m3.fromEulerAnglesZYX(rotZ, rotY, rotX);
-	m4.makeTransform(transform.position, transform.scale, m3);
 
 	for (auto& particle : particleInstances)
 	{
@@ -172,34 +165,52 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 	}
 }
 
-void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, Camera* camera)
+void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, Camera* camera, Glitter::Vector3& rotation)
 {
 	switch (type)
 	{
 	case Glitter::EmitterDirectionType::Billboard:
-		transform.rotation.x = transform.rotation.x - camera->getPitch();
-		transform.rotation.y = 90.0f - camera->getYaw();
+		rotation.x = rotation.x - camera->getPitch();
+		rotation.y = 90.0f - camera->getYaw();
 		break;
 
 	case Glitter::EmitterDirectionType::YRotationOnly:
-		transform.rotation.y = 90.0f - camera->getYaw();
+		rotation.y = 90.0f - camera->getYaw();
 		break;
 
 	case Glitter::EmitterDirectionType::XAxis:
-		transform.rotation.y = 90.0f;
-		transform.rotation.z = 0.0f;
+		rotation.y = 90.0f;
+		rotation.z = 0.0f;
 		break;
 
 	case Glitter::EmitterDirectionType::YAxis:
-		transform.rotation.x = -90.0f;
-		transform.rotation.z = 0.0f;
+		rotation.x = -90.0f;
+		rotation.z = 0.0f;
 		break;
 
 	case Glitter::EmitterDirectionType::ZAxis:
-		transform.rotation.x = 0.0f;
-		transform.rotation.y = 0.0f;
+		rotation.x = 0.0f;
+		rotation.y = 0.0f;
 		break;
 	}
+}
+
+void EmitterNode::updateTransform(float time, Camera* camera, Transform& effT)
+{
+	Glitter::Quaternion em;
+	Glitter::Quaternion emA;
+	Glitter::Vector3 rot = emitter->getRotation() + rotationAdd;
+	changeDirection(emitter->getDirectionType(), camera, rot);
+	em.fromEulerDegrees(rot);
+	emA.fromEulerDegrees(animationNode->tryGetRotation(time));
+
+	Glitter::Matrix4 m4;
+	m4.makeTransform(effT.position, effT.scale, effT.rotation);
+
+	transform.position = (m4 * ((emitter->getTranslation() + animationNode->tryGetTranslation(time)) - effT.position)) + effT.position;
+	transform.rotation = effT.rotation;
+	transform.rotation = transform.rotation * emA * em;
+	transform.scale	= emitter->getScaling() *= animationNode->tryGetScale(time);
 }
 
 void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
@@ -221,12 +232,7 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 	// emitter has started
 	if (emitterTime >= 0.0f)
 	{
-		transform = baseTransform;
-		transform.position += getPosition(emitterLife);
-		transform.rotation += getRotation(emitterLife);
-		transform.rotation -= baseTransform.rotation;
-		transform.scale = getScaling(emitterLife);
-		changeDirection(emitter->getDirectionType(), camera);
+		updateTransform(emitterLife, camera, baseTransform);
 
 		emissionCount = emitter->getParticlesPerEmission();
 		int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, emitterLife, -1);
@@ -261,17 +267,9 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 		}
 	}
 
-	Transform t = baseTransform;
-	t.scale = transform.scale;
-
-	if (emitter->getType() == Glitter::EmitterType::Box)
-	{
-		t.rotation += transform.rotation;
-	}
-
 	for (auto& particle : particleInstances)
 	{
-		particle.update(emitterTime, camera, t, transform);
+		particle.update(emitterTime, camera, transform);
 	}
 }
 

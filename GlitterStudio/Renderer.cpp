@@ -56,28 +56,28 @@ Glitter::Vector3 Renderer::getAnchorPoint(Glitter::PivotPosition pivot)
 	switch (pivot)
 	{
 	case Glitter::PivotPosition::TopLeft:
-		return Glitter::Vector3(-0.5, 0.5, 0);
+		return Glitter::Vector3(0.5, 0.5, 0);
 
 	case Glitter::PivotPosition::TopCenter:
 		return Glitter::Vector3(0, 0.5, 0);
 
 	case Glitter::PivotPosition::TopRight:
-		return Glitter::Vector3(0.5, 0.5, 0);
+		return Glitter::Vector3(-0.5, 0.5, 0);
 
 	case Glitter::PivotPosition::MiddleLeft:
-		return Glitter::Vector3(-0.5, 0, 0);
-
-	case Glitter::PivotPosition::MiddleRight:
 		return Glitter::Vector3(0.5, 0, 0);
 
+	case Glitter::PivotPosition::MiddleRight:
+		return Glitter::Vector3(-0.5, 0, 0);
+
 	case Glitter::PivotPosition::BottomLeft:
-		return Glitter::Vector3(-0.5, -0.5, 0);
+		return Glitter::Vector3(0.5, -0.5, 0);
 
 	case Glitter::PivotPosition::BottomCenter:
 		return Glitter::Vector3(0, -0.5, 0);
 
 	case Glitter::PivotPosition::BottomRight:
-		return Glitter::Vector3(0.5, -0.5, 0);
+		return Glitter::Vector3(-0.5, -0.5, 0);
 
 	default:
 		return Glitter::Vector3(0, 0, 0);
@@ -126,13 +126,17 @@ void Renderer::initQuad()
 	glBindVertexArray(0);
 }
 
-void Renderer::configureShader(std::shared_ptr<Shader>& s, Camera* camera, Glitter::Vector2 size)
+void Renderer::configureShader(std::shared_ptr<Shader>& s, Camera* camera, Glitter::Vector2 size, Glitter::BlendMode blend)
 {
 	if (shader != s)
 		bindShader(s);
 
 	shader->setMatrix4("view", camera->getViewMatrix());
 	shader->setMatrix4("projection", camera->getProjectionMatrix(size.x / size.y));
+	if (shader->getName() != "Grid")
+	{
+		shader->setInt("blendMode", (int)blend);
+	}
 }
 
 void Renderer::setBlendMode(Glitter::BlendMode mode)
@@ -157,13 +161,13 @@ void Renderer::setBlendMode(Glitter::BlendMode mode)
 	switch (mode)
 	{
 	case Glitter::BlendMode::Multiply:
-		glBlendFuncSeparate(GL_DST_COLOR, GL_ZERO, GL_SRC_ALPHA, GL_DST_ALPHA);
+		glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendEquation(GL_FUNC_ADD);
 		break;
 
 	case Glitter::BlendMode::Subtract:
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_DST_ALPHA, GL_SRC_ALPHA, GL_DST_ALPHA);
-		glBlendEquationSeparate(GL_FUNC_SUBTRACT, GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquationSeparate(GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
 		break;
 
 	case Glitter::BlendMode::Typical:
@@ -244,14 +248,10 @@ void Renderer::drawPoolMesh(ParticleInstance &instance, Camera* camera)
 	{
 		if (!p.dead)
 		{
-			float rotX = Utilities::toRadians(p.transform.rotation.x);
-			float rotY = Utilities::toRadians(p.transform.rotation.y);
-			float rotZ = Utilities::toRadians(p.transform.rotation.z);
-
 			DirectX::XMMATRIX model = DirectX::XMMatrixScaling(p.transform.scale.x, p.transform.scale.y, p.transform.scale.z);
 			model *= DirectX::XMMatrixTranslation(-pivot.x, -pivot.y, -pivot.z);
-			model *= DirectX::XMMatrixRotationRollPitchYaw(rotX, rotY, rotZ);
-			model *= DirectX::XMMatrixTranslation(p.transform.position.x + pivot.x, p.transform.position.y + pivot.y, p.transform.position.z + pivot.z);
+			model *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ p.transform.rotation.x, p.transform.rotation.y, p.transform.rotation.z, p.transform.rotation.w });
+			model *= DirectX::XMMatrixTranslation(p.transform.position.x - pivot.x, p.transform.position.y + pivot.y, p.transform.position.z + pivot.z);
 
 			meshParticleShader->setMatrix4("model", model);
 			meshParticleShader->setVec4("color", DirectX::XMVECTOR{ p.color.r, p.color.g, p.color.b, p.color.a });
@@ -264,13 +264,14 @@ void Renderer::drawPoolQuad(ParticleInstance& instance, Camera* camera)
 {
 	std::shared_ptr<MaterialNode> mat = instance.getReference()->getMaterialNode();
 	std::vector<ParticleStatus> &pool = instance.getPool();
+	Glitter::Vector3 anchor = getAnchorPoint(instance.getParticle()->getPivotPosition());
 
 	getUVCoords(mat);
 	for (auto& p : pool)
 	{
 		if (!p.dead)
 		{
-			drawQuad(p.transform, getAnchorPoint(instance.getParticle()->getPivotPosition()), p.color, p.UVIndex, mat->getTexture());
+			drawQuad(p.transform, anchor, p.color, p.UVIndex, mat->getTexture());
 		}
 	}
 }
@@ -293,15 +294,12 @@ void Renderer::drawQuad(Transform& transform, Glitter::Vector3 pivot, Glitter::C
 	if (uvIndex >= uvCoords.size())
 		uvIndex = uvCoords.size() - 1;
 
-	float rotX = Utilities::toRadians(transform.rotation.x);
-	float rotY = Utilities::toRadians(transform.rotation.y);
-	float rotZ = Utilities::toRadians(transform.rotation.z);
 	pivot *= transform.scale;
 
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(transform.scale.x, transform.scale.y, transform.scale.z);
-	model.r[3] = DirectX::XMVECTOR{ -pivot.x, -pivot.y, -pivot.z };
-	model *= DirectX::XMMatrixRotationRollPitchYaw(rotX, rotY, rotZ);
-	model.r[3] = DirectX::XMVECTOR{ transform.position.x + pivot.x, transform.position.y + pivot.y, transform.position.z + pivot.z };
+	model *= DirectX::XMMatrixTranslation(-pivot.x, -pivot.y, -pivot.z);
+	model *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w});
+	model *= DirectX::XMMatrixTranslation(transform.position.x - pivot.x, transform.position.y + pivot.y, transform.position.z);
 	DirectX::XMVECTOR colorV{ color.r, color.g, color.b, color.a };
 
 	for (size_t i = 0; i < 4; ++i)
@@ -333,7 +331,7 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 				Glitter::BlendMode mode = node->getParticle()->getBlendMode();
 				if (mode == Glitter::BlendMode::Zero || mode == Glitter::BlendMode::UseMaterial)
 					mode = node->getMaterialNode()->getMaterial()->getBlendMode();
-				
+
 				setBlendMode(mode);
 				if (node->getParticle()->getType() == Glitter::ParticleType::Mesh)
 				{
@@ -342,7 +340,7 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 						if (batchStarted)
 							endBatch();
 
-						configureShader(meshParticleShader, camera, viewportSize);
+						configureShader(meshParticleShader, camera, viewportSize, mode);
 						drawPoolMesh(instance, camera);
 					}
 				}
@@ -353,7 +351,7 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 						if (!batchStarted)
 							beginBatch();
 
-						configureShader(billboardShader, camera, viewportSize);
+						configureShader(billboardShader, camera, viewportSize, mode);
 						drawPoolQuad(instance, camera);
 					}
 				}
@@ -414,7 +412,7 @@ void Renderer::initGrid()
 
 void Renderer::drawGrid(Camera* camera, const Glitter::Vector2& viewportSize)
 {
-	configureShader(gridShader, camera, viewportSize);
+	configureShader(gridShader, camera, viewportSize, Glitter::BlendMode::Zero);
 
 	glBindVertexArray(gVao);
 	glDrawArrays(GL_LINES, 0, gridVertexCount);

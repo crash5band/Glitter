@@ -274,7 +274,6 @@ namespace Glitter
 		mr.fromEulerAnglesYZX(rot_z, rot_y, rot_x);
 		fromRotationMatrix(mr);
 	}
-	
 
 	void Quaternion::fromRotationMatrix(const Matrix3& kRot) {
         float fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2];
@@ -363,12 +362,16 @@ namespace Glitter
 		m[3][0] = 0; m[3][1] = 0; m[3][2] = 0; m[3][3] = 1;
 	}
 
-	void Quaternion::fromLostWorldEuler(Vector3 euler) {
+	void Quaternion::fromEuler(Vector3 euler) {
 		Quaternion quatX, quatY, quatZ;
 		quatX.fromAngleAxis(euler.x, Vector3(1,0,0));
 		quatY.fromAngleAxis(euler.y, Vector3(0,1,0));
 		quatZ.fromAngleAxis(euler.z, Vector3(0,0,1));
 		*this = quatY * quatX * quatZ;
+	}
+
+	void Quaternion::fromEulerDegrees(Vector3 euler) {
+		fromEuler(Vector3(euler.x / RAD_TO_DEGREE, euler.y / RAD_TO_DEGREE, euler.z / RAD_TO_DEGREE));
 	}
 
 	void Quaternion::fromAngleAxis(float rfAngle, Vector3 rkAxis) {

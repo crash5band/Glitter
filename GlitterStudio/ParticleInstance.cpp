@@ -68,55 +68,55 @@ bool ParticleInstance::isVisible() const
 	return visible;
 }
 
-void ParticleInstance::changeDirection(Glitter::ParticleDirectionType type, Camera* camera, Transform& t, Glitter::Vector3& origin)
+void ParticleInstance::changeDirection(Glitter::ParticleDirectionType type, Camera* camera, Glitter::Vector3 &pos, Glitter::Vector3& rotation, Glitter::Vector3& origin)
 {
 	switch (type)
 	{
 	case Glitter::ParticleDirectionType::Billboard:
-		t.rotation.x = -camera->getPitch();
-		t.rotation.y = 90.0f - camera->getYaw();
+		rotation.x = -camera->getPitch();
+		rotation.y = 90.0f - camera->getYaw();
 		break;
 
 	case Glitter::ParticleDirectionType::DirectionalAngle:
 		break;
 
 	case Glitter::ParticleDirectionType::DirectionalAngleBillboard:
-		t.rotation.x = -camera->getPitch();
-		t.rotation.y = 90.0f - camera->getYaw();
+		rotation.x = -camera->getPitch();
+		rotation.y = 90.0f - camera->getYaw();
 		break;
 
 	case Glitter::ParticleDirectionType::EmitterDirection:
 	{
-		Glitter::Vector3 pPos = t.position - origin;
+		Glitter::Vector3 pPos = pos - origin;
 		pPos.normalise();
 
-		t.rotation.x = Utilities::toDegrees(asinf(-pPos.y));
-		t.rotation.y = Utilities::toDegrees(atan2f(pPos.x, pPos.z));
+		rotation.x = Utilities::toDegrees(asinf(-pPos.y));
+		rotation.y = Utilities::toDegrees(atan2f(pPos.x, pPos.z));
 	}
 	break;
 
 	case Glitter::ParticleDirectionType::XAxis:
-		t.rotation.y = 90.0f;
-		t.rotation.z = 0.0f;
+		rotation.y = 90.0f;
+		rotation.z = 0.0f;
 		break;
 
 	case Glitter::ParticleDirectionType::YAxis:
-		t.rotation.x = -90.0f;
-		t.rotation.z = 0.0f;
+		rotation.x = -90.0f;
+		rotation.z = 0.0f;
 		break;
 
 	case Glitter::ParticleDirectionType::ZAxis:
-		t.rotation.x = 0.0f;
-		t.rotation.y = 0.0f;
+		rotation.x = 0.0f;
+		rotation.y = 0.0f;
 		break;
 
 	case Glitter::ParticleDirectionType::YRotationOnly:
-		t.rotation.y = 90.0f - camera->getYaw();
+		rotation.y = 90.0f - camera->getYaw();
 		break;
 	}
 }
 
-void ParticleInstance::update(float time, Camera* camera, Transform& baseTransform, Transform& emitterTransform)
+void ParticleInstance::update(float time, Camera* camera, Transform& emitterTransform)
 {
 	verifyPoolSize();
 	auto &particle = reference->getParticle();
@@ -131,24 +131,10 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 		maxUV = ((int)uvSplit.x * (int)uvSplit.y) - 1;
 	}
 
-	// We need the emitter's rotation here to be able to transform the particle's velocity
-	// according to the direction the emitter is facing if flag 4 (emitter local) is enabled
-	float rX1 = Utilities::toRadians(baseTransform.rotation.x);
-	float rY1 = Utilities::toRadians(baseTransform.rotation.y);
-	float rZ1 = Utilities::toRadians(baseTransform.rotation.z);
-	float rX2 = Utilities::toRadians(emitterTransform.rotation.x);
-	float rY2 = Utilities::toRadians(emitterTransform.rotation.y);
-	float rZ2 = Utilities::toRadians(emitterTransform.rotation.z);
-
 	Glitter::Vector3 origin;
-	Glitter::Matrix3 m3, m3Local;
-	Glitter::Matrix4 m4, m4Local, m4LocalOrigin;
-
-	m3.fromEulerAnglesZYX(rZ1, rY1, rX1);
-	m3Local.fromEulerAnglesZYX(rZ2, rY2, rX2);
-	m4.makeTransform(origin, baseTransform.scale, m3);
-	m4Local.makeTransform(emitterTransform.position, emitterTransform.scale, m3Local);
-	m4LocalOrigin.makeTransform(origin, baseTransform.scale, m3Local);
+	Glitter::Vector3 emRot = emitterTransform.rotation.toEulerDegrees();
+	Glitter::Matrix4 m4LocalOrigin;
+	m4LocalOrigin.makeTransform(origin, emitterTransform.scale, emitterTransform.rotation);
 
 	aliveCount = 0;
 	for (auto& p : pool)
@@ -163,28 +149,27 @@ void ParticleInstance::update(float time, Camera* camera, Transform& baseTransfo
 			continue;
 	
 		p.time = time - p.startTime;
-		p.transform = baseTransform;
 		Glitter::Vector3 basePos = p.basePos;
 		Glitter::Vector3 velocity = (p.direction + (p.acceleration * p.time));
-		Glitter::Vector3 animT = animNode->tryGetTranslation(p.time);
 
 		// Update Position
 		if (particle->getFlags() & 4)
 		{
 			// transform particle's basePos with emitter rotation. since this is done every update, it 'follows' the emitter
-			basePos = m4Local * basePos;
+			// we use m4LocalOrigin here so that the emitter's position does not get added in double amounts to basePos and origin. 
+			basePos = m4LocalOrigin * basePos;
 			velocity = m4LocalOrigin * velocity;
-			animT = m4LocalOrigin * animT;
 		}
 
-		p.transform.position = (m4 * (p.transform.position + basePos + animT)) + (velocity * p.time);
+		p.transform.position = basePos + emitterTransform.position + (m4LocalOrigin * animNode->tryGetTranslation(p.time)) + (velocity * p.time);
 
 		// Update Rotation
-		p.transform.rotation += p.rotation + animNode->tryGetRotation(p.time);
-		changeDirection(particle->getDirectionType(), camera, p.transform, emitterTransform.position);
+		Glitter::Vector3 pRot = emRot + p.rotation + animNode->tryGetRotation(p.time);
+		changeDirection(particle->getDirectionType(), camera, p.transform.position, pRot, emitterTransform.position);
+		p.transform.rotation.fromEulerDegrees(pRot);
 
 		// Update scale
-		p.transform.scale *= animNode->tryGetScale(p.time);
+		p.transform.scale = animNode->tryGetScale(p.time);
 		if (particle->getType() != Glitter::ParticleType::Mesh)
 		{
 			// FLAGS: Uniform Scale

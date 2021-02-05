@@ -13,8 +13,13 @@ struct Material
 };
 
 uniform Material material;
+uniform int blendMode;
 
 void main()
 {
-    fragColor = texture(material.diffuse0, uv1) * color;
+    vec4 texColor = texture(material.diffuse0, uv1) * color;
+    if (blendMode == 5 && texColor.a < 0.5)
+        discard;
+
+    fragColor = texColor;
 }

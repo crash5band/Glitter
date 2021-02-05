@@ -343,11 +343,18 @@ namespace Glitter
 
 			}
 
-			Vector3 toLostWorldEuler() const {
+			Vector3 toEuler() const {
 				return Vector3( asinf(-2 * (y*z - w*x)),
 								atan2f(2*(x*z + w*y), powf(w,2) - powf(x,2) - powf(y,2) + powf(z,2)),
 								atan2f(2*(x*y + w*z), powf(w,2) - powf(x,2) + powf(y,2) - powf(z,2))
 							  );
+			}
+
+			Vector3 toEulerDegrees() const {
+				return Vector3( asinf(-2 * (y * z - w * x)) * RAD_TO_DEGREE,
+								atan2f(2 * (x * z + w * y), powf(w, 2) - powf(x, 2) - powf(y, 2) + powf(z, 2)) * RAD_TO_DEGREE,
+								atan2f(2 * (x * y + w * z), powf(w, 2) - powf(x, 2) + powf(y, 2) - powf(z, 2)) * RAD_TO_DEGREE
+				);
 			}
 
 			float getYaw();
@@ -356,7 +363,8 @@ namespace Glitter
 			void fromXYZInts(int rx, int ry, int rz);
 			void fromZXYInts(int rx, int ry, int rz);
 			void fromXZYInts(int rx, int ry, int rz);
-			void fromLostWorldEuler(Vector3 euler);
+			void fromEuler(Vector3 euler);
+			void fromEulerDegrees(Vector3 euler);
 			void fromAngleAxis(float rfAngle, Vector3 rkAxis);
 			void fromRotationMatrix(const Matrix3& kRot);
 			void toRotationMatrix(Matrix3& kRot);

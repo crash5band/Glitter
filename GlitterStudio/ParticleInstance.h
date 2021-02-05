@@ -37,9 +37,9 @@ private:
 public:
 	ParticleInstance(std::weak_ptr<ParticleNode> ref);
 
-	void update(float time, Camera* camera, Transform& baseTransform, Transform& emitterTransform);
+	void update(float time, Camera* camera, Transform& emitterTransform);
 	void create(int count, float startTime, Glitter::EmissionDirectionType dir, std::vector<Glitter::Vector3>& pos, Glitter::Vector3& origin);
-	void changeDirection(Glitter::ParticleDirectionType type, Camera* camera, Transform& t, Glitter::Vector3& origin);
+	void changeDirection(Glitter::ParticleDirectionType type, Camera* camera, Glitter::Vector3& pos, Glitter::Vector3& rotation, Glitter::Vector3& origin);
 	void kill();
 	void setVisible(bool val);
 	bool isVisible() const;

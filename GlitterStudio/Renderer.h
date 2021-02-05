@@ -56,7 +56,7 @@ public:
 	~Renderer();
 
 	void bindShader(std::shared_ptr<Shader>& shader);
-	void configureShader(std::shared_ptr<Shader>& shader, Camera* camera, Glitter::Vector2 size);
+	void configureShader(std::shared_ptr<Shader>& shader, Camera* camera, Glitter::Vector2 size, Glitter::BlendMode blend);
 	void setBlendMode(Glitter::BlendMode mode);
 	void beginBatch();
 	void drawGrid(Camera* camera, const Glitter::Vector2& viewportSize);
@@ -65,4 +65,3 @@ public:
 	void flush();
 	void endBatch();
 };
-

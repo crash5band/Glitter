@@ -4,7 +4,7 @@
 struct Transform
 {
 	Glitter::Vector3 position;
-	Glitter::Vector3 rotation;
+	Glitter::Quaternion rotation;
 	Glitter::Vector3 scale;
 
 	Transform()

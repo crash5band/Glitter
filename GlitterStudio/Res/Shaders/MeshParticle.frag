@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec2 uv;
+in vec4 vColor;
 out vec4 fragColor;
 
 struct Material
@@ -12,8 +13,13 @@ struct Material
 
 uniform Material material;
 uniform vec4 color;
+uniform int blendMode;
 
 void main()
 {
-    fragColor = texture(material.diffuse0, uv) * color;
+    vec4 result = texture(material.diffuse0, uv) * color * vColor;
+    if (blendMode == 5 && result.a < 0.5)
+        discard;
+
+    fragColor = result;
 }

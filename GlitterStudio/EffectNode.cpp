@@ -52,7 +52,7 @@ void EffectNode::update(float time, Camera* camera)
 	if (effectTime >= 0.0f)
 	{
 		transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectLife);
-		transform.rotation = effect->getRotation() + animationNode->tryGetRotation(effectLife);
+		transform.rotation.fromEulerDegrees(effect->getRotation() + animationNode->tryGetRotation(effectLife));
 		Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectLife);
 
 		for (auto& particle : particleNodes)

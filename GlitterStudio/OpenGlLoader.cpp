@@ -71,7 +71,8 @@ bool Editor::initImgui()
 	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	//io->ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard;
 	io->ConfigWindowsMoveFromTitleBarOnly = true;
-	io->IniFilename = imguiINIDir.c_str();
+	std::string imINI = appDir + imguiConfig;
+	io->IniFilename = imINI.c_str();
 
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -89,7 +90,7 @@ bool Editor::initImgui()
 	fontDir.append("\\Fonts\\segoeui.ttf");
 
 	io->Fonts->AddFontFromFileTTF(fontDir.c_str(), 16, NULL, io->Fonts->GetGlyphRangesDefault());
-	io->Fonts->AddFontFromFileTTF(std::string(appDir + "Res\\Fonts\\fa-solid-900.ttf").c_str(), 16.0f, &fontConfig, iconRanges);
+	io->Fonts->AddFontFromFileTTF(std::string(appDir + fontsDir + "fa-solid-900.ttf").c_str(), 16.0f, &fontConfig, iconRanges);
 
 	return true;
 }

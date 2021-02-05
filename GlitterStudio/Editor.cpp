@@ -3,6 +3,7 @@
 #include "FileGUI.h"
 #include "ResourceManager.h"
 #include "MaterialEditor.h"
+#include "CommandManager.h"
 #include "Utilities.h"
 #include "Logger.h"
 #include <Windows.h>
@@ -20,13 +21,11 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	char buf[_MAX_PATH];
 	GetModuleFileNameA(NULL, buf, _MAX_PATH);
 	appDir = Glitter::File::getFilePath(buf);
-	imguiINIDir = appDir + "imgui.ini";
 
 	initOpenGl();
 	initImgui();
 	setImguiStyle();
 
-	const std::string shadersDir = appDir + "/Res/Shaders/";
 	ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle.vert", shadersDir + "BillboardParticle.frag");
 	ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle.vert", shadersDir + "MeshParticle.frag");
 	ResourceManager::loadShader("Grid", shadersDir + "GridShader.vert", shadersDir + "GridShader.frag");
@@ -194,7 +193,7 @@ void Editor::saveEffect(int index, bool saveAs)
 			Logger::log(Message(MessageType::Normal, "Saved effect " + name));
 
 			// save materials used by effect's particles
-			auto particles = effectNodes[index]->getParticleNodes();
+			auto &particles = effectNodes[index]->getParticleNodes();
 			auto materials = MaterialEditor::getNodes();
 			for (auto& particle : particles)
 			{
@@ -263,8 +262,7 @@ void Editor::getVersion(char* buffer)
 					{
 						major = (verInfo->dwFileVersionMS >> 16) & 0xffff;
 						minor = (verInfo->dwFileVersionMS >> 0) & 0xffff;
-						build = (verInfo->dwFileVersionLS >> 16) & 0xffff;
-						rev = (verInfo->dwFileVersionLS >> 0) & 0xffff;
+						rev = (verInfo->dwFileVersionLS >> 16) & 0xffff;
 					}
 				}
 			}
@@ -281,7 +279,7 @@ void Editor::about()
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(500, 250), ImGuiCond_Appearing);
 
-	if (ImGui::BeginPopupModal("About"))
+	if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_NoResize))
 	{
 		ImGui::Text("Glitter Studio\nCopyright (C) 2021 Crash5b\n\n");
 		ImGui::Separator();
@@ -289,10 +287,11 @@ void Editor::about()
 		ImGui::Columns(2, "about_cols", false);
 		ImGui::SetColumnWidth(0, ImGui::GetWindowSize().x / 2.0f);
 
-		static const char* fields[]{ "Version", "Github" };
+		const int fieldCount = 2;
+		static const char* fields[fieldCount]{ "Version", "Github" };
 	
-		ImGui::Text("%s", fields[0]);
-		ImGui::Text("%s", fields[1]);
+		for (int f = 0; f < fieldCount; ++f)
+			ImGui::Text(fields[f]);
 
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
@@ -301,7 +300,7 @@ void Editor::about()
 		getVersion(buffer);
 
 		ImGui::Text(buffer);
-		ImGui::Text("%s", "https://github.com/crash5band/Glitter");
+		ImGui::Text("https://github.com/crash5band/Glitter");
 
 		ImGui::Columns(1);
 		ImGui::Separator();

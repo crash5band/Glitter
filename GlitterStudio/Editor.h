@@ -60,7 +60,6 @@ private:
 	ImGuiID dockspaceID;
 
 	std::string appDir;
-	std::string imguiINIDir;
 	std::vector<effPtr> effectNodes;
 	std::vector <std::weak_ptr<ParticleNode>> availableParticles;
 	Inspector* inspector;

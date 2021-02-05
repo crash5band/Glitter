@@ -1,5 +1,7 @@
 #include "Editor.h"
 #include "EffectCommands.h"
+#include "MaterialEditor.h"
+#include "CommandManager.h"
 
 using effPtr = std::shared_ptr<EffectNode>;
 using emPtr = std::shared_ptr<EmitterNode>;

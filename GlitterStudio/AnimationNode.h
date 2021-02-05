@@ -12,7 +12,6 @@ class AnimationNode
 private:
 	std::vector<Glitter::Animation> *animationList;
 	std::array<std::vector<float>, Glitter::animationTypeTableSize> cache;
-	std::unordered_map<Glitter::AnimationType, std::vector<float>> animValues;
 
 public:
 	AnimationNode(std::vector<Glitter::Animation>* list);

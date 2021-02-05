@@ -299,7 +299,7 @@ void Renderer::drawQuad(Transform& transform, Glitter::Vector3 pivot, Glitter::C
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(transform.scale.x, transform.scale.y, transform.scale.z);
 	model *= DirectX::XMMatrixTranslation(-pivot.x, -pivot.y, -pivot.z);
 	model *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w});
-	model *= DirectX::XMMatrixTranslation(transform.position.x - pivot.x, transform.position.y + pivot.y, transform.position.z);
+	model *= DirectX::XMMatrixTranslation(transform.position.x, transform.position.y, transform.position.z);
 	DirectX::XMVECTOR colorV{ color.r, color.g, color.b, color.a };
 
 	for (size_t i = 0; i < 4; ++i)

@@ -156,7 +156,7 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 
 			if (!(particle.getReference()->getParticle()->getFlags() & 4))
 			{
-				basePos = m4 * basePos;
+				basePos = (m4 * basePos) + transform.position;
 			}
 			basePositions.emplace_back(basePos);
 		}
@@ -244,12 +244,11 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 		if (interval > -1.0f)
 			emissionInterval = interval;
 
-		emissionInterval = round(emissionInterval);
-		if (((emissionTime <= emitter->getLifeTime()) || (emitter->getFlags() & 1)) && emissionInterval > 0.5f)
+		if (((emissionTime <= emitter->getLifeTime()) || (emitter->getFlags() & 1)) && emissionInterval > 0.0f)
 		{
 			if (emitter->getEmitCondition() == Glitter::EmitCondition::Time)
 			{
-				if (((fmodf(emissionTime, emissionInterval) == 0.0f) || emissionTime == 0) && (emissionTime != lastEmissionTime))
+				if (((fmodf(emissionTime, emissionInterval) <= 0.1f) || emissionTime == 0) && (emissionTime != lastEmissionTime))
 				{
 					lastEmissionTime = emissionTime;
 					emit(emitterTime, baseTransform);

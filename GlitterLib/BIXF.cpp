@@ -268,10 +268,11 @@ namespace Glitter
 		unsigned int stringCount = reader.readInt32();
 
 		reader.gotoAddress(23 + firstSectionSize);
-		std::string* strTable = new std::string[stringCount];
+		std::vector<std::string> strTable;
+		strTable.reserve(stringCount);
 		for (unsigned int i = 0; i < stringCount; ++i)
 		{
-			strTable[i] = reader.readString();
+			strTable.emplace_back(reader.readString());
 		}
 
 		reader.gotoAddress(20);

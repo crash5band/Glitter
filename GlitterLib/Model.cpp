@@ -72,8 +72,8 @@ namespace Glitter
 
 		if (reader->getRootNodeType() != MODEL_ROOT_DYNAMIC_GENERATIONS)
 		{
-			printf(std::string(filename + " is not a genrations model. aborting.\n").c_str());
-			return;
+			//printf(std::string(filename + " is not a genrations model. aborting.\n").c_str());
+			//return;
 		}
 
 		size_t headerAddress = reader->getCurrentAddress();

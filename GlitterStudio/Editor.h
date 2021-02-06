@@ -1,14 +1,10 @@
 #pragma once
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
 #include "ImGui/imgui_impl_glfw.h"
 #include "ImGui/imgui_impl_opengl3.h"
 #include "Inspector.h"
 #include "GlitterPlayer.h"
-#include "MaterialEditor.h"
-#include "CommandManager.h"
 #include "InputManager.h"
 #include "UIFn.h"
 
@@ -16,20 +12,23 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-struct DebugWindows
+struct EditorSettings
 {
+	// Editor
+	bool vsync = true;
+	bool colorWheel = false;
+	bool matPreview = true;
+	bool fpsCounter = false;
+
+	// Window
+	Glitter::Vector2 windowSize{ 1366, 768 };
+	bool maximized = false;
+
+	// Editor Windows
 	bool particlesOpen = false;
 	bool statsOpen = false;
 	bool historyViewOpen = false;
 	bool imguiDemoOpen = false;
-};
-
-struct EditorSetting
-{
-	bool vsync;
-	bool colorWheel;
-	bool matPreview;
-	bool fpsCounter;
 };
 
 struct DeltaTime
@@ -59,6 +58,11 @@ private:
 	ImGuiIO *io;
 	ImGuiID dockspaceID;
 
+	std::string shadersDir;
+	std::string fontsDir;
+	std::string imguiConfig = "imgui.ini";
+	std::string editorConfig = "config.dat";
+
 	std::string appDir;
 	std::vector<effPtr> effectNodes;
 	std::vector <std::weak_ptr<ParticleNode>> availableParticles;
@@ -78,11 +82,10 @@ private:
 	void debugInfo();
 
 public:
-	Editor();
+	Editor(const std::string& dir);
 
 	static bool resizing;
-	static DebugWindows debugWindows;
-	static EditorSetting editorSettings;
+	static EditorSettings editorSettings;
 	static std::vector<DeltaTime> times;
 	static void setScreenDimensions(int width, int height);
 	static void logTime(const char* name, const Stopwatch& t);
@@ -105,6 +108,9 @@ public:
 	void updateMenuBar();
 	void frameTime();
 	void getVersion(char* buffer);
+	void setDirectory(const std::string& dir);
+	void loadSettings(const std::string& filename);
+	void saveSettings(const std::string& filename);
 
 	bool effectMenu(int index);
 	bool emitterMenu(int parent, int index);

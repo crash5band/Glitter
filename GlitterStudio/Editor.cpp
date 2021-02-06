@@ -12,16 +12,14 @@
 int Editor::screenWidth = 1366;
 int Editor::screenHeight = 768;
 bool Editor::resizing = false;
-DebugWindows Editor::debugWindows;
-EditorSetting Editor::editorSettings;
+EditorSettings Editor::editorSettings;
 std::vector<DeltaTime> Editor::times;
 
-Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, selectedChild{ -1 }
+Editor::Editor(const std::string& dir) : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, selectedChild{ -1 }
 {
-	char buf[_MAX_PATH];
-	GetModuleFileNameA(NULL, buf, _MAX_PATH);
-	appDir = Glitter::File::getFilePath(buf);
-
+	setDirectory(dir);
+	loadSettings(appDir + editorConfig);
+	printf(appDir.c_str());
 	initOpenGl();
 	initImgui();
 	setImguiStyle();
@@ -33,9 +31,6 @@ Editor::Editor() : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, select
 	inspector = new Inspector();
 	player = new GlitterPlayer();
 	inputManager = new InputManager();
-	Editor::editorSettings.vsync = true;
-	Editor::editorSettings.fpsCounter = false;
-	Editor::editorSettings.matPreview = true;
 
 	dockspaceID = 39765;
 
@@ -270,7 +265,59 @@ void Editor::getVersion(char* buffer)
 		delete[] verData;
 	}
 
-	sprintf(buffer, "%d.%d.%d.%d", major, minor, build, rev);
+	sprintf(buffer, "%d.%d.%d", major, minor, rev);
+}
+
+void Editor::loadSettings(const std::string& filename)
+{
+	if (!std::filesystem::exists(filename))
+		return;
+
+	Glitter::BinaryReader reader(filename, Glitter::Endianness::LITTLE);
+	
+	editorSettings.vsync = reader.readChar();
+	editorSettings.colorWheel = reader.readChar();
+	editorSettings.matPreview = reader.readChar();
+	editorSettings.fpsCounter = reader.readChar();
+	
+	editorSettings.windowSize.x = reader.readSingle();
+	editorSettings.windowSize.y = reader.readSingle();
+	editorSettings.maximized = reader.readChar();
+
+	editorSettings.particlesOpen = reader.readChar();
+	editorSettings.statsOpen = reader.readChar();
+	editorSettings.historyViewOpen = reader.readChar();
+
+	reader.close();
+}
+
+void Editor::saveSettings(const std::string& filename)
+{
+	Glitter::BinaryWriter writer(filename, Glitter::Endianness::LITTLE);
+
+	writer.writeChar(editorSettings.vsync);
+	writer.writeChar(editorSettings.colorWheel);
+	writer.writeChar(editorSettings.matPreview);
+	writer.writeChar(editorSettings.fpsCounter);
+
+	writer.writeSingle(editorSettings.windowSize.x);
+	writer.writeSingle(editorSettings.windowSize.y);
+
+	editorSettings.maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
+	writer.writeChar(editorSettings.maximized);
+
+	writer.writeChar(editorSettings.particlesOpen);
+	writer.writeChar(editorSettings.statsOpen);
+	writer.writeChar(editorSettings.historyViewOpen);
+
+	writer.close();
+}
+
+void Editor::setDirectory(const std::string& dir)
+{
+	appDir = Glitter::File::getFilePath(dir);
+	shadersDir = appDir + "Res\\Shaders\\";
+	fontsDir = appDir + "Res\\Fonts\\";
 }
 
 void Editor::about()
@@ -416,8 +463,8 @@ void Editor::go()
 		resizeLayout(dockspaceID, screenWidth, screenHeight);
 		initLayout(dockspaceID, screenWidth, screenHeight);
 
-		if (debugWindows.imguiDemoOpen)
-			ImGui::ShowDemoWindow(&debugWindows.imguiDemoOpen);
+		if (editorSettings.imguiDemoOpen)
+			ImGui::ShowDemoWindow(&editorSettings.imguiDemoOpen);
 
 		updateGlitterTreeView();
 		MaterialEditor::update();
@@ -434,6 +481,8 @@ void Editor::go()
 
 		glfwSwapBuffers(window);
 	}
+
+	saveSettings(appDir + editorConfig);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

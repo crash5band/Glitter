@@ -92,9 +92,9 @@ void Editor::updateMenuBar()
 
 	if (ImGui::BeginMenu("View"))
 	{
-		ImGui::MenuItem("History View", NULL, &Editor::debugWindows.historyViewOpen);
-		ImGui::MenuItem("Active Particles", NULL, &Editor::debugWindows.particlesOpen);
-		ImGui::MenuItem("Stats Window", NULL, &Editor::debugWindows.statsOpen);
+		ImGui::MenuItem("History View", NULL, &editorSettings.historyViewOpen);
+		ImGui::MenuItem("Active Particles", NULL, &editorSettings.particlesOpen);
+		ImGui::MenuItem("Stats Window", NULL, &editorSettings.statsOpen);
 
 		if (ImGui::MenuItem("Clear Log"))
 			Logger::clear();
@@ -135,7 +135,7 @@ void Editor::updateMenuBar()
 #ifdef _DEBUG
 	if (ImGui::BeginMenu("Debug"))
 	{
-		ImGui::MenuItem("Show ImGui Demo Window", NULL, &Editor::debugWindows.imguiDemoOpen);
+		ImGui::MenuItem("Show ImGui Demo Window", NULL, &editorSettings.imguiDemoOpen);
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Reset Editor", NULL))
@@ -147,12 +147,12 @@ void Editor::updateMenuBar()
 
 	if (ImGui::BeginMenu("Preferences"))
 	{
-		if (ImGui::MenuItem("VSync", NULL, Editor::editorSettings.vsync))
-			glfwSwapInterval(Editor::editorSettings.vsync ^= true);
+		if (ImGui::MenuItem("VSync", NULL, editorSettings.vsync))
+			glfwSwapInterval(editorSettings.vsync ^= true);
 
-		ImGui::MenuItem("Hue Wheel", NULL, &Editor::editorSettings.colorWheel);
-		ImGui::MenuItem("FPS Meter", NULL, &Editor::editorSettings.fpsCounter);
-		ImGui::MenuItem("Hover Over Materials To Preview", NULL, &Editor::editorSettings.matPreview);
+		ImGui::MenuItem("Hue Wheel", NULL, &editorSettings.colorWheel);
+		ImGui::MenuItem("FPS Meter", NULL, &editorSettings.fpsCounter);
+		ImGui::MenuItem("Hover Over Materials To Preview", NULL, &editorSettings.matPreview);
 
 		ImGui::EndMenu();
 	}

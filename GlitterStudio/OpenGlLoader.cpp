@@ -11,7 +11,14 @@ void frameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 	if (width && height)
+	{
 		Editor::setScreenDimensions(width, height);
+		if (!glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
+		{
+			Editor::editorSettings.windowSize.x = width;
+			Editor::editorSettings.windowSize.y = height;
+		}
+	}
 }
 
 void loadIcon(std::string filepath, GLFWwindow* window)
@@ -31,7 +38,9 @@ bool Editor::initOpenGl()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	window = glfwCreateWindow(1366, 768, "Glitter Studio", NULL, NULL);
+	screenWidth = editorSettings.windowSize.x;
+	screenHeight = editorSettings.windowSize.y;
+	window = glfwCreateWindow(screenWidth, screenHeight, "Glitter Studio", NULL, NULL);
 	if (window == NULL)
 	{
 		MessageBox(NULL, "Failed to create GLFW Window.\n", NULL, MB_OK | MB_ICONERROR);
@@ -40,6 +49,11 @@ bool Editor::initOpenGl()
 	}
 
 	glfwMakeContextCurrent(window);
+	if (editorSettings.maximized)
+	{
+		glfwMaximizeWindow(window);
+		glfwGetWindowSize(window, &screenWidth, &screenHeight);
+	}
 
 	// GLAD initializtion
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -48,7 +62,7 @@ bool Editor::initOpenGl()
 		return false;
 	}
 
-	glViewport(0, 0, 1366, 768);
+	glViewport(0, 0, screenWidth, screenHeight);
 	glfwSwapInterval(1);
 	glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
@@ -90,7 +104,7 @@ bool Editor::initImgui()
 	fontDir.append("\\Fonts\\segoeui.ttf");
 
 	io->Fonts->AddFontFromFileTTF(fontDir.c_str(), 16, NULL, io->Fonts->GetGlyphRangesDefault());
-	io->Fonts->AddFontFromFileTTF(std::string(appDir + fontsDir + "fa-solid-900.ttf").c_str(), 16.0f, &fontConfig, iconRanges);
+	io->Fonts->AddFontFromFileTTF(std::string(fontsDir + "fa-solid-900.ttf").c_str(), 16.0f, &fontConfig, iconRanges);
 
 	return true;
 }

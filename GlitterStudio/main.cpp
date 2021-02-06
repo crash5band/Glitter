@@ -8,7 +8,8 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		Editor app;
+		Editor app(argv[0]);
+
 		if (argc > 1)
 		{
 			for (int i = 1; i < argc; ++i)

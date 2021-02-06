@@ -11,9 +11,9 @@ void Editor::frameTime()
 
 void Editor::debugInfo()
 {
-	if (Editor::debugWindows.statsOpen)
+	if (editorSettings.statsOpen)
 	{
-		if (ImGui::Begin(statsWindow, &Editor::debugWindows.statsOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
+		if (ImGui::Begin(statsWindow, &editorSettings.statsOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
 		{
 			ImGui::Text("Effects: %d", effectNodes.size());
 			ImGui::Text("Materials: %d", MaterialEditor::count());
@@ -40,9 +40,9 @@ void Editor::debugInfo()
 		ImGui::End();
 	}
 
-	if (Editor::debugWindows.historyViewOpen)
+	if (editorSettings.historyViewOpen)
 	{
-		if (ImGui::Begin(historyWindow, &Editor::debugWindows.historyViewOpen))
+		if (ImGui::Begin(historyWindow, &editorSettings.historyViewOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
 		{
 			ImGui::Columns(2, "##history_cols", true);
 			ImGui::SetColumnOffset(1, 0);
@@ -69,9 +69,9 @@ void Editor::debugInfo()
 		ImGui::End();
 	}
 
-	if (Editor::debugWindows.particlesOpen)
+	if (editorSettings.particlesOpen)
 	{
-		if (ImGui::Begin("Active Particles", &Editor::debugWindows.particlesOpen))
+		if (ImGui::Begin("Active Particles", &editorSettings.particlesOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
 		{
 			EffectNode* selectedEffect = nullptr;
 			if (selectedParent > -1 && selectedParent < effectNodes.size())
@@ -88,11 +88,17 @@ void Editor::debugInfo()
 				EmitterNode* emitterNode = selectedEffect->getEmitterNodes()[i].get();
 				if (ImGui::TreeNodeEx(emitterNode->getEmitter()->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 				{
+					ImGui::SameLine();
+					ImGui::Text("(%s)", Glitter::glitterEnumToString(Glitter::emitterTypeTable, Glitter::emitterTypeTableSize, (size_t)emitterNode->getEmitter()->getType()));
+
 					for (int j = 0; j < emitterNode->getParticles().size(); ++j)
 					{
 						ParticleInstance& pInstance = emitterNode->getParticles()[j];
 						if (ImGui::TreeNodeEx(pInstance.getParticle()->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 						{
+							ImGui::SameLine();
+							ImGui::Text("(%s)", Glitter::glitterEnumToString(Glitter::particleTypeTable, Glitter::particleTypeTableSize, (size_t)pInstance.getParticle()->getType()));
+
 							ImGui::Text("Alive: %d", pInstance.getAliveCount());
 							ImGui::TreePop();
 						}

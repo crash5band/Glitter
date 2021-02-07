@@ -55,34 +55,17 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 		Glitter::Vertex* vertex = (*vIt);
 		VertexData vData;
 
-		vData.position.x = vertex->getPosition().x;
-		vData.position.y = vertex->getPosition().y;
-		vData.position.z = vertex->getPosition().z;
-
-		vData.normal.x = vertex->getNormal().x;
-		vData.normal.y = vertex->getNormal().y;
-		vData.normal.z = vertex->getNormal().z;
-
-		vData.tangent.x = vertex->getTangent().x;
-		vData.tangent.y = vertex->getTangent().y;
-		vData.tangent.z = vertex->getTangent().z;
-
-		vData.binormal.x = vertex->getBinormal().x;
-		vData.binormal.y = vertex->getBinormal().y;
-		vData.binormal.z = vertex->getBinormal().z;
+		vData.position	= vertex->getPosition();
+		vData.normal	= vertex->getNormal();
+		vData.tangent	= vertex->getTangent();
+		vData.binormal	= vertex->getBinormal();
 
 		for (int channel = 0; channel < 4; ++channel)
-		{
-			vData.uv[channel].x = vertex->getUV(channel).x;
-			vData.uv[channel].y = vertex->getUV(channel).y;
-		}
+			vData.uv[channel] = vertex->getUV(channel);
 
-		vData.color.r = vertex->getColor().r;
-		vData.color.g = vertex->getColor().g;
-		vData.color.b = vertex->getColor().b;
-		vData.color.a = vertex->getColor().a;
+		vData.color = vertex->getColor();
 
-		vertexData.push_back(vData);
+		vertexData.emplace_back(vData);
 	}
 
 	// process faces
@@ -92,7 +75,7 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 
 	for (std::list<unsigned int>::iterator fIt = faces.begin(); fIt != faces.end(); ++fIt)
 	{
-		faceData.push_back((*fIt));
+		faceData.emplace_back((*fIt));
 	}
 
 	// process materials
@@ -124,7 +107,7 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 		// some materials have weird texture internal names that do not reflect the texture filename
 		// or it could be that they are not located in the same directory
 		if (texture)
-			texturesData.push_back(*texture.get());
+			texturesData.emplace_back(*texture.get());
 	}
 
 	return SubmeshData(vertexData, faceData, texturesData, PirimitveType::TriangleStrip);

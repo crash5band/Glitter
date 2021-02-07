@@ -110,15 +110,21 @@ void Editor::openFolder(const std::string& directory)
 	Logger::log(Message(MessageType::Normal, "Looking for GTE files in " + directory + "..."));
 
 	std::vector<std::string> files;
+	int matCount = 0;
 	for (const auto& file : std::filesystem::directory_iterator(directory))
 	{
 		std::string extension = file.path().extension().string();
 		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 		if (extension == ".gte")
 			files.emplace_back(file.path().string());
+		else if (extension == ".gtm")
+			++matCount;
 	}
 
 	Logger::log(Message(MessageType::Normal, "Found " + std::to_string(files.size()) + " GTE files."));
+
+	effectNodes.reserve(effectNodes.size() + files.size());
+	MaterialEditor::reserve(matCount);
 
 	for (const std::string& file : files)
 		openGlitterFile(file);

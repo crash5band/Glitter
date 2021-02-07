@@ -60,6 +60,11 @@ void MaterialEditor::clear()
 	selection = -1;
 }
 
+void MaterialEditor::reserve(size_t count)
+{
+	materialNodes.reserve(materialNodes.size() + count);
+}
+
 std::vector<std::shared_ptr<MaterialNode>> MaterialEditor::getNodes()
 {
 	return materialNodes;

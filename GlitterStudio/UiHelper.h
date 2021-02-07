@@ -147,7 +147,7 @@ static void addColorProperty(const char* label, Glitter::Color val, std::shared_
 
 	beginPropertyColumn(label);
 	ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_DisplayRGB;
-	if (Editor::editorSettings.colorWheel)
+	if (Editor::settings.colorWheel)
 		flags |= ImGuiColorEditFlags_PickerHueWheel;
 
 	if (ImGui::ColorEdit4(std::string("##").append(label).c_str(), v4, flags))

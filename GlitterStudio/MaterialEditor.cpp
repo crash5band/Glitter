@@ -105,7 +105,7 @@ void MaterialEditor::update()
 			if (ImGui::IsItemActivated())
 				selection = m;
 
-			if (ImGui::IsItemHovered() && Editor::editorSettings.matPreview)
+			if (ImGui::IsItemHovered() && Editor::settings.matPreview)
 			{
 				auto tex = materialNodes[m]->getTexture();
 				if (tex)

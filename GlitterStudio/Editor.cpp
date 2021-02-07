@@ -11,15 +11,13 @@
 
 int Editor::screenWidth = 1366;
 int Editor::screenHeight = 768;
-bool Editor::resizing = false;
-EditorSettings Editor::editorSettings;
+EditorSettings Editor::settings;
 std::vector<DeltaTime> Editor::times;
 
 Editor::Editor(const std::string& dir) : frameDelta{ 0 }, lastFrame{ 0 }, selectedParent{ -1 }, selectedChild{ -1 }
 {
 	setDirectory(dir);
 	loadSettings(appDir + editorConfig);
-	printf(appDir.c_str());
 	initOpenGl();
 	initImgui();
 	setImguiStyle();
@@ -45,7 +43,7 @@ void Editor::setScreenDimensions(int width, int height)
 
 void Editor::logTime(const char* name, const Stopwatch& t)
 {
-	Editor::times.emplace_back(DeltaTime(name, t.elapsed()));
+	times.emplace_back(DeltaTime(name, t.elapsed()));
 }
 
 bool Editor::openGlitterFile(const std::string& filename)
@@ -281,18 +279,18 @@ void Editor::loadSettings(const std::string& filename)
 
 	Glitter::BinaryReader reader(filename, Glitter::Endianness::LITTLE);
 	
-	editorSettings.vsync = reader.readChar();
-	editorSettings.colorWheel = reader.readChar();
-	editorSettings.matPreview = reader.readChar();
-	editorSettings.fpsCounter = reader.readChar();
+	settings.vsync = reader.readChar();
+	settings.colorWheel = reader.readChar();
+	settings.matPreview = reader.readChar();
+	settings.fpsCounter = reader.readChar();
 	
-	editorSettings.windowSize.x = reader.readSingle();
-	editorSettings.windowSize.y = reader.readSingle();
-	editorSettings.maximized = reader.readChar();
+	settings.windowSize.x = reader.readSingle();
+	settings.windowSize.y = reader.readSingle();
+	settings.maximized = reader.readChar();
 
-	editorSettings.particlesOpen = reader.readChar();
-	editorSettings.statsOpen = reader.readChar();
-	editorSettings.historyViewOpen = reader.readChar();
+	settings.particlesOpen = reader.readChar();
+	settings.statsOpen = reader.readChar();
+	settings.historyViewOpen = reader.readChar();
 
 	reader.close();
 }
@@ -301,20 +299,20 @@ void Editor::saveSettings(const std::string& filename)
 {
 	Glitter::BinaryWriter writer(filename, Glitter::Endianness::LITTLE);
 
-	writer.writeChar(editorSettings.vsync);
-	writer.writeChar(editorSettings.colorWheel);
-	writer.writeChar(editorSettings.matPreview);
-	writer.writeChar(editorSettings.fpsCounter);
+	writer.writeChar(settings.vsync);
+	writer.writeChar(settings.colorWheel);
+	writer.writeChar(settings.matPreview);
+	writer.writeChar(settings.fpsCounter);
 
-	writer.writeSingle(editorSettings.windowSize.x);
-	writer.writeSingle(editorSettings.windowSize.y);
+	writer.writeSingle(settings.windowSize.x);
+	writer.writeSingle(settings.windowSize.y);
 
-	editorSettings.maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
-	writer.writeChar(editorSettings.maximized);
+	settings.maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
+	writer.writeChar(settings.maximized);
 
-	writer.writeChar(editorSettings.particlesOpen);
-	writer.writeChar(editorSettings.statsOpen);
-	writer.writeChar(editorSettings.historyViewOpen);
+	writer.writeChar(settings.particlesOpen);
+	writer.writeChar(settings.statsOpen);
+	writer.writeChar(settings.historyViewOpen);
 
 	writer.close();
 }
@@ -371,6 +369,7 @@ void Editor::processInput()
 	//if (io->WantCaptureKeyboard)
 		//return;
 
+	inputManager->update(window);
 	if (inputManager->isDown(GLFW_KEY_LEFT_CONTROL) || inputManager->isDown(GLFW_KEY_RIGHT_CONTROL))
 	{
 		if (inputManager->isDown(GLFW_KEY_LEFT_ALT) || inputManager->isDown(GLFW_KEY_RIGHT_ALT))
@@ -407,9 +406,7 @@ void Editor::processInput()
 	{
 		if (inputManager->isTapped(GLFW_KEY_DELETE))
 		{
-			if (selectedParent == -1)
-				return;
-			else
+			if (selectedParent > -1)
 			{
 				size_t emitterCount = effectNodes[selectedParent]->getEmitterNodes().size();
 				size_t particleCount = effectNodes[selectedParent]->getParticleNodes().size();
@@ -459,7 +456,6 @@ void Editor::go()
 		glClearColor(0.1, 0.1, 0.1, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		inputManager->update(window);
 		processInput();
 
 		ImGui_ImplOpenGL3_NewFrame();
@@ -469,8 +465,8 @@ void Editor::go()
 		resizeLayout(dockspaceID, screenWidth, screenHeight);
 		initLayout(dockspaceID, screenWidth, screenHeight);
 
-		if (editorSettings.imguiDemoOpen)
-			ImGui::ShowDemoWindow(&editorSettings.imguiDemoOpen);
+		if (settings.imguiDemoOpen)
+			ImGui::ShowDemoWindow(&settings.imguiDemoOpen);
 
 		updateGlitterTreeView();
 		MaterialEditor::update();

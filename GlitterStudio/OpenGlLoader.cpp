@@ -15,8 +15,8 @@ void frameBufferResizeCallback(GLFWwindow* window, int width, int height)
 		Editor::setScreenDimensions(width, height);
 		if (!glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
 		{
-			Editor::editorSettings.windowSize.x = width;
-			Editor::editorSettings.windowSize.y = height;
+			Editor::settings.windowSize.x = width;
+			Editor::settings.windowSize.y = height;
 		}
 	}
 }
@@ -38,8 +38,8 @@ bool Editor::initOpenGl()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	screenWidth = editorSettings.windowSize.x;
-	screenHeight = editorSettings.windowSize.y;
+	screenWidth = settings.windowSize.x;
+	screenHeight = settings.windowSize.y;
 	window = glfwCreateWindow(screenWidth, screenHeight, "Glitter Studio", NULL, NULL);
 	if (window == NULL)
 	{
@@ -49,7 +49,7 @@ bool Editor::initOpenGl()
 	}
 
 	glfwMakeContextCurrent(window);
-	if (editorSettings.maximized)
+	if (settings.maximized)
 	{
 		glfwMaximizeWindow(window);
 		glfwGetWindowSize(window, &screenWidth, &screenHeight);

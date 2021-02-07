@@ -92,9 +92,9 @@ void Editor::updateMenuBar()
 
 	if (ImGui::BeginMenu("View"))
 	{
-		ImGui::MenuItem("History View", NULL, &editorSettings.historyViewOpen);
-		ImGui::MenuItem("Active Particles", NULL, &editorSettings.particlesOpen);
-		ImGui::MenuItem("Stats Window", NULL, &editorSettings.statsOpen);
+		ImGui::MenuItem("History View", NULL, &settings.historyViewOpen);
+		ImGui::MenuItem("Active Particles", NULL, &settings.particlesOpen);
+		ImGui::MenuItem("Stats Window", NULL, &settings.statsOpen);
 
 		if (ImGui::MenuItem("Clear Log"))
 			Logger::clear();
@@ -135,7 +135,7 @@ void Editor::updateMenuBar()
 #ifdef _DEBUG
 	if (ImGui::BeginMenu("Debug"))
 	{
-		ImGui::MenuItem("Show ImGui Demo Window", NULL, &editorSettings.imguiDemoOpen);
+		ImGui::MenuItem("Show ImGui Demo Window", NULL, &settings.imguiDemoOpen);
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Reset Editor", NULL))
@@ -147,12 +147,12 @@ void Editor::updateMenuBar()
 
 	if (ImGui::BeginMenu("Preferences"))
 	{
-		if (ImGui::MenuItem("VSync", NULL, editorSettings.vsync))
-			glfwSwapInterval(editorSettings.vsync ^= true);
+		if (ImGui::MenuItem("VSync", NULL, settings.vsync))
+			glfwSwapInterval(settings.vsync ^= true);
 
-		ImGui::MenuItem("Hue Wheel", NULL, &editorSettings.colorWheel);
-		ImGui::MenuItem("FPS Meter", NULL, &editorSettings.fpsCounter);
-		ImGui::MenuItem("Hover Over Materials To Preview", NULL, &editorSettings.matPreview);
+		ImGui::MenuItem("Hue Wheel", NULL, &settings.colorWheel);
+		ImGui::MenuItem("FPS Meter", NULL, &settings.fpsCounter);
+		ImGui::MenuItem("Hover Over Materials To Preview", NULL, &settings.matPreview);
 
 		ImGui::EndMenu();
 	}
@@ -166,7 +166,7 @@ void Editor::updateMenuBar()
 		ImGui::EndMenu();
 	}
 
-	if (Editor::editorSettings.fpsCounter)
+	if (Editor::settings.fpsCounter)
 	{
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 		ImGui::Text("%.3f ms (%.3f FPS)", frameDelta * 1000.0f, 1.0f / frameDelta);

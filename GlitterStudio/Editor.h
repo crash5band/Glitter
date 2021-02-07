@@ -84,9 +84,8 @@ private:
 public:
 	Editor(const std::string& dir);
 
-	static bool resizing;
-	static EditorSettings editorSettings;
 	static std::vector<DeltaTime> times;
+	static EditorSettings settings;
 	static void setScreenDimensions(int width, int height);
 	static void logTime(const char* name, const Stopwatch& t);
 

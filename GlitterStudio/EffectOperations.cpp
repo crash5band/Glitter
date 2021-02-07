@@ -5,7 +5,7 @@
 
 using effPtr = std::shared_ptr<EffectNode>;
 using emPtr = std::shared_ptr<EmitterNode>;
-using pPtr = std::shared_ptr<Glitter::Particle>;
+using pPtr = std::shared_ptr<ParticleNode>;
 
 void Editor::createEffect(const std::string& name)
 {
@@ -44,12 +44,12 @@ void Editor::removeParticle(effPtr eff, size_t index)
 	CommandManager::pushNew(new DeleteParticleCommand(eff, eff->getParticleNodes()[index], index));
 }
 
-void Editor::addParticleInstance(emPtr em, std::shared_ptr<ParticleNode> p, size_t pos)
+void Editor::addParticleInstance(emPtr em, pPtr p, size_t pos)
 {
 	CommandManager::pushNew(new AddParticleCommand(em, p, pos));
 }
 
-void Editor::removeParticleInstance(emPtr em, std::shared_ptr<ParticleNode> p, size_t pos)
+void Editor::removeParticleInstance(emPtr em, pPtr p, size_t pos)
 {
 	CommandManager::pushNew(new RemoveParticleCommand(em, p, pos));
 }

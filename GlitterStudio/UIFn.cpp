@@ -86,7 +86,7 @@ void initLayout(ImGuiID dockspaceID, int width, int height)
 	}
 }
 
-bool transparentButton(std::string& lbl, ImVec2 size)
+bool transparentButton(const std::string& lbl, const ImVec2 &size)
 {
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));

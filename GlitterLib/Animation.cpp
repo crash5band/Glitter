@@ -17,7 +17,20 @@ namespace Glitter
 		endTime = startTime + 10;
 		repeatType = RepeatType::Constant;
 		randomFlags = 0;
-		keys.push_back(Key{ start, 0.0f, InterpolationType::Linear, 0.0f, 0.0f, 0.0f });
+
+		float value = 0.0f;
+		if ((size_t)type >= 6 && (size_t)type < 10)
+		{
+			// scale
+			value = 1;
+		}
+		else if ((size_t)type >= 10 && (size_t)type < 14)
+		{
+			// color
+			value = 255;
+		}
+
+		keys.push_back(Key{ start, value, InterpolationType::Linear, 0.0f, 0.0f, 0.0f });
 	}
 
 	AnimationType Animation::getType() const
@@ -110,7 +123,7 @@ namespace Glitter
 			}
 		}
 
-		keys.push_back(key);
+		keys.emplace_back(key);
 		return keys.size() - 1;
 	}
 

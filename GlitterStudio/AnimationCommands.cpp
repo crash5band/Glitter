@@ -56,7 +56,20 @@ void ChangeAnimationCommand::undo()
 AddKeyCommand::AddKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, int frame) :
 	animationNode{ node }, animIndex{ a }
 {
-	key = Glitter::Key{ (float)frame };
+	size_t type = (size_t)node->getAnimationList()->at(a).getType();
+	float value = 0;
+	if ((size_t)type >= 6 && (size_t)type < 10)
+	{
+		// scale
+		value = 1;
+	}
+	else if ((size_t)type >= 10 && (size_t)type < 14)
+	{
+		// color
+		value = 255;
+	}
+
+	key = Glitter::Key{ (float)frame,  value};
 }
 
 void AddKeyCommand::execute()

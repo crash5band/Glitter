@@ -1,7 +1,7 @@
 #include "SubmeshData.h"
 #include "glad/glad.h"
 
-SubmeshData::SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const std::vector<TextureData> &t, PirimitveType pirimitive)
+SubmeshData::SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const std::vector<std::shared_ptr<TextureData>>& t, PirimitveType pirimitive)
 {
 	vertices = v;
 	faces = i;
@@ -11,7 +11,7 @@ SubmeshData::SubmeshData(const std::vector<VertexData> &v, const std::vector<uns
 	build();
 }
 
-SubmeshData::SubmeshData(const std::vector<VertexData>& v, const std::vector<unsigned int>& i, TextureData &t, PirimitveType pirimitive)
+SubmeshData::SubmeshData(const std::vector<VertexData>& v, const std::vector<unsigned int>& i, std::shared_ptr<TextureData> & t, PirimitveType pirimitive)
 {
 	vertices = v;
 	faces = i;
@@ -78,8 +78,8 @@ void SubmeshData::draw(Shader* shader)
 		std::string samplerName;
 		std::string samplerNum;
 
-		TextureData &texture = textures[i];
-		switch (texture.getSlot())
+		std::shared_ptr<TextureData> &texture = textures[i];
+		switch (texture->getSlot())
 		{
 		case TextureSlot::Diffuse:
 			samplerNum = std::to_string(diffuseIndex++);
@@ -91,7 +91,7 @@ void SubmeshData::draw(Shader* shader)
 		}
 
 		shader->setInt(samplerName, i);
-		texture.use();
+		texture->use();
 	}
 
 	glBindVertexArray(vao);

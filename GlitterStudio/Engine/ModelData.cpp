@@ -83,7 +83,7 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 	Glitter::Material material(directory + materialName + ".material");
 
 	std::vector<Glitter::Texture*> textures = material.getTextures();
-	std::vector<TextureData> texturesData;
+	std::vector<std::shared_ptr<TextureData>> texturesData;
 	texturesData.reserve(textures.size());
 
 	// process textures
@@ -107,7 +107,7 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 		// some materials have weird texture internal names that do not reflect the texture filename
 		// or it could be that they are not located in the same directory
 		if (texture)
-			texturesData.emplace_back(*texture.get());
+			texturesData.emplace_back(texture);
 	}
 
 	return SubmeshData(vertexData, faceData, texturesData, PirimitveType::TriangleStrip);

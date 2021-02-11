@@ -2,6 +2,7 @@
 #include "MathGens.h"
 #include "TextureData.h"
 #include "Shader.h"
+#include <memory>
 #include <vector>
 
 enum class PirimitveType
@@ -25,7 +26,7 @@ class SubmeshData
 private:
 	std::vector<VertexData> vertices;
 	std::vector<unsigned int> faces;
-	std::vector<TextureData> textures;
+	std::vector<std::shared_ptr<TextureData>> textures;
 	PirimitveType pirimitiveType;
 
 	unsigned int vao, vbo, ebo;
@@ -33,8 +34,8 @@ private:
 	void build();
 
 public:
-	SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const std::vector<TextureData> &t, PirimitveType pirimitive);
-	SubmeshData(const std::vector<VertexData>& v, const std::vector<unsigned int>& i, TextureData &t, PirimitveType pirimitive);
+	SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const std::vector<std::shared_ptr<TextureData>>& t, PirimitveType pirimitive);
+	SubmeshData(const std::vector<VertexData>& v, const std::vector<unsigned int>& i, std::shared_ptr<TextureData> & t, PirimitveType pirimitive);
 	~SubmeshData();
 
 	void dispose();

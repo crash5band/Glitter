@@ -304,20 +304,16 @@ namespace Glitter
 			animations[count].write(animationElement);
 		}
 
-		for (count = 0; count < particles.size(); ++count)
-			particles[count]->setID(count);
-
-		for (count = 0; count < emitters.size(); ++count)
-			emitters[count]->setID(count);
-
 		for (count = 0; count < emitters.size(); ++count)
 		{
+			emitters[count]->setID(count);
 			tinyxml2::XMLElement* emitterElement = effectElement->InsertNewChildElement("Emitter");
 			emitters[count]->write(emitterElement);
 		}
 
 		for (count = 0; count < particles.size(); ++count)
 		{
+			particles[count]->setID(count);
 			tinyxml2::XMLElement* particleElement = effectElement->InsertNewChildElement("Particle");
 			particles[count]->write(particleElement);
 		}

@@ -55,21 +55,6 @@ void EmitterNode::changeMesh(const std::string& filename)
 	emitter->setMeshName(Glitter::File::getFileNameWithoutExtension(filename));
 }
 
-Glitter::Vector3 EmitterNode::getPosition(float time)
-{
-	return emitter->getTranslation() + animationNode->tryGetTranslation(time);
-}
-
-Glitter::Vector3 EmitterNode::getRotation(float time)
-{
-	return emitter->getRotation() + rotationAdd + animationNode->tryGetRotation(time);
-}
-
-Glitter::Vector3 EmitterNode::getScaling(float time)
-{
-	return emitter->getScaling() *= animationNode->tryGetScale(time);
-}
-
 bool EmitterNode::isVisible() const
 {
 	return visible;

@@ -270,7 +270,6 @@ namespace Glitter
 				if (submeshCount > 1)
 				{
 					printf("Water slot more than 1? Unhandled case.\n");
-					getchar();
 				}
 
 				if (submeshCount == 0) break;
@@ -284,7 +283,6 @@ namespace Glitter
 
 				if ((waterSlotString != "water") && (waterSlotString != "transparentz") && (waterSlotString != "transparentz2") && (waterSlotString != "transparentafterpunch") && (waterSlotString != "opaqueblending")) {
 					printf("A string different than water for the 4th slot? Report this model! %s\n", waterSlotString.c_str());
-					getchar();
 				}
 
 				reader->gotoAddress(submeshCountAddress);

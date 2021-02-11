@@ -389,8 +389,7 @@ namespace Glitter
 	{
 		ID = element->FindAttribute("Id")->UnsignedValue();
 		name = element->FindAttribute("Name")->Value();
-		std::string typeStr = element->FindAttribute("Type")->Value();
-		type = (EmitterType)glitterStringToEnum(emitterTypeTable, emitterTypeTableSize, typeStr);
+		type = (EmitterType)glitterStringToEnum(emitterTypeTable, emitterTypeTableSize, element->FindAttribute("Type")->Value());
 
 		startTime			= BIXF::toFloat(element->FirstChildElement("StartTime"));
 		lifeTime			= BIXF::toFloat(element->FirstChildElement("LifeTime"));
@@ -460,7 +459,7 @@ namespace Glitter
 		{
 			Animation animation;
 			animation.read(animationElement);
-			animations.push_back(animation);
+			animations.emplace_back(animation);
 			animationElement = animationElement->NextSiblingElement("Animation");
 		}
 	}
@@ -469,9 +468,7 @@ namespace Glitter
 	{
 		element->SetAttribute("Id", ID);
 		element->SetAttribute("Name", name.c_str());
-		
-		std::string typeStr = glitterEnumToString(emitterTypeTable, emitterTypeTableSize, (size_t)type);
-		element->SetAttribute("Type", typeStr.c_str());
+		element->SetAttribute("Type", glitterEnumToString(emitterTypeTable, emitterTypeTableSize, (size_t)type).c_str());
 
 		BIXF::createChildValue(element, "StartTime", startTime);
 		BIXF::createChildValue(element, "LifeTime", lifeTime);
@@ -483,12 +480,8 @@ namespace Glitter
 		BIXF::createChildVector3(element, "RotationAddRandom", rotationAddRandom);
 		BIXF::createChildVector3(element, "Scaling", scaling);
 
-		std::string emitStr = glitterEnumToString(emitConditionTable, emitConditionTableSize, (size_t)emitCondition);
-		BIXF::createChildValue(element, "EmitCondition", emitStr);
-
-		std::string dirStr = glitterEnumToString(EdirectionTypeTable, EdirectionTypeTableSize, (size_t)directionType);
-		BIXF::createChildValue(element, "DirectionType", dirStr);
-
+		BIXF::createChildValue(element, "EmitCondition", glitterEnumToString(emitConditionTable, emitConditionTableSize, (size_t)emitCondition).c_str());
+		BIXF::createChildValue(element, "DirectionType", glitterEnumToString(EdirectionTypeTable, EdirectionTypeTableSize, (size_t)directionType).c_str());
 		BIXF::createChildValue(element, "EmissionInterval", emissionInterval);
 		BIXF::createChildValue(element, "ParticlePerEmission", particlesPerEmission);
 
@@ -538,12 +531,9 @@ namespace Glitter
 
 		for (count = 0; count < particles.size(); ++count)
 		{
-			unsigned int particleID = particles[count].lock()->getID();
-			std::string particleName = particles[count].lock()->getName();
-
 			tinyxml2::XMLElement* particleElement = element->InsertNewChildElement("Particle");
-			particleElement->SetAttribute("Id", particleID);
-			particleElement->SetAttribute("Name", particleName.c_str());
+			particleElement->SetAttribute("Id", particles[count].lock()->getID());
+			particleElement->SetAttribute("Name", particles[count].lock()->getName().c_str());
 		}
 	}
 }

@@ -255,9 +255,9 @@ void ParticleNode::populateInspector()
 
 	if (ImGui::TreeNodeEx("Emitter Translation", treeFlags))
 	{
-		addFloatProperty("Emitter-Effect Ratio", particle->getEmitterTranslationEffectRatio(), particle, std::mem_fn(&Particle::setEmitterTranslationEffectRatio));
-		addFloatProperty("Follow Ratio", particle->getFollowEmitterTranslationRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationRatio));
-		addFloatProperty("Follow Y Ratio", particle->getFollowEmitterTranslationYRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationYRatio));
+		addFloatProperty("Emitter Translation Effect Ratio", particle->getEmitterTranslationEffectRatio(), particle, std::mem_fn(&Particle::setEmitterTranslationEffectRatio));
+		addFloatProperty("Follow Emitter Translation Ratio", particle->getFollowEmitterTranslationRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationRatio));
+		addFloatProperty("Follow Emitter Translation Y Ratio", particle->getFollowEmitterTranslationYRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationYRatio));
 
 		ImGui::TreePop();
 	}

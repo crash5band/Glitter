@@ -143,17 +143,14 @@ void ParticleInstance::update(float time, Camera* camera, Transform& emitterTran
 	for (auto& p : pool)
 	{
 		if (p.time > particle->getLifeTime() || p.time < 0.0f)
-		{
 			p.dead = true;
-			continue;
-		}
 
 		if (p.dead)
 			continue;
 	
 		p.time = time - p.startTime;
 		Glitter::Vector3 basePos = p.basePos;
-		Glitter::Vector3 velocity = (p.direction + (p.acceleration * p.time));
+		Glitter::Vector3 velocity = p.direction + (p.acceleration * p.time);
 		Glitter::Vector3 oVelocity = velocity;
 
 		// Update Position

@@ -46,8 +46,4 @@ public:
 	void setVisible(bool val);
 	void setVisibleAll(bool val);
 	bool isVisible() const;
-
-	Glitter::Vector3 getPosition(float time);
-	Glitter::Vector3 getRotation(float time);
-	Glitter::Vector3 getScaling(float time);
 };

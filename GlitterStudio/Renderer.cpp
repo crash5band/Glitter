@@ -161,12 +161,12 @@ void Renderer::setBlendMode(Glitter::BlendMode mode)
 	switch (mode)
 	{
 	case Glitter::BlendMode::Multiply:
-		glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBlendEquation(GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquationSeparate(GL_FUNC_SUBTRACT, GL_FUNC_ADD);
 		break;
 
 	case Glitter::BlendMode::Subtract:
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendEquationSeparate(GL_FUNC_REVERSE_SUBTRACT, GL_FUNC_ADD);
 		break;
 
@@ -412,7 +412,8 @@ void Renderer::initGrid()
 
 void Renderer::drawGrid(Camera* camera, const Glitter::Vector2& viewportSize)
 {
-	configureShader(gridShader, camera, viewportSize, Glitter::BlendMode::Zero);
+	configureShader(gridShader, camera, viewportSize, Glitter::BlendMode::Add);
+	setBlendMode(Glitter::BlendMode::Add);
 
 	glBindVertexArray(gVao);
 	glDrawArrays(GL_LINES, 0, gridVertexCount);

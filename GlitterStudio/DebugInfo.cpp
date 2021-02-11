@@ -13,7 +13,7 @@ void Editor::debugInfo()
 {
 	if (settings.statsOpen)
 	{
-		if (ImGui::Begin(statsWindow, &settings.statsOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
+		if (ImGui::Begin(statsWindow, &settings.statsOpen))
 		{
 			ImGui::Text("Effects: %d", effectNodes.size());
 			ImGui::Text("Materials: %d", MaterialEditor::count());
@@ -42,7 +42,7 @@ void Editor::debugInfo()
 
 	if (settings.historyViewOpen)
 	{
-		if (ImGui::Begin(historyWindow, &settings.historyViewOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
+		if (ImGui::Begin(historyWindow, &settings.historyViewOpen))
 		{
 			ImGui::Columns(2, "##history_cols", true);
 			ImGui::SetColumnOffset(1, 0);
@@ -71,7 +71,7 @@ void Editor::debugInfo()
 
 	if (settings.particlesOpen)
 	{
-		if (ImGui::Begin("Active Particles", &settings.particlesOpen, ImGuiWindowFlags_NoBringToFrontOnFocus))
+		if (ImGui::Begin("Active Particles", &settings.particlesOpen))
 		{
 			EffectNode* selectedEffect = nullptr;
 			if (selectedParent > -1 && selectedParent < effectNodes.size())

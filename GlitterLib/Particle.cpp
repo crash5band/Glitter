@@ -675,8 +675,7 @@ namespace Glitter
 	{
 		ID = element->FindAttribute("Id")->FloatValue();
 		name = element->FindAttribute("Name")->Value();
-		std::string typeStr = element->FindAttribute("Type")->Value();
-		type = (ParticleType)glitterStringToEnum(particleTypeTable, particleTypeTableSize, typeStr);
+		type = (ParticleType)glitterStringToEnum(particleTypeTable, particleTypeTableSize, element->FindAttribute("Type")->Value());
 
 		lifeTime = BIXF::toFloat(element->FirstChildElement("LifeTime"));
 		
@@ -728,7 +727,7 @@ namespace Glitter
 		secondaryAlphaScrollSpeed		= BIXF::toFloat(element->FirstChildElement("SecondaryAlphaScrollSpeed"));
 		material						= BIXF::toString(element->FirstChildElement("Material"));
 		emitterTranslationEffectRatio	= BIXF::toFloat(element->FirstChildElement("EmitterTranslationEffectRatio"));
-		followEmitterTranslationRatio	= BIXF::toFloat(element->FirstChildElement("FollowEmitterTranslationRatio")); // flag 2048
+		followEmitterTranslationRatio	= BIXF::toFloat(element->FirstChildElement("FollowEmitterTranslationRatio")); // flag 2048?
 		followEmitterTranslationYRatio	= BIXF::toFloat(element->FirstChildElement("FollowEmitterTranslationYRatio"));
 		
 		std::string blendStr = BIXF::toString(element->FirstChildElement("BlendMode"));
@@ -759,7 +758,7 @@ namespace Glitter
 		{
 			Animation animation;
 			animation.read(animationElement);
-			animations.push_back(animation);
+			animations.emplace_back(animation);
 
 			animationElement = animationElement->NextSiblingElement("Animation");
 		}
@@ -778,18 +777,11 @@ namespace Glitter
 	{
 		element->SetAttribute("Id", ID);
 		element->SetAttribute("Name", name.c_str());
-		
-		std::string typeStr = glitterEnumToString(particleTypeTable, particleTypeTableSize, (size_t)type);
-		element->SetAttribute("Type", typeStr.c_str());
+		element->SetAttribute("Type", glitterEnumToString(particleTypeTable, particleTypeTableSize, (size_t)type).c_str());
 
 		BIXF::createChildValue(element, "LifeTime", lifeTime);
-
-		std::string pivotStr = glitterEnumToString(pivotPositionTable, pivotPositionTableSize, (size_t)pivotPosition);
-		BIXF::createChildValue(element, "PivotPosition", pivotStr);
-
-		std::string dirStr = glitterEnumToString(PdirectionTypeTable, PdirectionTypeTableSize, (size_t)directionType);
-		BIXF::createChildValue(element, "DirectionType", dirStr);
-
+		BIXF::createChildValue(element, "PivotPosition", glitterEnumToString(pivotPositionTable, pivotPositionTableSize, (size_t)pivotPosition));
+		BIXF::createChildValue(element, "DirectionType", glitterEnumToString(PdirectionTypeTable, PdirectionTypeTableSize, (size_t)directionType));
 		BIXF::createChildValue(element, "ZOffest", zOffset);
 
 		BIXF::createChildVector3(element, "Size", size);
@@ -823,9 +815,7 @@ namespace Glitter
 
 		BIXF::createChildColor(element, "Color", color);
 		BIXF::createChildValue(element, "TextureIndex", textureIndex);
-
-		std::string uvTypeStr = glitterEnumToString(uvIndexTypeTable, uvIndexTypeTableSize, (size_t)uvIndexType);
-		BIXF::createChildValue(element, "UvIndexType", uvTypeStr);
+		BIXF::createChildValue(element, "UvIndexType", glitterEnumToString(uvIndexTypeTable, uvIndexTypeTableSize, (size_t)uvIndexType));
 
 		BIXF::createChildValue(element, "UvIndex", uvIndex);
 		BIXF::createChildValue(element, "UvChangeInterval", uvChangeInterval);
@@ -846,9 +836,7 @@ namespace Glitter
 		BIXF::createChildValue(element, "FollowEmitterTranslationRatio", followEmitterTranslationRatio);
 		BIXF::createChildValue(element, "FollowEmitterTranslationYRatio", followEmitterTranslationYRatio);
 
-		std::string secondBlendStr = glitterEnumToString(blendModeTable, blendModeTableSize, (size_t)secondaryBlendMode);
-		BIXF::createChildValue(element, "SecondaryBlendMode", secondBlendStr);
-
+		BIXF::createChildValue(element, "SecondaryBlendMode", glitterEnumToString(blendModeTable, blendModeTableSize, (size_t)secondaryBlendMode));
 		BIXF::createChildValue(element, "SecondaryBlend", secondaryBlend);
 		BIXF::createChildValue(element, "Flags", flags);
 

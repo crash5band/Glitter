@@ -220,7 +220,7 @@ void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
 		updateTransform(emitterLife, camera, baseTransform);
 
 		emissionCount = emitter->getParticlesPerEmission();
-		int count = animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, emitterLife, -1);
+		int count = round(animationNode->tryGetValue(Glitter::AnimationType::ParticlePerEmission, emitterLife, -1));
 		if (count > -1)
 			emissionCount = count;
 

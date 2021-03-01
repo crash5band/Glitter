@@ -689,8 +689,8 @@ namespace Glitter
 		size					= BIXF::toVector3(element->FirstChildElement("Size"));
 		sizeRandom				= BIXF::toVector3(element->FirstChildElement("SizeRandom"));
 		rotation				= BIXF::toVector3(element->FirstChildElement("Rotation"));
-		rotationAdd				= BIXF::toVector3(element->FirstChildElement("RotationAdd"));
 		rotationRandom			= BIXF::toVector3(element->FirstChildElement("RotationRandom"));
+		rotationAdd				= BIXF::toVector3(element->FirstChildElement("RotationAdd"));
 		rotationAddRandom		= BIXF::toVector3(element->FirstChildElement("RotationAddRandom"));
 		direction				= BIXF::toVector3(element->FirstChildElement("Direction"));
 		directionRandom			= BIXF::toVector3(element->FirstChildElement("DirectionRandom"));
@@ -734,6 +734,9 @@ namespace Glitter
 		blendMode = (BlendMode)glitterStringToEnum(blendModeTable, blendModeTableSize, blendStr);
 		std::string secondBlenStr = BIXF::toString(element->FirstChildElement("SecondaryBlendMode"));
 		secondaryBlendMode = (BlendMode)glitterStringToEnum(blendModeTable, blendModeTableSize, secondBlenStr);
+
+		std::string addressModeStr = BIXF::toString(element->FirstChildElement("AddressMode"));
+		addressMode = (AddressMode)glitterStringToEnum(addressModeTable, addressModeTableSize, addressModeStr);
 
 		secondaryBlend = BIXF::toFloat(element->FirstChildElement("SecondaryBlend"));
 		flags = BIXF::toUInt(element->FirstChildElement("Flags"));
@@ -782,13 +785,13 @@ namespace Glitter
 		BIXF::createChildValue(element, "LifeTime", lifeTime);
 		BIXF::createChildValue(element, "PivotPosition", glitterEnumToString(pivotPositionTable, pivotPositionTableSize, (size_t)pivotPosition));
 		BIXF::createChildValue(element, "DirectionType", glitterEnumToString(PdirectionTypeTable, PdirectionTypeTableSize, (size_t)directionType));
-		BIXF::createChildValue(element, "ZOffest", zOffset);
+		BIXF::createChildValue(element, "ZOffset", zOffset);
 
 		BIXF::createChildVector3(element, "Size", size);
 		BIXF::createChildVector3(element, "SizeRandom", sizeRandom);
 		BIXF::createChildVector3(element, "Rotation", rotation);
-		BIXF::createChildVector3(element, "RotationAdd", rotationAdd);
 		BIXF::createChildVector3(element, "RotationRandom", rotationRandom);
+		BIXF::createChildVector3(element, "RotationAdd", rotationAdd);
 		BIXF::createChildVector3(element, "RotationAddRandom", rotationAddRandom);
 		BIXF::createChildVector3(element, "Direction", direction);
 		BIXF::createChildVector3(element, "DirectionRandom", directionRandom);

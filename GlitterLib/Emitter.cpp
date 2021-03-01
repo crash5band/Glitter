@@ -522,18 +522,17 @@ namespace Glitter
 
 		BIXF::createChildValue(element, "Flags", flags);
 
-		unsigned int count;
-		for (count = 0; count < animations.size(); ++count)
+		for (unsigned int count = 0; count < animations.size(); ++count)
 		{
 			tinyxml2::XMLElement* animationElement = element->InsertNewChildElement("Animation");
 			animations[count].write(animationElement);
 		}
 
-		for (count = 0; count < particles.size(); ++count)
+		for (const std::weak_ptr<Particle>& particle : particles)
 		{
 			tinyxml2::XMLElement* particleElement = element->InsertNewChildElement("Particle");
-			particleElement->SetAttribute("Id", particles[count].lock()->getID());
-			particleElement->SetAttribute("Name", particles[count].lock()->getName().c_str());
+			particleElement->SetAttribute("Id", particle.lock()->getID());
+			particleElement->SetAttribute("Name", particle.lock()->getName().c_str());
 		}
 	}
 }

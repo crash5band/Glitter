@@ -180,7 +180,7 @@ namespace Glitter
 		std::string repeatStr = BIXF::toString(element->FirstChildElement("RepeatType"));
 		repeatType	= (RepeatType)glitterStringToEnum(repeatTypeTable, repeatTypeTableSize, repeatStr);
 
-		randomFlags = BIXF::toUInt(element->FirstChildElement("Flags"));
+		randomFlags = BIXF::toUInt(element->FirstChildElement("RandomFlags"));
 
 		tinyxml2::XMLElement* keyElement = element->FirstChildElement("Key");
 		while (keyElement)
@@ -197,7 +197,7 @@ namespace Glitter
 			tinyxml2::XMLElement* randomRangeElement = keyElement->FirstChildElement("RandomRange");
 			key.randomRange = randomRangeElement ? randomRangeElement->FirstAttribute()->FloatValue() : 0;
 
-			keys.push_back(key);
+			keys.emplace_back(key);
 			keyElement = keyElement->NextSiblingElement("Key");
 		}
 	}
@@ -214,19 +214,19 @@ namespace Glitter
 		BIXF::createChildValue(element, "RepeatType", repeatStr);
 		BIXF::createChildValue(element, "RandomFlags", randomFlags);
 
-		for (unsigned int count = 0; count < keys.size(); ++count)
+		for (const Key& key : keys)
 		{
 			tinyxml2::XMLElement* keyElement = element->InsertNewChildElement("Key");
-			keyElement->SetAttribute("Time", keys[count].time);
-			keyElement->SetAttribute("Value", keys[count].value);
+			keyElement->SetAttribute("Time", key.time);
+			keyElement->SetAttribute("Value", key.value);
 
-			std::string interpolationStr = glitterEnumToString(interpolationTypeTable, interpolationTypeTableSize, (size_t)keys[count].interpolationType);
+			std::string interpolationStr = glitterEnumToString(interpolationTypeTable, interpolationTypeTableSize, (size_t)key.interpolationType);
 			BIXF::createChildValue(keyElement, "InterpolationType", interpolationStr);
-			BIXF::createChildValue(keyElement, "InParam", keys[count].inParam);
-			BIXF::createChildValue(keyElement, "OutParam", keys[count].outParam);
-
-			if ((randomFlags & 2) != 0)
-				BIXF::createChildValue(keyElement, "RandomRange", keys[count].randomRange);
+			BIXF::createChildValue(keyElement, "InParam", key.inParam);
+			BIXF::createChildValue(keyElement, "OutParam", key.outParam);
+			
+			if (key.randomRange != 0)
+				BIXF::createChildValue(keyElement, "RandomRange", key.randomRange);
 		}
 	}
 }

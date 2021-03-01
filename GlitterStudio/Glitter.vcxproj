@@ -117,6 +117,9 @@
       <AdditionalLibraryDirectories>..\Dependencies\GlitterLib\$(Configuration);..\Dependencies\GLFW\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)Res\" "$(OutDir)Res\" /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -162,6 +165,9 @@
       <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)Res\" "$(OutDir)Res\" /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Camera.cpp" />

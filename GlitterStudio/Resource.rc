@@ -52,7 +52,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON2               ICON                    "C:\\Data\\Repositories\\Glitter\\Glitter\\glitter_icon.ico"
+IDI_ICON2               ICON                    "..\\glitter_icon.ico"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

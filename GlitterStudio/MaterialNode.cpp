@@ -59,7 +59,7 @@ void MaterialNode::populateInspector()
 		}
 		ImGui::NextColumn();
 
-		addComboBoxProperty("Blend Mode", Glitter::blendModeTable, Glitter::blendModeTableSize - 1, material->getBlendMode(),
+		addComboBoxProperty("Blend Mode", Glitter::blendModeTable, Glitter::blendModeTableSize, material->getBlendMode(),
 			material, std::mem_fn(&Material::setBlendMode));
 
 		addComboBoxProperty("Address Mode", Glitter::addressModeTable, Glitter::addressModeTableSize, material->getAddressMode(),

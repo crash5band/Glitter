@@ -326,13 +326,18 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 				continue;
 
 			std::shared_ptr<ParticleNode> node = instance.getReference();
+			
+			// particles must have a material bound to render
 			if (node->getMaterialNode())
 			{
 				Glitter::BlendMode mode = node->getParticle()->getBlendMode();
-				if (mode == Glitter::BlendMode::Zero || mode == Glitter::BlendMode::UseMaterial)
+
+				// switch to material's blend mode if the particle's is not set
+				if (mode == Glitter::BlendMode::Zero)
 					mode = node->getMaterialNode()->getMaterial()->getBlendMode();
 
 				setBlendMode(mode);
+
 				if (node->getParticle()->getType() == Glitter::ParticleType::Mesh)
 				{
 					if (node->getMesh())

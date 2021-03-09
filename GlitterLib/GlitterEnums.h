@@ -126,10 +126,7 @@ namespace Glitter
 
 	enum class BlendMode
 	{
-		/*
-			Particles use all. Zero and UseMaterial are 7
-			Materials use all but UseMaterial
-		*/
+		// Particles use all. Materials use all but UseMaterial.
 
 		Zero,
 		Typical,
@@ -138,13 +135,13 @@ namespace Glitter
 		Multiply,
 		PunchThrough,
 		Opaque,
-		UseMaterial
 	};
 
 	enum class AddressMode
 	{
 		Clamp,
-		Wrap
+		Wrap,
+		UseMaterial
 	};
 
 	const size_t interpolationTypeTableSize = 3;
@@ -278,7 +275,7 @@ namespace Glitter
 		"User"
 	};
 
-	const size_t blendModeTableSize = 8;
+	const size_t blendModeTableSize = 7;
 	const std::string blendModeTable[] =
 	{
 		"Zero",
@@ -287,15 +284,15 @@ namespace Glitter
 		"Subtract",
 		"Multiply",
 		"PunchThrough",
-		"Opaque",
-		"UseMaterial"
+		"Opaque"
 	};
 
-	const size_t addressModeTableSize = 2;
+	const size_t addressModeTableSize = 3;
 	const std::string addressModeTable[] =
 	{
 		"Clamp",
-		"Wrap"
+		"Wrap",
+		"UseMaterial"
 	};
 
 	static std::string glitterEnumToString(const std::string* arr, size_t size, size_t index)

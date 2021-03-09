@@ -50,8 +50,12 @@ void MaterialNode::populateInspector()
 	{
 		addTextProperty("Name", material->getName(), material, std::mem_fn(&Material::setName));
 
+		std::string textureLbl = material->getTexture();
+		if (!texture.get())
+			textureLbl.append(" (Not Loaded)");
+
 		beginPropertyColumn("Texture");
-		if (ImGui::Button(texture.get() ? material->getTexture().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
+		if (ImGui::Button(textureLbl.c_str(), ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
 		{
 			std::string name;
 			if (FileGUI::openFileGUI(FileType::Texture, name))

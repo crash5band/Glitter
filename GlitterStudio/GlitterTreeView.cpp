@@ -150,8 +150,11 @@ void Editor::updateMenuBar()
 		if (ImGui::MenuItem("VSync", NULL, settings.vsync))
 			glfwSwapInterval(settings.vsync ^= true);
 
+		ImGui::Separator();
 		ImGui::MenuItem("Hue Wheel", NULL, &settings.colorWheel);
 		ImGui::MenuItem("FPS Meter", NULL, &settings.fpsCounter);
+
+		ImGui::Separator();
 		ImGui::MenuItem("Hover Over Materials To Preview", NULL, &settings.matPreview);
 
 		ImGui::EndMenu();

@@ -44,10 +44,15 @@ void ResourceManager::loadModel(const std::string& filepath)
 	const std::string modelName = Glitter::File::getFileName(filepath);
 	std::shared_ptr<ModelData> model = getModel(modelName);
 
+	// model not loaded
 	if (!model)
 	{
-		models.emplace_back(std::make_shared<ModelData>(filepath));
-		Logger::log(Message(MessageType::Normal, std::string("loaded model " + modelName )));
+		model = std::make_shared<ModelData>();
+		if (model->reload(filepath))
+		{
+			models.emplace_back(model);
+			Logger::log(Message(MessageType::Normal, std::string("loaded model " + modelName)));
+		}
 	}
 }
 
@@ -56,10 +61,15 @@ void ResourceManager::loadTexture(const std::string& filepath, TextureSlot slot)
 	const std::string textureName = Glitter::File::getFileName(filepath);
 	std::shared_ptr<TextureData> texture = getTexture(textureName);
 
+	// texture not loaded
 	if (!texture)
 	{
-		textures.emplace_back(std::make_shared<TextureData>(filepath, slot));
-		Logger::log(Message( MessageType::Normal, std::string("loaded texture " + textureName )));
+		texture = std::make_shared<TextureData>();
+		if (texture->reload(filepath, slot))
+		{
+			textures.emplace_back(texture);
+			Logger::log(Message(MessageType::Normal, std::string("loaded texture " + textureName)));
+		}
 	}
 }
 

@@ -56,20 +56,20 @@ void TextureData::dispose()
 	glDeleteTextures(1, &ID);
 }
 
-void TextureData::reload(const std::string& path, TextureSlot slot)
+bool TextureData::reload(const std::string& path, TextureSlot slot)
 {
-	textureName = Glitter::File::getFileName(path);
-	fullname = path;
-
 	if (!Glitter::File::exists(path))
 	{
-		Logger::log(Message(MessageType::Error, "Failed to load texture " + textureName + ". File not found."));
-		return;
+		Logger::log(Message(MessageType::Error, "Failed to load texture " + path + ". File not found."));
+		return false;
 	}
 
+	textureName = Glitter::File::getFileName(path);
+	fullname = path;
 	this->slot = slot;
 
 	read();
+	return true;
 }
 
 void TextureData::read()

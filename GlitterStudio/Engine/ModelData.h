@@ -19,9 +19,9 @@ public:
 	ModelData(const std::string& path);
 	ModelData();
 
+	bool reload(const std::string& path);
 	void dispose();
 	void buildGensModel(Glitter::Model &model);
-	void reload(const std::string& path);
 	void draw(Shader* shader);
 	std::vector<VertexData>& getVertices();
 	std::string getName() const;

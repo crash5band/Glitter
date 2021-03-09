@@ -31,7 +31,7 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 
-	void reload(const std::string& path, TextureSlot slot);
+	bool reload(const std::string& path, TextureSlot slot);
 	void read();
 	void use();
 	void dispose();

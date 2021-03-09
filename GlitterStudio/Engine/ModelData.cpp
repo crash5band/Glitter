@@ -2,6 +2,7 @@
 #include "Material.h"
 #include "File.h"
 #include "ResourceManager.h"
+#include "../Logger.h"
 
 ModelData::ModelData(const std::string& path)
 {
@@ -124,12 +125,20 @@ std::vector<VertexData>& ModelData::getVertices()
 	return vertices;
 }
 
-void ModelData::reload(const std::string& path)
+bool ModelData::reload(const std::string& path)
 {
+	if (!Glitter::File::exists(path))
+	{
+		Logger::log(Message(MessageType::Error, "Failed to load " + path + ". File not found."));
+		return false;
+	}
+
 	Glitter::Model model(path);
 	modelName = Glitter::File::getFileName(path);
 	directory = Glitter::File::getFilePath(path);
 	buildGensModel(model);
+
+	return true;
 }
 
 std::string ModelData::getName() const

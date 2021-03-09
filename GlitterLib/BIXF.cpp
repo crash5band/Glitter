@@ -206,7 +206,7 @@ namespace Glitter
 	{
 		if (id >= IDTableSize)
 		{
-			return "Value #" + std::to_string(id);
+			return "Node #" + std::to_string(id);
 		}
 		else
 		{
@@ -228,7 +228,7 @@ namespace Glitter
 
 	bool BIXF::isInNodeTable(const std::string& str, unsigned char& id)
 	{
-		for (unsigned char i = 0; i < IDTableSize; ++i)
+		for (size_t i = 0; i < IDTableSize; ++i)
 		{
 			if (str == IDTable[i])
 			{
@@ -242,7 +242,7 @@ namespace Glitter
 
 	bool BIXF::isInValueTable(const std::string& str, unsigned char& id)
 	{
-		for (unsigned char i = 0; i < valueTableSize; ++i)
+		for (size_t i = 0; i < valueTableSize; ++i)
 		{
 			if (str == valueTable[i])
 			{
@@ -435,7 +435,7 @@ namespace Glitter
 		}
 
 		unsigned char header = 0x01;
-		writer.writeString("BIXF");
+		writer.writeString("BIXF", false);
 		writer.writeChar(header);
 		writer.fixPadding(20);
 
@@ -466,6 +466,8 @@ namespace Glitter
 	void BIXF::convertToBIXF(tinyxml2::XMLElement* element, std::vector<std::string>& strTable, std::vector<unsigned char>& data)
 	{
 		unsigned char id = 0;
+
+		// Node declaration
 		if (isInNodeTable(element->Value(), id))
 		{
 			data.push_back(BIXF_NEW_NODE_TABLE);
@@ -477,9 +479,9 @@ namespace Glitter
 			data.push_back(createBIXFString(element->Value(), strTable));
 		}
 
+		// Attributes
 		for (const tinyxml2::XMLAttribute* attrib = element->FirstAttribute(); attrib; attrib = attrib->Next())
 		{
-			id = 0;
 			if (isInNodeTable(attrib->Name(), id))
 			{
 				data.push_back(BIXF_NEW_PARAMETER_TABLE);
@@ -516,6 +518,7 @@ namespace Glitter
 			}
 		}
 
+		// Traverse children nodes and call the method recursively
 		tinyxml2::XMLElement* siblingElement = element->FirstChildElement();
 		while (siblingElement)
 		{
@@ -523,12 +526,13 @@ namespace Glitter
 			siblingElement = siblingElement->NextSiblingElement();
 		}
 
+		// Close node and go to parent
 		data.push_back(BIXF_GOTO_PARENT);
 	}
 
-	unsigned char BIXF::createBIXFString(const std::string& str, std::vector<std::string>& strTable)
+	size_t BIXF::createBIXFString(const std::string& str, std::vector<std::string>& strTable)
 	{
-		for (unsigned char index = 0; index < strTable.size(); ++index)
+		for (size_t index = 0; index < strTable.size(); ++index)
 		{
 			if (strTable[index] == str)
 				return index;

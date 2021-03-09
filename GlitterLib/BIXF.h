@@ -33,7 +33,7 @@ namespace Glitter
 		static void convertToBIXF(std::string inputFilename, std::string outputFilename = "");
 		static void convertToBIXF(tinyxml2::XMLDocument* xml, std::string outputFilename);
 		static void convertToBIXF(tinyxml2::XMLElement* element, std::vector<std::string>& strTable, std::vector<unsigned char>& data);
-		static unsigned char createBIXFString(const std::string& str, std::vector<std::string>& strTable);
+		static size_t createBIXFString(const std::string& str, std::vector<std::string>& strTable);
 
 		static std::string toString(tinyxml2::XMLElement* element);
 		static float toFloat(tinyxml2::XMLElement* element);

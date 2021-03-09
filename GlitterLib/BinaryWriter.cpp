@@ -161,7 +161,7 @@ namespace Glitter
 		}
 	}
 
-	void BinaryWriter::writeString(const char* data)
+	void BinaryWriter::writeString(const char* data, bool nullTerminated)
 	{
 		if (file)
 		{
@@ -169,7 +169,12 @@ namespace Glitter
 			if (length)
 			{
 				fwrite(data, sizeof(char), length, file);
-				fwrite("\0", sizeof(char), 1, file);
+				if (nullTerminated)
+					writeNull(1);
+			}
+			else
+			{
+				writeNull(1);
 			}
 		}
 	}

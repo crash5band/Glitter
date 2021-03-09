@@ -32,7 +32,7 @@ namespace Glitter
 		void writeAddress(const uint32_t &data, bool addToTable = true);
 		void writeSingle(const float &data);
 		void writeFloat8(const float &data);
-		void writeString(const char *data);
+		void writeString(const char *data, bool nullTerminated = true);
 		void writeNull(size_t length);
 
 		void write(const Vector2& val);

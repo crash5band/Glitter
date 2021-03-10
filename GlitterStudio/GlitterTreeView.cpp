@@ -135,6 +135,32 @@ void Editor::updateMenuBar()
 #ifdef _DEBUG
 	if (ImGui::BeginMenu("Debug"))
 	{
+		if (ImGui::MenuItem("Dump Effect XML"))
+		{
+			if (selectedParent > -1 && selectedParent < effectNodes.size())
+			{
+				auto eff = effectNodes[selectedParent]->getEffect();
+				std::string filename = eff->getFilename() + ".xml";
+				eff->writeXML(filename);
+				
+				Logger::log(Message(MessageType::Normal, "Dumped effect xml to " + filename));
+			}
+		}
+
+		if (ImGui::MenuItem("Dump Material XML"))
+		{
+			int index = MaterialEditor::getSelection();
+			if (index > -1 && index < MaterialEditor::count())
+			{
+				auto mat = MaterialEditor::getNodes().at(index)->getMaterial();
+				std::string filename = mat->getFilename() + ".xml";
+				mat->writeXML(filename);
+
+				Logger::log(Message(MessageType::Normal, "Dumped material xml to " + filename));
+			}
+		}
+
+		ImGui::Separator();
 		ImGui::MenuItem("Show ImGui Demo Window", NULL, &settings.imguiDemoOpen);
 
 		ImGui::Separator();

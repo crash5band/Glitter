@@ -173,7 +173,6 @@ namespace Glitter
 	{
 		tinyxml2::XMLDocument* xml = new tinyxml2::XMLDocument();
 		prepare(xml);
-		this->filename = filename;
 
 		xml->SaveFile(filename.c_str());
 		delete xml;

@@ -14,7 +14,7 @@ namespace Glitter
 		std::string name;
 		std::string folder;
 		std::vector<Texture*> textures;
-		std::vector<Parameter*> parameters;
+		std::vector<MaterialParam*> parameters;
 		std::string shader;
 		std::string subShader;
 		std::string extra;
@@ -41,11 +41,11 @@ namespace Glitter
 		std::string getGiExtra() const;
 		std::string getLayer() const;
 		std::vector<Texture*> getTextures() const;
-		std::vector<Parameter*> getParameters() const;
+		std::vector<MaterialParam*> getParameters() const;
 		Texture* getTextureByUnit(std::string unit, size_t = 0);
 		Texture* getTextureByIndex(size_t index);
-		Parameter* getParameterByName(std::string name);
-		Parameter* getParameterByIndex(size_t index);
+		MaterialParam* getParameterByName(std::string name);
+		MaterialParam* getParameterByIndex(size_t index);
 		unsigned char getMaterialFlag() const;
 		bool hasNoCulling() const;
 		bool hasColorBlend() const;
@@ -53,7 +53,7 @@ namespace Glitter
 		bool hasGiExtra() const;
 		int getTextureUnitsSize() const;
 
-		void addParameter(Parameter* param);
+		void addParameter(MaterialParam* param);
 		void setParameter(std::string paramName, Color color);
 		void removeParameter(std::string name);
 		void removeParameterByIndex(size_t index);

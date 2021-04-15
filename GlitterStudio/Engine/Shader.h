@@ -12,11 +12,11 @@ private:
 	std::string name;
 	std::unordered_map<std::string, GLint> locMap;
 
-	void compile(const char* vSource, const char* fSource);
+	void compile(const std::string& source);
 	GLint getUniformLoc(const std::string& name);
 
 public:	
-	Shader(const std::string& name, const char* v, const char* f);
+	Shader(const std::string& name, const std::string &source);
 	~Shader();
 
 	std::string getName() const;

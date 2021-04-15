@@ -47,7 +47,7 @@ namespace Glitter
 
 	Material::~Material()
 	{
-		for (std::vector<Parameter*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+		for (std::vector<MaterialParam*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 			delete (*it);
 
 		for (std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
@@ -107,7 +107,7 @@ namespace Glitter
 		return textures;
 	}
 
-	std::vector<Parameter*> Material::getParameters() const
+	std::vector<MaterialParam*> Material::getParameters() const
 	{
 		return parameters;
 	}
@@ -136,9 +136,9 @@ namespace Glitter
 			return nullptr;
 	}
 
-	Parameter* Material::getParameterByName(std::string name)
+	MaterialParam* Material::getParameterByName(std::string name)
 	{
-		for (std::vector<Parameter*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+		for (std::vector<MaterialParam*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 		{
 			if ((*it)->name == name)
 				return (*it);
@@ -147,7 +147,7 @@ namespace Glitter
 		return nullptr;
 	}
 
-	Parameter* Material::getParameterByIndex(size_t index)
+	MaterialParam* Material::getParameterByIndex(size_t index)
 	{
 		if (index < parameters.size())
 			return parameters[index];
@@ -185,7 +185,7 @@ namespace Glitter
 		return textures.size();
 	}
 
-	void Material::addParameter(Parameter* param)
+	void Material::addParameter(MaterialParam* param)
 	{
 		if (param)
 			parameters.push_back(param);
@@ -193,16 +193,16 @@ namespace Glitter
 
 	void Material::setParameter(std::string paramName, Color color)
 	{
-		Parameter* parameter = getParameterByName(paramName);
+		MaterialParam* parameter = getParameterByName(paramName);
 		if (parameter)
 			parameter->color = color;
 		else
-			parameters.push_back(new Parameter(paramName, color));
+			parameters.push_back(new MaterialParam(paramName, color));
 	}
 
 	void Material::removeParameter(std::string name)
 	{
-		for (std::vector<Parameter*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+		for (std::vector<MaterialParam*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 			if ((*it)->name == name)
 				parameters.erase(it);
 	}
@@ -294,6 +294,7 @@ namespace Glitter
 		size_t texsetsAddress = reader->readAddress();
 		size_t texturesAddress = reader->readAddress();
 
+		reader->gotoAddress(headerAddress + 16);
 		materialFlag = reader->readChar();
 		noCulling = reader->readChar();
 		colorBlend = reader->readChar();
@@ -303,6 +304,7 @@ namespace Glitter
 		reader->gotoAddress(headerAddress + 23);
 		unsigned char textureCount = reader->readChar();
 		
+		reader->gotoAddress(headerAddress + 24);
 		size_t parametersAddress = reader->readAddress();
 
 		reader->gotoAddress(shaderAddress);
@@ -319,7 +321,7 @@ namespace Glitter
 			reader->gotoAddress(parametersAddress + i * 4);
 			size_t address = reader->readAddress();
 			reader->gotoAddress(address);
-			Parameter* parameter = new Parameter();
+			MaterialParam* parameter = new MaterialParam();
 			parameter->read(reader);
 			parameters.push_back(parameter);
 		}

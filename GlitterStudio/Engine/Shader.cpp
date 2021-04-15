@@ -3,10 +3,10 @@
 #include <fstream>
 #include <iostream>
 
-Shader::Shader(const std::string& name, const char* v, const char* f)
+Shader::Shader(const std::string& name, const std::string &source)
 {
 	this->name = name;
-	compile(v, f);
+	compile(source);
 }
 
 Shader::~Shader()
@@ -19,7 +19,7 @@ std::string Shader::getName() const
 	return name;
 }
 
-void Shader::compile(const char* vertexPath, const char* fragmentPath)
+void Shader::compile(const std::string &source)
 {
 	std::string vertexCode, fragmentCode;
 	std::ifstream vertexFile, fragmentFile;
@@ -28,8 +28,8 @@ void Shader::compile(const char* vertexPath, const char* fragmentPath)
 
 	try
 	{
-		vertexFile.open(vertexPath);
-		fragmentFile.open(fragmentPath);
+		vertexFile.open(source + ".vert");
+		fragmentFile.open(source + ".frag");
 
 		std::stringstream vertexStream, fragmnetStream;
 

@@ -22,9 +22,9 @@ Editor::Editor(const std::string& dir) : frameDelta{ 0 }, lastFrame{ 0 }, select
 	initImgui();
 	setImguiStyle();
 
-	ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle.vert", shadersDir + "BillboardParticle.frag");
-	ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle.vert", shadersDir + "MeshParticle.frag");
-	ResourceManager::loadShader("Grid", shadersDir + "GridShader.vert", shadersDir + "GridShader.frag");
+	ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle");
+	ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle");
+	ResourceManager::loadShader("Grid", shadersDir + "GridShader");
 
 	inspector = new Inspector();
 	player = new GlitterPlayer();

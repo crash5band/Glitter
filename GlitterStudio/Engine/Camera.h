@@ -13,13 +13,10 @@ class Camera
 private:
 	float defaultYaw = -90;
 	float defaultPitch = 0;
-	float defaultSpeed = 2.5f;
 	float defaultSensitivity = 0.1f;
 	float defaultZoom = 45.0f;
 	float defaultRadius = 3.0f;
 	DirectX::XMVECTOR defaultPosition;
-
-	std::string modes[2];
 
 	CameraMode mode;
 	DirectX::XMVECTOR target;
@@ -32,7 +29,7 @@ private:
 	float pitch;
 	float speed;
 	float sensitivity;
-	float fovy;
+	float fov;
 	float radius;
 
 	void updateCameraVectors();
@@ -45,11 +42,21 @@ public:
 
 	void update(bool l, bool r, float x, float y, float w);
 	void reset();
+	void setAngle(float yaw, float pitch);
+	void setFOV(float angle);
+	void setDistance(float d);
+	void setMode(CameraMode mode);
+	void setTarget(DirectX::XMVECTOR tgt);
 
 	inline float getYaw() const { return yaw; }
 	inline float getPitch() const { return pitch; }
+	inline float getFOV() const { return fov; }
+	inline float getDistance() const { return radius; }
+	inline CameraMode getMode() const { return mode; }
+
 	DirectX::XMMATRIX getViewMatrix() const;
 	DirectX::XMMATRIX getProjectionMatrix(float aspect) const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMVECTOR getFront() const;
+	DirectX::XMVECTOR getTarget() const;
 };

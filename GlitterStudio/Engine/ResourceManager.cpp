@@ -73,10 +73,15 @@ void ResourceManager::loadTexture(const std::string& filepath, TextureSlot slot)
 	}
 }
 
-void ResourceManager::loadShader(const std::string& name, const std::string& vPath, const std::string& fPath)
+void ResourceManager::loadShader(const std::string& name, const std::string& path)
 {
-	shaders.emplace_back(std::make_shared<Shader>(name, vPath.c_str(), fPath.c_str()));
+	shaders.emplace_back(std::make_shared<Shader>(name, path));
 	//Logger::log(Message( MessageType::Normal, std::string("loaded shader " + name )));
+}
+
+std::vector<std::shared_ptr<ModelData>> ResourceManager::getModelList()
+{
+	return models;
 }
 
 size_t ResourceManager::getModelCount()

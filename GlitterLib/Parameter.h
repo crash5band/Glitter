@@ -6,14 +6,14 @@
 
 namespace Glitter
 {
-	class Parameter
+	class MaterialParam
 	{
 	public:
 		std::string name;
 		Color color;
 
-		Parameter();
-		Parameter(std::string n, Color c);
+		MaterialParam();
+		MaterialParam(std::string n, Color c);
 
 		void read(BinaryReader* reader);;
 		void write(BinaryWriter* writer);

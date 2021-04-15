@@ -2,18 +2,18 @@
 
 namespace Glitter
 {
-	Parameter::Parameter()
+	MaterialParam::MaterialParam()
 	{
 
 	}
 
-	Parameter::Parameter(std::string n, Color c) :
+	MaterialParam::MaterialParam(std::string n, Color c) :
 		name{ n }, color{ c }
 	{
 
 	}
 
-	void Parameter::read(BinaryReader* reader)
+	void MaterialParam::read(BinaryReader* reader)
 	{
 		size_t headerAddress = reader->getCurrentAddress();
 
@@ -27,7 +27,7 @@ namespace Glitter
 		color = reader->readRGBA();
 	}
 
-	void Parameter::write(BinaryWriter* writer)
+	void MaterialParam::write(BinaryWriter* writer)
 	{
 		size_t headerAddress = writer->getCurrentAddress();
 		unsigned char flag1 = 2;

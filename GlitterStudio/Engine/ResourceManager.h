@@ -16,9 +16,11 @@ public:
 	static std::shared_ptr<TextureData> getTexture(const std::string& name);
 	static std::shared_ptr<Shader> getShader(const std::string& name);
 
+	static std::vector<std::shared_ptr<ModelData>> getModelList();
+
 	static void loadModel(const std::string& filepath);
 	static void loadTexture(const std::string& filepath, TextureSlot slot);
-	static void loadShader(const std::string& name, const std::string& vPath, const std::string& fPath);
+	static void loadShader(const std::string& name, const std::string& path);
 	static void disposeAll();
 	static void cleanModels();
 	static void cleanTextures();

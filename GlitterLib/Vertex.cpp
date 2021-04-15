@@ -29,6 +29,7 @@ namespace Glitter
 		normal = orient * clone->normal;
 		tangent = orient * clone->tangent;
 		binormal = orient * clone->binormal;
+		color = clone->color;
 		normal.normalise();
 		tangent.normalise();
 		binormal.normalise();

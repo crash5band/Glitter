@@ -1,20 +1,36 @@
 #pragma once
-#include "glm/glm.hpp"
+#include "MathGens.h"
+
+enum class LightType
+{
+	Direct,
+	Point,
+	Spotlight
+};
 
 struct Light
 {
-	glm::vec3 direction;
-	glm::vec4 color;
+	Glitter::Vector3 position;
+	Glitter::Color color;
+	LightType type;
 	float ambient;
-	float diffuse;
 	float specular;
+	float specularPower;
+	float innerRadius;
+	float outerRadius;
+	float pointRadius;
 
-	Light()
+	Light(LightType t)
 	{
-		direction = glm::vec3(0.0, 1.0, 0.0);
-		color = glm::vec4(1.0);
-		ambient = 0.5f;
-		diffuse = 1.0f;
-		specular = 0.2f;
+		position = Glitter::Vector3(0.4f, 1.0f, -0.7f);
+		color = Glitter::Color(1.0f, 1.0f, 1.0f);
+
+		type = t;
+		ambient = 0.8f;
+		specular = 0.5f;
+		specularPower = 5.0f;
+		innerRadius = 0.5f;
+		outerRadius = 0.75f;
+		pointRadius = 0.5f;
 	}
 };

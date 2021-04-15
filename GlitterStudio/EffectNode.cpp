@@ -1,10 +1,15 @@
 #include "EffectNode.h"
 #include "UiHelper.h"
+#include "FileGUI.h"
+#include "ResourceManager.h"
+#include "IconsFontAwesome5.h"
+#include "File.h"
 
 EffectNode::EffectNode(std::shared_ptr<Glitter::GlitterEffect> &effect) :
 	effect{ effect }
 {
 	animationNode = std::make_shared<AnimationNode>(&effect->getAnimations());
+	refModel = nullptr;
 
 	for (auto& particle : effect->getParticles())
 		particleNodes.push_back(std::make_shared<ParticleNode>(particle));
@@ -33,6 +38,11 @@ std::shared_ptr<AnimationNode> EffectNode::getAnimationNode()
 	return animationNode;
 }
 
+std::shared_ptr<ModelData> EffectNode::getRefModel()
+{
+	return refModel;
+}
+
 NodeType EffectNode::getType()
 {
 	return NodeType::Effect;
@@ -43,7 +53,20 @@ float EffectNode::getLife()
 	return effect->getLifeTime();
 }
 
-void EffectNode::update(float time, Camera* camera)
+void EffectNode::changeMesh(const std::string &name)
+{
+	if (name.size())
+	{
+		ResourceManager::loadModel(name);
+		refModel = ResourceManager::getModel(Glitter::File::getFileName(name));
+	}
+	else
+	{
+		refModel = nullptr;
+	}
+}
+
+void EffectNode::update(float time, const Camera &camera)
 {
 	float effectTime = time - effect->getStartTime();
 	float effectLife = fmodf(effectTime, effect->getLifeTime() + 1);
@@ -107,4 +130,23 @@ void EffectNode::populateInspector()
 		ImGui::TreePop();
 	}
 	endPropertyColumn();
+
+	if (ImGui::TreeNodeEx("Reference Model", treeFlags))
+	{
+		std::string lbl = refModel ? refModel->getName() : "None";
+		if (ImGui::Button(lbl.c_str(), ImVec2(ImGui::GetContentRegionAvail().x - btnHeight * 2, btnHeight)))
+		{
+			std::string name;
+			if (FileGUI::openFileGUI(FileType::Model, name))
+				changeMesh(name);
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_TIMES, ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
+		{
+			changeMesh("");
+		}
+
+		ImGui::TreePop();
+	}
 }

@@ -150,17 +150,17 @@ void EmitterNode::emit(float time, Transform& baseTransform)
 	}
 }
 
-void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, Camera* camera, Glitter::Vector3& rotation)
+void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, const Camera &camera, Glitter::Vector3& rotation)
 {
 	switch (type)
 	{
 	case Glitter::EmitterDirectionType::Billboard:
-		rotation.x = rotation.x - camera->getPitch();
-		rotation.y = 90.0f - camera->getYaw();
+		rotation.x = rotation.x - camera.getPitch();
+		rotation.y = 90.0f - camera.getYaw();
 		break;
 
 	case Glitter::EmitterDirectionType::YRotationOnly:
-		rotation.y = 90.0f - camera->getYaw();
+		rotation.y = 90.0f - camera.getYaw();
 		break;
 
 	case Glitter::EmitterDirectionType::XAxis:
@@ -180,7 +180,7 @@ void EmitterNode::changeDirection(Glitter::EmitterDirectionType type, Camera* ca
 	}
 }
 
-void EmitterNode::updateTransform(float time, Camera* camera, Transform& effT)
+void EmitterNode::updateTransform(float time, const Camera &camera, Transform& effT)
 {
 	Glitter::Quaternion em;
 	Glitter::Quaternion emA;
@@ -198,7 +198,7 @@ void EmitterNode::updateTransform(float time, Camera* camera, Transform& effT)
 	transform.scale	= emitter->getScaling() *= animationNode->tryGetScale(time);
 }
 
-void EmitterNode::update(float time, Camera* camera, Transform& baseTransform)
+void EmitterNode::update(float time, const Camera &camera, Transform& baseTransform)
 {
 	float emitterTime = time - emitter->getStartTime();
 	float emitterLife = emitter->getFlags() & 1 ? fmodf(emitterTime, emitter->getLifeTime()) : emitterTime;

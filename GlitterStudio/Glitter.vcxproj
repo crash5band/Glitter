@@ -212,10 +212,10 @@
     <ClCompile Include="ParticleNode.cpp" />
     <ClCompile Include="UIFn.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h" />
-    <ClInclude Include="Engine\Light.h" />
     <ClInclude Include="Engine\MeshData.h" />
     <ClInclude Include="Engine\ModelData.h" />
     <ClInclude Include="Engine\RenderTarget.h" />
@@ -234,6 +234,7 @@
     <ClInclude Include="EmitterNode.h" />
     <ClInclude Include="FileGUI.h" />
     <ClInclude Include="GlitterPlayer.h" />
+    <ClInclude Include="Engine\Light.h" />
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="IconsFontAwesome5.h" />
     <ClInclude Include="IGlitterNode.h" />
@@ -260,6 +261,7 @@
     <ClInclude Include="UIFn.h" />
     <ClInclude Include="UiHelper.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="Viewport.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

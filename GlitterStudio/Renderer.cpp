@@ -126,13 +126,16 @@ void Renderer::initQuad()
 	glBindVertexArray(0);
 }
 
-void Renderer::configureShader(std::shared_ptr<Shader>& s, Camera* camera, Glitter::Vector2 size, Glitter::BlendMode blend)
+void Renderer::configureShader(std::shared_ptr<Shader>& s, const Viewport &vp, Glitter::BlendMode blend)
 {
 	if (shader != s)
 		bindShader(s);
 
-	shader->setMatrix4("view", camera->getViewMatrix());
-	shader->setMatrix4("projection", camera->getProjectionMatrix(size.x / size.y));
+	Camera cam = vp.getCamera();
+	Glitter::Vector2 size = vp.getSize();
+
+	shader->setMatrix4("view", cam.getViewMatrix());
+	shader->setMatrix4("projection", cam.getProjectionMatrix(size.x / size.y));
 	if (shader->getName() != "Grid")
 	{
 		shader->setInt("blendMode", (int)blend);
@@ -145,11 +148,13 @@ void Renderer::setBlendMode(Glitter::BlendMode mode)
 	{
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 	}
 	else
 	{
 		glEnable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
 	}
 
 	if (blendMode == mode)
@@ -240,7 +245,7 @@ void Renderer::getUVCoords(std::shared_ptr<MaterialNode> mat)
 	}
 }
 
-void Renderer::drawPoolMesh(ParticleInstance &instance, Camera* camera)
+void Renderer::drawPoolMesh(ParticleInstance &instance, const Camera &camera)
 {
 	Glitter::Vector3 pivot = getAnchorPoint(instance.getParticle()->getPivotPosition());
 	std::vector<ParticleStatus> pool = instance.getPool();
@@ -260,7 +265,7 @@ void Renderer::drawPoolMesh(ParticleInstance &instance, Camera* camera)
 	}
 }
 
-void Renderer::drawPoolQuad(ParticleInstance& instance, Camera* camera)
+void Renderer::drawPoolQuad(ParticleInstance& instance, const Camera &camera)
 {
 	std::shared_ptr<MaterialNode> mat = instance.getReference()->getMaterialNode();
 	std::vector<ParticleStatus> &pool = instance.getPool();
@@ -315,7 +320,7 @@ void Renderer::drawQuad(Transform& transform, Glitter::Vector3 pivot, Glitter::C
 	++numQuads;
 }
 
-void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Vector2 &viewportSize)
+void Renderer::drawEffect(EffectNode* effNode, const Viewport &vp)
 {
 	for (auto& em : effNode->getEmitterNodes())
 	{
@@ -345,8 +350,8 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 						if (batchStarted)
 							endBatch();
 
-						configureShader(meshParticleShader, camera, viewportSize, mode);
-						drawPoolMesh(instance, camera);
+						configureShader(meshParticleShader, vp, mode);
+						drawPoolMesh(instance, vp.getCamera());
 					}
 				}
 				else
@@ -356,8 +361,8 @@ void Renderer::drawEffect(EffectNode* effNode, Camera* camera, const Glitter::Ve
 						if (!batchStarted)
 							beginBatch();
 
-						configureShader(billboardShader, camera, viewportSize, mode);
-						drawPoolQuad(instance, camera);
+						configureShader(billboardShader, vp, mode);
+						drawPoolQuad(instance, vp.getCamera());
 					}
 				}
 			}
@@ -415,11 +420,36 @@ void Renderer::initGrid()
 	glBindVertexArray(0);
 }
 
-void Renderer::drawGrid(Camera* camera, const Glitter::Vector2& viewportSize)
+void Renderer::drawGrid(const Viewport &vp)
 {
-	configureShader(gridShader, camera, viewportSize, Glitter::BlendMode::Add);
+	configureShader(gridShader, vp, Glitter::BlendMode::Add);
 	setBlendMode(Glitter::BlendMode::Add);
 
 	glBindVertexArray(gVao);
 	glDrawArrays(GL_LINES, 0, gridVertexCount);
+}
+
+void Renderer::drawMesh(std::shared_ptr<ModelData> model, const Viewport& vp)
+{
+	configureShader(meshShader, vp, Glitter::BlendMode::Typical);
+	setBlendMode(Glitter::BlendMode::Typical);
+	glEnable(GL_DEPTH_TEST);
+
+	Transform t = model->getTransform();
+	DirectX::XMMATRIX m = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
+	m *= DirectX::XMMatrixRotationQuaternion(DirectX::FXMVECTOR{ t.rotation.x, t.rotation.y, t.rotation.z, t.rotation.w });
+	m *= DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
+
+	meshShader->setMatrix4("model", m);
+	meshShader->setVec4("color", DirectX::XMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
+	meshShader->setVec3("viewPos", vp.getCamera().getPosition());
+
+	Light l = vp.getLight();
+	meshShader->setVec3("light.position", DirectX::XMVECTOR{ l.position.x, l.position.y, l.position.z, 1.0f });
+	meshShader->setVec3("light.color", DirectX::XMVECTOR{ l.color.r, l.color.g, l.color.b, 1.0f });
+	meshShader->setInt("light.type", vp.isLightEnabled() ? (int)vp.getLight().type : -1);
+	meshShader->setFloat("light.ambient", vp.getLight().ambient);
+	meshShader->setFloat("light.specular", vp.getLight().specular);
+
+	model->draw(meshShader.get());
 }

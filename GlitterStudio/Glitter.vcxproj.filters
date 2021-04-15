@@ -143,6 +143,9 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="Viewport.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h">
@@ -238,9 +241,6 @@
     <ClInclude Include="Engine\Camera.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Light.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\ResourceManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -278,6 +278,12 @@
     <ClInclude Include="UIFn.h" />
     <ClInclude Include="Logger.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Light.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

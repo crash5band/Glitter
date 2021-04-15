@@ -1,5 +1,6 @@
 #pragma once
 #include "EffectNode.h"
+#include "Viewport.h"
 #include "..\Dependencies\DirectXMath-master\Inc\DirectXMath.h"
 #include <array>
 
@@ -46,8 +47,8 @@ private:
 	void initQuad();
 	void initGrid();
 	void resetVPos();
-	void drawPoolQuad(ParticleInstance& instance, Camera* camera);
-	void drawPoolMesh(ParticleInstance& instance, Camera* camera);
+	void drawPoolQuad(ParticleInstance& instance, const Camera &camera);
+	void drawPoolMesh(ParticleInstance& instance, const Camera &camera);
 	void getUVCoords(std::shared_ptr<MaterialNode> mat);
 	Glitter::Vector3 getAnchorPoint(Glitter::PivotPosition pivot);
 
@@ -56,12 +57,13 @@ public:
 	~Renderer();
 
 	void bindShader(std::shared_ptr<Shader>& shader);
-	void configureShader(std::shared_ptr<Shader>& shader, Camera* camera, Glitter::Vector2 size, Glitter::BlendMode blend);
+	void configureShader(std::shared_ptr<Shader>& shader, const Viewport &vp, Glitter::BlendMode blend);
 	void setBlendMode(Glitter::BlendMode mode);
 	void beginBatch();
-	void drawGrid(Camera* camera, const Glitter::Vector2& viewportSize);
-	void drawEffect(EffectNode* eff, Camera* camera, const Glitter::Vector2 &viewportSize);
+	void drawGrid(const Viewport &vp);
+	void drawEffect(EffectNode* eff, const Viewport &vp);
 	void drawQuad(Transform &transform, Glitter::Vector3 pivot, Glitter::Color &color, unsigned int uvIndex, std::shared_ptr<TextureData> tex);
+	void drawMesh(std::shared_ptr<ModelData> model, const Viewport &vp);
 	void flush();
 	void endBatch();
 };

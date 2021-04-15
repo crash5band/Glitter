@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Renderer.h"
 #include "Stopwatch.h"
+#include "Viewport.h"
 
 class GlitterPlayer
 {
@@ -14,14 +15,12 @@ private:
 	float playbackSpeed;
 	bool playing;
 	bool loop;
-	bool mouseInViewArea;
 	bool drawGrid;
-	ImRect viewArea;
+	bool drawRefModel;
 	Stopwatch timer;
 	EffectNode* selectedEffect;
-	RenderTarget* preview;
-	Camera* camera;
 	Renderer* renderer;
+	Viewport viewport;
 
 public:
 	GlitterPlayer();

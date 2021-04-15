@@ -5,19 +5,15 @@
 #include "ResourceManager.h"
 
 GlitterPlayer::GlitterPlayer() :
-	playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, mouseInViewArea{ false }
+	playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, drawRefModel{ true }
 {
 	time = maxTime	= 0;
 	selectedEffect	= nullptr;
-	preview			= new RenderTarget(1920, 1080);
-	camera			= new Camera(CameraMode::Orbit);
 	renderer		= new Renderer();
 }
 
 GlitterPlayer::~GlitterPlayer()
 {
-	delete preview;
-	delete camera;
 	delete renderer;
 }
 
@@ -53,7 +49,6 @@ void GlitterPlayer::setEffect(EffectNode* node)
 
 		stopPlayback();
 		togglePlayback();
-		//camera->reset();
 	}
 }
 
@@ -67,22 +62,10 @@ bool GlitterPlayer::isEffectLoop()
 
 void GlitterPlayer::updatePreview(float deltaT)
 {
-	viewArea = ImRect(ImGui::GetCursorScreenPos(), ImGui::GetCursorScreenPos() + ImGui::GetContentRegionAvail());
-	mouseInViewArea = ImGui::IsMouseHoveringRect(viewArea.Min, viewArea.Max, false);
-
-	if (mouseInViewArea && ImGui::IsWindowFocused())
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		camera->update(io.MouseDown[0], io.MouseDown[1], io.MouseDelta.x, io.MouseDelta.y, io.MouseWheel);
-	}
-
-	Glitter::Vector2 size(viewArea.Max.x - viewArea.Min.x, viewArea.Max.y - viewArea.Min.y);
-
-	preview->use();
-	preview->clear();
+	viewport.use();
 
 	if (drawGrid)
-		renderer->drawGrid(camera, size);
+		renderer->drawGrid(viewport);
 
 	if (selectedEffect)
 	{
@@ -96,30 +79,30 @@ void GlitterPlayer::updatePreview(float deltaT)
 
 		timer.reset();
 
-		selectedEffect->update(time, camera);
+		selectedEffect->update(time, viewport.getCamera());
 		time += deltaT * 60.0f * playbackSpeed * playing;
 
 		Editor::logTime("Update Effect", timer);
 		timer.reset();
 
-		renderer->drawEffect(selectedEffect, camera, size);
+		std::shared_ptr<ModelData> refModel = selectedEffect->getRefModel();
+		if (drawRefModel && refModel)
+		{
+			renderer->drawMesh(refModel, viewport);
+		}
+
+		renderer->drawEffect(selectedEffect, viewport);
 		Editor::logTime("Draw Effect", timer);
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDisable(GL_DEPTH_TEST);
-
-	auto texture = preview->getTexture();
-	ImGui::Image((void*)texture, ImGui::GetContentRegionAvail(), ImVec2(1, 1), ImVec2(0, 0),
-		ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 0.85));
+	viewport.end();
 }
 
 void GlitterPlayer::update(float deltaT)
 {
 	if (ImGui::Begin(prevWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		if (ImGui::Button(ICON_FA_VIDEO " Reset", ImVec2(80, btnHeight)))
-			camera->reset();
+		viewport.cameraControl();
 
 		ImGui::SameLine();
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
@@ -165,6 +148,8 @@ void GlitterPlayer::update(float deltaT)
 		ImGui::Checkbox("Loop", &loop);
 		ImGui::SameLine();
 		ImGui::Checkbox("Grid", &drawGrid);
+		ImGui::SameLine();
+		ImGui::Checkbox("Reference", &drawRefModel);
 
 		ImGui::BeginMainMenuBar();
 		if (ImGui::BeginMenu("View"))

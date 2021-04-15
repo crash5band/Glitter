@@ -25,7 +25,7 @@ private:
 	Glitter::Vector3 lastEmissionPosition;
 	Glitter::Vector3 rotationAdd;
 
-	void updateTransform(float time, Camera* camera, Transform& effT);
+	void updateTransform(float time, const Camera &camera, Transform& effT);
 
 public:
 	EmitterNode(std::shared_ptr<Glitter::Emitter> &em, EffectNode* parent);
@@ -38,11 +38,11 @@ public:
 	virtual std::shared_ptr<AnimationNode> getAnimationNode() override;
 	virtual float getLife() override;
 
-	void update(float time, Camera* camera, Transform& transform);
+	void update(float time, const Camera &camera, Transform& transform);
 	void emit(float time, Transform& baseTransform);
 	void kill();
 	void changeMesh(const std::string& filename);
-	void changeDirection(Glitter::EmitterDirectionType type, Camera* camera, Glitter::Vector3& rot);
+	void changeDirection(Glitter::EmitterDirectionType type, const Camera &camera, Glitter::Vector3& rot);
 	void setVisible(bool val);
 	void setVisibleAll(bool val);
 	bool isVisible() const;

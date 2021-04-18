@@ -327,6 +327,7 @@ namespace Glitter
 		}
 
 		textures.reserve(textureCount);
+
 		for (int i = 0; i < textureCount; ++i)
 		{
 			reader->gotoAddress(texsetsAddress + i * 4);
@@ -334,11 +335,23 @@ namespace Glitter
 			reader->gotoAddress(texsetAddress);
 			std::string texset = reader->readString();
 
-			reader->gotoAddress(texturesAddress + i * 4);
+			reader->gotoAddress((texturesAddress + i * 4));
 			size_t textureAddress = reader->readAddress();
 			reader->gotoAddress(textureAddress);
+
 			Texture* texture = new Texture();
-			texture->read(reader, texset);
+			if (reader->getVersion() < 3)
+			{
+				// texture info stored in .texture files
+				std::string texset = reader->readString();
+				std::string path = folder + texset + ".texture";
+				texture->readFile(path, texset);
+			}
+			else
+			{
+				texture->read(reader, texset);
+			}
+
 			textures.push_back(texture);
 		}
 	}
@@ -377,7 +390,7 @@ namespace Glitter
 		writer->writeNull(1);
 		writer->fixPadding();
 
-		// parameters
+		// wrtie parameters
 		size_t parametersAddress = writer->getCurrentAddress();
 		writer->writeNull(parametersCount * 4);
 		std::vector<size_t> parameterAddresses;
@@ -389,6 +402,7 @@ namespace Glitter
 		}
 		writer->fixPadding();
 
+		// write parameters addresses
 		for (int i = 0; i < parametersCount; ++i)
 		{
 			writer->gotoAddress(parametersAddress + i * 4);
@@ -396,7 +410,7 @@ namespace Glitter
 		}
 		writer->gotoEnd();
 
-		// texset
+		// write texsets
 		texsetsAddress = writer->getCurrentAddress();
 		writer->writeNull(texturesCount * 4);
 		std::vector<size_t> texsetAddresses;
@@ -407,6 +421,7 @@ namespace Glitter
 		}
 		writer->fixPadding();
 
+		// write texsets addresses
 		for (int i = 0; i < texturesCount; ++i)
 		{
 			writer->gotoAddress(texsetsAddress + i * 4);
@@ -414,17 +429,26 @@ namespace Glitter
 		}
 		writer->gotoEnd();
 
-		// textures
+		// write textures
 		texturesAddress = writer->getCurrentAddress();
 		writer->writeNull(texturesCount * 4);
 		std::vector<size_t> textureAddresses;
 		for (int i = 0; i < texturesCount; ++i)
 		{
 			textureAddresses.push_back(writer->getCurrentAddress());
-			textures[i]->write(writer);
+			if (writer->getVersion() < 3)
+			{
+				std::string filename = folder + textures[i]->getTexSet() + ".texture";
+				textures[i]->writeFile(filename);
+			}
+			else
+			{
+				textures[i]->write(writer);
+			}
 		}
 		writer->fixPadding();
 
+		// write textures addresses
 		for (int i = 0; i < texturesCount; ++i)
 		{
 			writer->gotoAddress(texturesAddress + i * 4);

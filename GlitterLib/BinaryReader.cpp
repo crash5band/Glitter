@@ -14,7 +14,7 @@ namespace Glitter
 
 		endianness = en;
 		rootNodeAddress = 0;
-		rootNodeType = 0;
+		version = 0;
 		globalOffset = 0;
 	}
 
@@ -68,9 +68,9 @@ namespace Glitter
 			fseek(file, 0, SEEK_END);
 	}
 
-	int BinaryReader::getRootNodeType() const
+	int BinaryReader::getVersion() const
 	{
-		return rootNodeType;
+		return version;
 	}
 
 	size_t BinaryReader::getRootNodeAddress() const
@@ -107,7 +107,7 @@ namespace Glitter
 		else
 		{
 			fseek(file, fileHeaderRootTypeAddress + globalOffset, SEEK_SET);
-			rootNodeType = readInt32();
+			version = readInt32();
 			fseek(file, fileHeaderRootNodeAddress + globalOffset, SEEK_SET);
 			rootNodeAddress = readInt32();
 			fseek(file, rootNodeAddress + globalOffset, SEEK_SET);

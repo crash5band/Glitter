@@ -70,7 +70,7 @@ namespace Glitter
 		if (!reader->valid())
 			return;
 
-		if (reader->getRootNodeType() != MODEL_ROOT_DYNAMIC_GENERATIONS)
+		if (reader->getVersion() != MODEL_ROOT_DYNAMIC_GENERATIONS)
 		{
 			//printf(std::string(filename + " is not a genrations model. aborting.\n").c_str());
 			//return;

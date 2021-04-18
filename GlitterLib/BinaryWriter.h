@@ -19,7 +19,7 @@ namespace Glitter
 		std::vector<uint32_t> addressTable;
 		std::string filename;
 		std::string filepath;
-		int rootNodeType;
+		int version;
 
 	public:
 		BinaryWriter(const std::string& filepath, Endianness en);
@@ -43,16 +43,17 @@ namespace Glitter
 		void write(const AABB& val);
 
 		size_t fixPadding(size_t multiple = 4);
-		size_t getFileSize() const ;
-		size_t getCurrentAddress() const ;
-		size_t getRootNodeAddress() const ;
+		size_t getFileSize() const;
+		size_t getCurrentAddress() const;
+		size_t getRootNodeAddress() const;
+		int getVersion() const;
 		bool valid() const;
 		void close() const;
-		void gotoAddress(size_t address) const ;
-		void moveAddress(size_t address) const ;
-		void gotoEnd() const ;
-		void setRootNodeAddress(size_t address) ;
-		void setGlobalOffset(size_t offset) ;
+		void gotoAddress(size_t address) const;
+		void moveAddress(size_t address) const;
+		void gotoEnd() const;
+		void setRootNodeAddress(size_t address);
+		void setGlobalOffset(size_t offset);
 		void writeAddressTableBBIN(size_t offset);
 		void prepareHeader(int rootType, int rootOffset = fileHeaderDefaultOffset);
 		void writeHeader(bool extraFooter);

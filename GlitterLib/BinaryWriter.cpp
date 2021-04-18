@@ -13,7 +13,7 @@ namespace Glitter
 			filepath = File::getFilePath(path);
 			globalOffset = 0;
 			rootNodeAddress = 0;
-			rootNodeType = 0;
+			version = 0;
 		}
 	}
 
@@ -47,6 +47,16 @@ namespace Glitter
 		{
 			return 0;
 		}
+	}
+
+	int BinaryWriter::getVersion() const
+	{
+		return version;
+	}
+
+	void BinaryWriter::changeEndianness(Endianness en)
+	{
+		endianness = en;
 	}
 
 	void BinaryWriter::gotoAddress(size_t address) const
@@ -240,7 +250,7 @@ namespace Glitter
 	{
 		if (file)
 		{
-			rootNodeType = rootType;
+			version = rootType;
 			rootNodeAddress = rootOffset;
 
 			writeNull(fileHeaderDefaultOffset);
@@ -268,7 +278,7 @@ namespace Glitter
 
 		fseek(file, 0 + globalOffset, SEEK_SET);
 		writeInt32(size);
-		writeInt32(((uint32_t)rootNodeType));
+		writeInt32(((uint32_t)version));
 		writeInt32(finalTableAddress);
 		writeInt32(rootNodeAddress);
 		writeInt32(finalTableAddressAbs);

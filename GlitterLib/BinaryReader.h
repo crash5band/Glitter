@@ -20,7 +20,7 @@ namespace Glitter
 		std::vector<uint32_t> addressTable;
 		std::string filename;
 		std::string filepath;
-		int rootNodeType;
+		int version;
 
 	public:
 		BinaryReader(const std::string& filename, Endianness endianness);
@@ -52,7 +52,7 @@ namespace Glitter
 		size_t getFileSize() const;
 		size_t getCurrentAddress() const;
 		size_t getRootNodeAddress() const;
-		int getRootNodeType() const;
+		int getVersion() const;
 		bool valid() const;
 		void close() const;
 		void changeEndianness(Endianness en);

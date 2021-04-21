@@ -30,91 +30,88 @@ void AnimationNode::remove(size_t pos)
 	animationList->erase(animationList->begin() + pos);
 }
 
+float AnimationNode::calcRandomRange(Glitter::AnimationType type, float randomRange)
+{
+	// color animations have a random range in one direction only(?)
+	float min = ((size_t)type>= 10 && (size_t)type < 14) ? 0 : -randomRange;
+	return Utilities::random(min, randomRange);
+}
+
 void AnimationNode::buildCache()
 {
 	for (auto& anim : cache)
 		anim.clear();
 
-	for (size_t a = 0; a < Glitter::animationTypeTableSize; ++a)
+	for (Glitter::Animation& anim : *animationList)
 	{
-		for (size_t b = 0; b < animationList->size(); ++b)
+		size_t type = (size_t)anim.getType();
+		size_t keyCount = anim.getKeys().size();
+		size_t nextIndex = 0;
+
+		if (!keyCount)
+			break;
+
+		Glitter::Key k1 = anim.getKeys()[nextIndex++];
+		k1.value += calcRandomRange(anim.getType(), k1.randomRange);
+
+		int frame = 0;
+		cache[type].reserve(anim.getEndTime() + 1);
+
+		// fill frames before the first key with default values
+		if (frame < k1.time)
 		{
-			if ((Glitter::AnimationType)a == animationList->at(b).getType())
+			float value = defaultValue;
+			size_t type = (size_t)anim.getType();
+
+			if (type > 5 && type < 10)
 			{
-				Glitter::Animation& anim = animationList->at(b);
-				size_t keyCount = anim.getKeys().size();
-				size_t index = 0;
+				value = defaultScale;
+			}
+			else if (type > 9 && type < 14)
+			{
+				value = defaultColor;
+			}
 
-				if (!keyCount)
-					break;
+			for (; frame < k1.time; ++frame)
+				cache[type].push_back(value);
+		}
 
-				Glitter::Key k1 = anim.getKeys()[index++];
+		if (keyCount > 1)
+		{
+			Glitter::Key k2 = anim.getKeys()[nextIndex];
+			k2.value += calcRandomRange(anim.getType(), k2.randomRange);
 
-				// color and integer animations have a random range in one direction only
-				float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ? 0 : -k1.randomRange;
-				k1.value += Utilities::random(min, k1.randomRange);
-
-				if (keyCount > 1)
+			for (; frame <= anim.getEndTime(); ++frame)
+			{
+				if (frame >= k2.time)
 				{
-					cache[a].reserve(anim.getEndTime() + 1);
-					Glitter::Key k2{ -1.0f };
+					k1 = k2;
+					++nextIndex;
 
-					int frame = 0;
-
-					// fill frames before the first key with default values
-					if (frame < k1.time)
+					if (nextIndex < keyCount)
 					{
-						float value = defaultValue;
-
-						size_t type = (size_t)anim.getType();
-						if (type > 5 && type < 10)
-						{
-							value = defaultScale;
-						}
-						else if (type > 9 && type < 14)
-						{
-							value = defaultColor;
-						}
-
-						for (; frame < k1.time; ++frame)
-							cache[a].push_back(value);
+						k2 = anim.getKeys()[nextIndex];
+						k2.value += calcRandomRange(anim.getType(), k2.randomRange);
 					}
+				}
 
-					for (; frame <= anim.getEndTime(); ++frame)
-					{
-						if (index < keyCount)
-						{
-							// color animations have their random range in one direction only.
-							float min = ((size_t)anim.getType() >= 10 && (size_t)anim.getType() < 14) ? 0 : -k2.randomRange;
-
-							float value = k2.time != anim.getKeys()[index].time ? Utilities::random(min, k2.randomRange) : 0.0f;
-							k2 = anim.getKeys()[index];
-							k2.value += value;
-						}
-
-						if (k1.interpolationType == Glitter::InterpolationType::Constant)
-						{
-							cache[a].push_back(k1.value);
-						}
-						else
-						{
-							cache[a].push_back(anim.interpolate(frame, k1, k2));
-						}
-
-						if (frame >= k2.time)
-						{
-							k1 = k2;
-							index++;
-						}
-					}
-
-					break;
+				if (k1.interpolationType == Glitter::InterpolationType::Constant)
+				{
+					for (; frame < k2.time; ++frame)
+						cache[type].push_back(k1.value);
 				}
 				else
 				{
-					cache[a].push_back(k1.value);
+					while (frame < k2.time)
+						cache[type].push_back(anim.interpolate(frame++, k1, k2));
+
+					cache[type].push_back(k2.value);
 				}
 			}
+		}
+		else
+		{
+			cache[type].push_back(k1.value);
 		}
 	}
 }

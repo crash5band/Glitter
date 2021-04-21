@@ -13,6 +13,8 @@ private:
 	std::vector<Glitter::Animation> *animationList;
 	std::array<std::vector<float>, Glitter::animationTypeTableSize> cache;
 
+	float calcRandomRange(Glitter::AnimationType type, float randomRange);
+
 public:
 	AnimationNode(std::vector<Glitter::Animation>* list);
 

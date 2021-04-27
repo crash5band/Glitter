@@ -103,6 +103,17 @@ void Editor::updateMenuBar()
 		ImGui::EndMenu();
 	}
 
+	if (ImGui::BeginMenu("Models"))
+	{
+		if (ImGui::MenuItem("Open"))
+			modelViewer->open();
+
+		if (ImGui::MenuItem("Open Folder"))
+			modelViewer->openFolder();
+
+		ImGui::EndMenu();
+	}
+
 	if (ImGui::BeginMenu("Materials"))
 	{
 		if (ImGui::MenuItem(ICON_FA_FILE " Open", "Alt + O"))
@@ -128,6 +139,18 @@ void Editor::updateMenuBar()
 		ImGui::Separator();
 		if (ImGui::MenuItem("Close All Materials"))
 			MaterialEditor::clean();
+
+		ImGui::Separator();
+		if (ImGui::BeginMenu("Textures"))
+		{
+			if (ImGui::MenuItem("Open"))
+				textureViewer->open();
+
+			if (ImGui::MenuItem("Open Folder"))
+				textureViewer->openFolder();
+
+			ImGui::EndMenu();
+		}
 
 		ImGui::EndMenu();
 	}

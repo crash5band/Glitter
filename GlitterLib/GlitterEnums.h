@@ -251,8 +251,8 @@ namespace Glitter
 		"YRotationOnly"
 	};
 
-	const size_t EdirectionTypeTableSize = 6;
-	const std::string EdirectionTypeTable[] =
+	const size_t emitterDirectionTypeTableSize = 6;
+	const std::string emitterDirectionTypeTable[] =
 	{
 		"ParentAxis",
 		"Billboard",

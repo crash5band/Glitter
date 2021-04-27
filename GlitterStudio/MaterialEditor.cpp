@@ -155,7 +155,7 @@ void MaterialEditor::preview()
 	auto tex = materialNodes[selection]->getTexture();
 	if (tex)
 	{
-		ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - 64);
+		ImGui::SetCursorPosX((ImGui::GetWindowSize().x / 2) - (texSize / 2.0f));
 		ImGui::SetCursorPosY(ImGui::GetCursorPos().y + 10);
 
 		ImVec2 min = ImGui::GetCursorScreenPos();

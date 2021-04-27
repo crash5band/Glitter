@@ -62,8 +62,8 @@ private:
 	void updateTimelineContents();
 	void drawAnimationCurve(const Glitter::Key &k1, const Glitter::Key &k2);
 	void onHandleDrag(Glitter::Key &k, int index, ImVec2& pos);
+	float valueToHeight(float value);
 	float heightToValue(float height);
-	float valueToHeight(float val);
 
 public:
 	AnimationTimeline();
@@ -73,11 +73,6 @@ public:
 	void setCurrentFrame(int frame);
 	void newKey();
 	void deleteKey();
-	void nextKey();
-	void previousKey();
-	void firstKey();
-	void lastKey();
 	AnimationGraphType getGraphType(Glitter::AnimationType type) const;
 	void update(std::weak_ptr<AnimationNode> &node, size_t animation);
 };
-

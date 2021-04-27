@@ -379,17 +379,17 @@ void Renderer::initGrid()
 	gridBuffer = new VertexBuffer[gridVertexCount];
 	for (float x = -gridSize; x <= gridSize; x += gridSpacing)
 	{
-		DirectX::XMVECTOR xColor{ 0.5f, 0.5f, 0.5f, 0.8f };
+		DirectX::XMVECTOR xColor{ 0.3f, 0.3f, 0.3f, 0.7f };
 		DirectX::XMVECTOR zColor(xColor);
 		if (x == 0)
 		{
-			xColor = DirectX::XMVECTOR{ 0.8f, 0.0f, 0.0f, 0.8f };
-			zColor = DirectX::XMVECTOR{ 0.0f, 0.8f, 0.0f, 0.8f };
+			xColor = DirectX::XMVECTOR{ 0.7f, 0.2f, 0.2f, 0.7f };
+			zColor = DirectX::XMVECTOR{ 0.2f, 0.7f, 0.2f, 0.7f };
 		}
 		else if (abs(x) - abs((int)x) == 0.5f)
 		{
-			xColor = DirectX::XMVECTOR{ 0.2f, 0.2f, 0.2f, 0.8f };
-			zColor = DirectX::XMVECTOR{ 0.2f, 0.2f, 0.2f, 0.8f };
+			xColor = DirectX::XMVECTOR{ 0.1f, 0.1f, 0.1f, 0.5f };
+			zColor = DirectX::XMVECTOR{ 0.1f, 0.1f, 0.1f, 0.5f };
 		}
 
 		gridBuffer[v].position = DirectX::XMVECTOR{ x, 0.0f, -gridSize};

@@ -405,7 +405,7 @@ namespace Glitter
 		emitCondition = (EmitCondition)glitterStringToEnum(emitConditionTable, emitConditionTableSize, emitStr);
 
 		std::string dirStr	= BIXF::toString(element->FirstChildElement("DirectionType"));
-		directionType = (EmitterDirectionType)glitterStringToEnum(EdirectionTypeTable, EdirectionTypeTableSize, dirStr);
+		directionType = (EmitterDirectionType)glitterStringToEnum(emitterDirectionTypeTable, emitterDirectionTypeTableSize, dirStr);
 
 		std::string emDirStr = BIXF::toString(element->FirstChildElement("EmissionDirectionType"));
 		emissionDirectionType = (EmissionDirectionType)glitterStringToEnum(emissionDirectionTypeTable, emissionDirectionTypeTableSize, emDirStr);
@@ -481,7 +481,7 @@ namespace Glitter
 		BIXF::createChildVector3(element, "Scaling", scaling);
 
 		BIXF::createChildValue(element, "EmitCondition", glitterEnumToString(emitConditionTable, emitConditionTableSize, (size_t)emitCondition).c_str());
-		BIXF::createChildValue(element, "DirectionType", glitterEnumToString(EdirectionTypeTable, EdirectionTypeTableSize, (size_t)directionType).c_str());
+		BIXF::createChildValue(element, "DirectionType", glitterEnumToString(emitterDirectionTypeTable, emitterDirectionTypeTableSize, (size_t)directionType).c_str());
 		BIXF::createChildValue(element, "EmissionInterval", emissionInterval);
 		BIXF::createChildValue(element, "ParticlePerEmission", particlesPerEmission);
 

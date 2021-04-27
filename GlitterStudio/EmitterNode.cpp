@@ -300,7 +300,7 @@ void EmitterNode::populateInspector()
 		addComboBoxProperty("Condition", Glitter::emitConditionTable, Glitter::emitConditionTableSize,
 			emitter->getEmitCondition(), emitter, std::mem_fn(&Emitter::setEmitCondition));
 
-		addComboBoxProperty("Direction Type", Glitter::EdirectionTypeTable, Glitter::EdirectionTypeTableSize,
+		addComboBoxProperty("Direction Type", Glitter::emitterDirectionTypeTable, Glitter::emitterDirectionTypeTableSize,
 			emitter->getDirectionType(), emitter, std::mem_fn(&Emitter::setDirectionType));
 
 		addFloatProperty("Interval", emitter->getEmissionInterval(), emitter, std::mem_fn(&Emitter::setEmissionInterval));

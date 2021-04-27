@@ -2222,17 +2222,29 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data
     PushMultiItemsWidths(components, CalcItemWidth());
     size_t type_size = GDataTypeInfo[data_type].Size;
 
-    const char* lbl[3];
-    if (components == 2)
+    const char* lbl[4];
+    switch (components)
     {
+    case 1:
+        lbl[0] = "";
+        break;
+
+    case 2:
         lbl[0] = "U: ";
         lbl[1] = "V: ";
-    }
-    else
-    {
+        break;
+
+    case 3:
         lbl[0] = "X: ";
         lbl[1] = "Y: ";
         lbl[2] = "Z: ";
+        break;
+
+    case 4:
+        lbl[0] = "R: ";
+        lbl[1] = "G: ";
+        lbl[2] = "B: ";
+        lbl[3] = "A: ";
     }
 
     for (int i = 0; i < components; i++)

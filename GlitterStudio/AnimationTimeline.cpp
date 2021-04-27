@@ -186,19 +186,19 @@ void AnimationTimeline::updateControls()
 	ImGui::SameLine();
 
 	if (ImGui::Button(ICON_FA_FAST_BACKWARD, btnNormal))
-		firstKey();
+		currentFrame = frameStart;
 
 	ImGui::SameLine();
 	if (ImGui::Button(ICON_FA_BACKWARD, btnNormal))
-		previousKey();
+		--currentFrame;
 
 	ImGui::SameLine();
 	if (ImGui::Button(ICON_FA_FORWARD, btnNormal))
-		nextKey();
+		++currentFrame;
 
 	ImGui::SameLine();
 	if (ImGui::Button(ICON_FA_FAST_FORWARD, btnNormal))
-		lastKey();
+		currentFrame = frameEnd;
 
 	currentFrame = std::clamp(currentFrame, frameStart, frameEnd);
 	zoom = std::clamp(zoom, minZoom, maxZoom);
@@ -543,54 +543,6 @@ void AnimationTimeline::deleteKey()
 		auto nodePtr = node.lock();
 		CommandManager::pushNew(new RemoveKeyCommand(nodePtr, animationIndex, selectedKey));
 		selectedKey = -1;
-	}
-}
-
-void AnimationTimeline::previousKey()
-{
-	std::vector<Glitter::Key> keys = animation->getKeys();
-	for (size_t index = 0; index < keys.size(); ++index)
-	{
-		if (keys[index].time >= currentFrame)
-		{
-			currentFrame = index > 0 ? keys[index - 1].time : keys[index].time;
-			//timelinePosOffset.x = canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth) + timelineMinOffset.x;
-			return;
-		}
-	}
-}
-
-void AnimationTimeline::nextKey()
-{
-	std::vector<Glitter::Key> keys = animation->getKeys();
-	for (size_t index = 0; index < keys.size(); ++index)
-	{
-		if (keys[index].time >= currentFrame)
-		{
-			currentFrame = index < keys.size() - 1 ? keys[index + 1].time : keys[index].time;
-			//timelinePosOffset.x = canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth);
-			return;
-		}
-	}
-}
-
-void AnimationTimeline::firstKey()
-{
-	std::vector<Glitter::Key> keys = animation->getKeys();
-	if (keys.size())
-	{
-		currentFrame = keys[0].time;
-		//timelinePosOffset.x = canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth);
-	}
-}
-
-void AnimationTimeline::lastKey()
-{
-	std::vector<Glitter::Key> keys = animation->getKeys();
-	if (keys.size())
-	{
-		currentFrame = keys[keys.size() - 1].time;
-		//timelinePosOffset.x = canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth);
 	}
 }
 

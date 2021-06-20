@@ -1,281 +1,451 @@
 #include "ParticleInstance.h"
 #include "Utilities.h"
 
-ParticleInstance::ParticleInstance(std::weak_ptr<ParticleNode> nodeRef) :
-	reference{ nodeRef }, aliveCount{ 0 }, rotationAddCount{ 0 }, visible{ true }
+namespace Glitter
 {
-	size_t count = reference->getParticle()->getMaxCount();
-	pool.reserve(count);
-	for (size_t i = 0; i < count; ++i)
-		pool.emplace_back();
-}
-
-std::vector<ParticleStatus> &ParticleInstance::getPool()
-{
-	return pool;
-}
-
-std::shared_ptr<ParticleNode> ParticleInstance::getReference() const
-{
-	return reference;
-}
-
-std::shared_ptr<Glitter::Particle> ParticleInstance::getParticle() const
-{
-	return reference->getParticle();
-}
-
-size_t ParticleInstance::getAliveCount() const
-{
-	return aliveCount;
-}
-
-void ParticleInstance::verifyPoolSize()
-{
-	// resize pool if MaxCount is changed
-	auto &particle = reference->getParticle();
-	size_t size = pool.size();
-
-	if (particle->getMaxCount() > size)
+	namespace Editor
 	{
-		pool.reserve(particle->getMaxCount());
-
-		for (size_t i = 0; i < particle->getMaxCount() - size; ++i)
-			pool.emplace_back();
-	}
-	else if (particle->getMaxCount() < pool.size())
-	{
-		for (size_t i = 0; i < size - particle->getMaxCount(); ++i)
-			pool.pop_back();
-
-		//pool.shrink_to_fit();
-	}
-}
-
-void ParticleInstance::kill()
-{
-	for (auto& p : pool)
-		p.dead = true;
-}
-
-void ParticleInstance::setVisible(bool val)
-{
-	visible = val;
-}
-
-bool ParticleInstance::isVisible() const
-{
-	return visible;
-}
-
-void ParticleInstance::changeDirection(Glitter::ParticleDirectionType type, const Camera &cam, Glitter::Vector3 &pos,
-	Glitter::Vector3 v, Glitter::Vector3& rot, Glitter::Vector3& o, Glitter::Vector3& r)
-{
-	switch (type)
-	{
-	case Glitter::ParticleDirectionType::Billboard:
-		rot.x = -cam.getPitch();
-		rot.y = 90.0f - cam.getYaw();
-		break;
-
-	case Glitter::ParticleDirectionType::DirectionalAngle:
-	case Glitter::ParticleDirectionType::DirectionalAngleBillboard:
-	{
-		Glitter::Vector3 vel = v;
-		vel.normalise();
-
-		rot.y = Utilities::toDegrees(atan2f(vel.x, vel.z));
-		rot.x = vel.y == 0 ? 0 : Utilities::toDegrees(acosf(vel.y));
-
-		break;
-	}
-
-	case Glitter::ParticleDirectionType::EmitterDirection:
-	{
-		Glitter::Vector3 pPos = pos - o;
-		pPos.normalise();
-
-		rot.x = Utilities::toDegrees(asinf(-pPos.y));
-		rot.y = Utilities::toDegrees(atan2f(pPos.x, pPos.z));
-		break;
-	}
-
-	case Glitter::ParticleDirectionType::XAxis:
-		rot.y = 90.0f;
-		rot.z = 0.0f;
-		break;
-
-	case Glitter::ParticleDirectionType::YAxis:
-		rot.x = -90.0f;
-		rot.z = 0.0f;
-		break;
-
-	case Glitter::ParticleDirectionType::ZAxis:
-		rot.x = 0.0f;
-		rot.y = 0.0f;
-		break;
-
-	case Glitter::ParticleDirectionType::YRotationOnly:
-		rot.y = 90.0f - cam.getYaw();
-		break;
-	}
-}
-
-void ParticleInstance::update(float time, const Camera &camera, Transform& emitterTransform)
-{
-	verifyPoolSize();
-	auto &particle = reference->getParticle();
-	auto animNode = reference->getAnimationNode();
-
-	unsigned int maxUV = 0;
-	int interval = particle->getUVChangeInterval();
-	Glitter::UVIndexType type = particle->getUVIndexType();
-	if (reference->getMaterialNode().get())
-	{
-		Glitter::Vector2 uvSplit = reference->getMaterialNode()->getMaterial()->getSplit();
-		maxUV = ((int)uvSplit.x * (int)uvSplit.y) - 1;
-	}
-
-	Glitter::Vector3 origin;
-	Glitter::Vector3 emRot = emitterTransform.rotation.toEulerDegrees();
-	Glitter::Matrix4 m4LocalOrigin;
-	m4LocalOrigin.makeTransform(origin, emitterTransform.scale, emitterTransform.rotation);
-
-	aliveCount = 0;
-	for (auto& p : pool)
-	{
-		if (p.time > particle->getLifeTime() || p.time < 0.0f)
-			p.dead = true;
-
-		if (p.dead)
-			continue;
-	
-		p.time = time - p.startTime;
-		Glitter::Vector3 basePos = p.basePos;
-		Glitter::Vector3 velocity = p.direction + (p.acceleration * p.time);
-
-		// Update Position
-		if (particle->getFlags() & 4)
+		ParticleInstance::ParticleInstance(std::weak_ptr<ParticleNode> nodeRef) :
+			reference{ nodeRef }, aliveCount{ 0 }, rotationAddCount{ 0 }, visible{ true }
 		{
-			// transform particle's basePos with emitter rotation. since this is done every update, it 'follows' the emitter 
-			basePos = (m4LocalOrigin * basePos) + emitterTransform.position;
-			velocity = m4LocalOrigin * velocity;
+			size_t count = reference->getParticle()->getMaxCount();
+			pool.reserve(count);
+			for (size_t i = 0; i < count; ++i)
+				pool.emplace_back();
 		}
 
-		p.transform.position = basePos + (m4LocalOrigin * animNode->tryGetTranslation(p.time)) + (velocity * p.time);
-
-		// Update Rotation
-		Glitter::Vector3 pRot = emRot + p.rotation + animNode->tryGetRotation(p.time);
-		changeDirection(particle->getDirectionType(), camera, p.transform.position, velocity, pRot, emitterTransform.position, emRot);
-		p.transform.rotation.fromEulerDegrees(pRot);
-
-		// Update scale
-		p.transform.scale = animNode->tryGetScale(p.time);
-		if (particle->getType() != Glitter::ParticleType::Mesh)
+		std::vector<ParticleStatus>& ParticleInstance::getPool()
 		{
-			// FLAGS: Uniform Scale
-			if (particle->getFlags() & 16)
-				p.transform.scale *= p.scale.x;
-			else
-				p.transform.scale *= p.scale;
+			return pool;
 		}
 
-		// Update Color
-		p.color = particle->getColor() * reference->getBaseColor() * animNode->tryGetColor(p.time);
-
-		// Update UVs
-		if (particle->getUVIndexType() == Glitter::UVIndexType::Fixed)
+		std::shared_ptr<ParticleNode> ParticleInstance::getReference() const
 		{
-			p.UVIndex = particle->getUVIndex();
+			return reference;
 		}
-		else if (maxUV && interval && !((int)p.time % interval) && (round(p.lastUVChange) != round(p.time)))
+
+		std::shared_ptr<Particle> ParticleInstance::getParticle() const
 		{
-			switch (type)
+			return reference->getParticle();
+		}
+
+		size_t ParticleInstance::getAliveCount() const
+		{
+			return aliveCount;
+		}
+
+		void ParticleInstance::verifyPoolSize()
+		{
+			// resize pool if MaxCount is changed
+			auto& particle = reference->getParticle();
+			size_t size = pool.size();
+
+			if (particle->getMaxCount() > size)
 			{
-			case Glitter::UVIndexType::ReverseOrder:
-			case Glitter::UVIndexType::InitialRandomReverseOrder:
-				--p.UVIndex;
-				if (p.UVIndex < 0)
-					p.UVIndex = maxUV;
-				break;
+				pool.reserve(particle->getMaxCount());
 
-			case Glitter::UVIndexType::SequentialOrder:
-			case Glitter::UVIndexType::InitialRandomSequentialOrder:
-				p.UVIndex = (p.UVIndex + 1) % maxUV;
-				break;
-
-			case Glitter::UVIndexType::RandomOrder:
-				p.UVIndex = Utilities::random(0, maxUV);
-				break;
+				for (size_t i = 0; i < particle->getMaxCount() - size; ++i)
+					pool.emplace_back();
 			}
+			else if (particle->getMaxCount() < pool.size())
+			{
+				for (size_t i = 0; i < size - particle->getMaxCount(); ++i)
+				{
+					pool.pop_back();
+				}
 
-			p.lastUVChange = p.time;
+				//pool.shrink_to_fit();
+			}
 		}
 
-		++aliveCount;
-	}
-}
-
-void ParticleInstance::create(int n, float startTime, Glitter::EmissionDirectionType dir, std::vector<Glitter::Vector3>& basePos, Glitter::Vector3& origin)
-{	
-	int count = 0;
-	for (std::vector<ParticleStatus>::iterator it = pool.begin(); it != pool.end(); ++it)
-	{
-		if ((*it).dead)
+		void ParticleInstance::kill()
 		{
-			ParticleStatus &p	= (*it);
-			auto &particle		= reference->getParticle();
-			p.startTime			= startTime;
-			p.time				= 0.0f;
-			p.dead				= false;
-
-			float speed					= Utilities::randomize(particle->getSpeed(), particle->getSpeedRandom());
-			float deceleration			= Utilities::randomize(particle->getDeceleration(),	particle->getDecelerationRandom());
-			Glitter::Vector3 direction	= Utilities::randomize(particle->getDirection(), particle->getDirectionRandom());
-			Glitter::Vector3 accel		= Utilities::randomize(particle->getExternalAccel(), particle->getExternalAccelRandom());
-			Glitter::Vector3 dirAdd		= Glitter::Vector3();
-
-			switch (dir)
+			for (auto& p : pool)
 			{
-			case Glitter::EmissionDirectionType::Inward:
-				dirAdd = origin - basePos[count];
-				break;
+				p.locusHistories.clear();
+				p.dead = true;
+			}
+		}
 
-			case Glitter::EmissionDirectionType::Outward:
-				dirAdd = basePos[count] - origin;
-				break;
+		void ParticleInstance::setVisible(bool val)
+		{
+			visible = val;
+		}
+
+		bool ParticleInstance::isVisible() const
+		{
+			return visible;
+		}
+
+		Vector3 ParticleInstance::getAnchorPoint(PivotPosition pivot)
+		{
+			switch (pivot)
+			{
+			case PivotPosition::TopLeft:
+				return Vector3(0.5, -0.5, 0);
+
+			case PivotPosition::TopCenter:
+				return Vector3(0, -0.5, 0);
+
+			case PivotPosition::TopRight:
+				return Vector3(-0.5, -0.5, 0);
+
+			case PivotPosition::MiddleLeft:
+				return Vector3(0.5, 0, 0);
+
+			case PivotPosition::MiddleRight:
+				return Vector3(-0.5, 0, 0);
+
+			case PivotPosition::BottomLeft:
+				return Vector3(0.5, 0.5, 0);
+
+			case PivotPosition::BottomCenter:
+				return Vector3(0, 0.5, 0);
+
+			case PivotPosition::BottomRight:
+				return Vector3(-0.5, 0.5, 0);
 
 			default:
-				break;
+				return Vector3(0, 0, 0);
 			}
-
-			dirAdd.normalise();
-			p.direction		= (direction + dirAdd) * speed;
-			p.basePos		= basePos[count];
-			p.acceleration	= (accel - deceleration + particle->getGravitationalAccel()) / 3600.0f;
-			p.scale			= Utilities::randomize(particle->getSize(),	particle->getSizeRandom());	
-			p.UVIndex		= particle->getUVIndex();
-			p.lastUVChange	= p.time;
-
-			Glitter::Vector3 rotation = Utilities::randomize(particle->getRotation(), particle->getRotationRandom());
-			Glitter::Vector3 rotationAdd = Utilities::randomize(particle->getRotationAdd(), particle->getRotationAddRandom());
-			p.rotation = rotation + rotationAdd * (rotationAddCount++ % particle->getMaxCount());
-
-			// InitialRandom UVIndex Types
-			if ((size_t)particle->getUVIndexType() >= 1 && (size_t)particle->getUVIndexType() < 5)
-			{
-				Glitter::Vector2 uvSplit = Glitter::Vector2(1.0f, 1.0f);
-				if (reference->getMaterialNode())
-					uvSplit = reference->getMaterialNode()->getMaterial()->getSplit();
-
-				unsigned int maxUV = (uvSplit.x * uvSplit.y) - 1;
-				p.UVIndex = Utilities::random(0, maxUV);
-			}
-
-			++count;
 		}
 
-		if (count >= n)
-			return;
+		void ParticleInstance::update(float time, const Camera& camera, const DirectX::XMMATRIX &emM4, const Quaternion &emRot)
+		{
+			verifyPoolSize();
+
+			auto& particle = reference->getParticle();
+
+			unsigned int maxUV = 0;
+			int interval = particle->getUVChangeInterval();
+			UVIndexType type = particle->getUVIndexType();
+			if (reference->getMaterialNode())
+			{
+				Vector2 uvSplit = reference->getMaterialNode()->getMaterial()->getSplit();
+				maxUV = ((int)uvSplit.x * (int)uvSplit.y) - 1;
+			}
+
+			DirectX::XMMATRIX emM4Origin = emM4;
+			emM4Origin.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+
+			std::shared_ptr<EditorAnimationSet> animationSet = reference->getAnimationSet();
+
+			DirectX::XMMATRIX directionM4 = DirectX::XMMatrixIdentity();
+			DirectX::XMMATRIX inverseViewM4 = DirectX::XMMatrixIdentity();
+			inverseViewM4 = DirectX::XMMatrixRotationY(PI);
+			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+			inverseViewM4 *= DirectX::XMMatrixInverse(nullptr, camera.getViewMatrix());
+			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+
+			ParticleDirectionType dType = particle->getDirectionType();
+
+			aliveCount = 0;
+			for (auto& p : pool)
+			{
+				if (p.time > particle->getLifeTime() || p.time < 0.0f)
+					p.dead = true;
+
+				if (p.dead)
+					continue;
+
+				if (animationSet->isDirty())
+					p.animation.buildCache(animationSet);
+
+				float lastTime = p.time;
+				p.time = time - p.startTime;
+
+				Vector3 velocity = p.direction + (p.acceleration * p.time);
+				Vector3 basePos = p.basePos;
+				Vector3 animT = p.animation.tryGetTranslation(p.time);
+				Vector3 gravity = (particle->getGravitationalAccel() / 3600) * p.time * p.time;
+
+				if (particle->getFlags() & 4)
+				{
+					// FLAGS: Emitter Local
+					DirectX::XMVECTOR pTransform{ basePos.x, basePos.y, + basePos.z };
+					pTransform = DirectX::XMVector3Transform(pTransform, emM4Origin);
+					pTransform = DirectX::XMVectorAdd(pTransform, emM4.r[3]);
+					basePos = Vector3(pTransform.m128_f32[0], pTransform.m128_f32[1], pTransform.m128_f32[2]);
+
+					DirectX::XMVECTOR vTransform{ velocity.x, velocity.y, velocity.z };
+					vTransform = DirectX::XMVector3Transform(vTransform, emM4Origin);
+					velocity = Vector3(vTransform.m128_f32[0], vTransform.m128_f32[1], vTransform.m128_f32[2]);
+				}
+
+				DirectX::XMVECTOR aTransform{ animT.x, animT.y, animT.z };
+				aTransform = DirectX::XMVector3Transform(aTransform, emM4Origin);
+				animT = Vector3(aTransform.m128_f32[0], aTransform.m128_f32[1], aTransform.m128_f32[2]);
+
+				Vector3 translation = basePos + (velocity * p.time) + animT + gravity;
+				Vector3 rotation = p.rotation + p.animation.tryGetRotation(p.time);
+				Vector3 scaling = p.animation.tryGetScale(p.time);
+				if (particle->getType() != ParticleType::Mesh)
+				{
+					// FLAGS: Uniform Scale
+					if (particle->getFlags() & 16)
+						scaling *= p.scale.x;
+					else
+						scaling *= p.scale;
+				}
+
+				Vector3 pivot = getAnchorPoint(particle->getPivotPosition());
+				pivot *= scaling;
+
+				p.mat4 = DirectX::XMMatrixIdentity();
+				p.mat4 *= DirectX::XMMatrixScaling(scaling.x, scaling.y, scaling.z);
+				p.mat4 *= DirectX::XMMatrixTranslation(pivot.x, pivot.y, pivot.z);
+
+				switch (dType)
+				{
+				case ParticleDirectionType::Billboard:
+					directionM4 = inverseViewM4;
+					break;
+
+				case ParticleDirectionType::DirectionalAngle:
+				case ParticleDirectionType::DirectionalAngleBillboard:
+				{
+					Vector3 diff = translation - basePos;
+					float length = diff.squaredLength();
+
+					if (length < 0.000001f)
+						diff = basePos;
+
+					diff.normalise();
+					directionM4 = DirectX::XMMatrixIdentity();
+
+					Vector3 up(0.0f, 1.0f, 0.0f);
+
+					float t;
+					Vector3 axis = up.crossProduct(diff);
+					float angle = axis.length();
+
+					if (angle >= 0.000001f)
+					{
+						angle = asinf(std::min(angle, 1.0f));
+					}
+					else
+					{
+						angle = 0.0f;
+						axis.x = up.z;
+						axis.y = 0.0f;
+						axis.z = up.x;
+						t = axis.length();
+						if (t < 0.000001f)
+						{
+							axis.x = -up.y;
+							axis.y = up.x;
+							axis.z = 0.0f;
+						}
+					}
+
+					t = up.dotProduct(diff);
+					if (t < 0.0f)
+						angle = PI - angle;
+
+					if (dType == ParticleDirectionType::DirectionalAngleBillboard)
+					{
+						directionM4 *= DirectX::XMMatrixRotationY(PI);
+						directionM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+						directionM4 *= DirectX::XMMatrixRotationY(Utilities::toRadians(90 - camera.getYaw()));
+						directionM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+					}
+
+					directionM4 *= DirectX::XMMatrixRotationAxis(DirectX::XMVECTOR{ axis.x, axis.y, axis.z, 1.0f }, angle);
+
+					// directionM4 is already transformed by emM4Origin
+					p.mat4 *= DirectX::XMMatrixInverse(nullptr, emM4Origin);
+				}
+				break;
+
+				case ParticleDirectionType::EmitterDirection:
+					break;
+
+				case ParticleDirectionType::XAxis:
+					directionM4 = DirectX::XMMatrixRotationY(-PI / 2);
+					break;
+
+				case ParticleDirectionType::YAxis:
+					directionM4 = DirectX::XMMatrixRotationX(PI / 2);
+					break;
+
+				case ParticleDirectionType::ZAxis:
+					directionM4 = DirectX::XMMatrixRotationZ(-PI / 2);
+					break;
+
+				case ParticleDirectionType::YRotationOnly:
+					directionM4 = DirectX::XMMatrixRotationY(PI);
+					directionM4 *= DirectX::XMMatrixRotationY(Utilities::toRadians(90 - camera.getYaw()));
+					break;
+
+				default:
+					break;
+				}
+
+				Quaternion qX, qY, qZ, qR;
+				qX.fromAngleAxis(Utilities::toRadians(rotation.x), Vector3(1, 0, 0));
+				qY.fromAngleAxis(Utilities::toRadians(rotation.y), Vector3(0, 1, 0));
+				qZ.fromAngleAxis(Utilities::toRadians(rotation.z), Vector3(0, 0, 1));
+				qR = emRot * qZ * qY * qX;
+
+				if (dType != ParticleDirectionType::Billboard)
+				{
+					p.mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ qR.x, qR.y, qR.z, qR.w });
+				}
+				else
+				{
+					p.mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ qZ.x, qZ.y, qZ.z, qZ.w });
+				}
+
+				p.mat4 *= directionM4;
+				p.mat4 *= DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z);
+
+				p.color = particle->getColor() * p.animation.tryGetColor(p.time);
+
+				if (particle->getType() == ParticleType::Locus)
+				{
+					// avoid appending to locus history if playback is paused
+					if (lastTime != p.time)
+					{
+						Vector3 temp(p.mat4.r[3].m128_f32[0], p.mat4.r[3].m128_f32[1], p.mat4.r[3].m128_f32[2]);
+
+						LocusHistory history;
+						history.pos = temp;
+						history.scale = p.scale;
+						history.color = p.color;
+
+						if (p.locusHistories.size() < 1)
+							p.locusHistories.push_back(history);
+						else if (p.locusHistories.size() == 1)
+						{
+							history.pos = p.locusHistories[0].pos;
+							if (p.locusHistories.size() < p.locusHistories.capacity())
+								p.locusHistories.push_back(history);
+
+							p.locusHistories[0].pos = temp;
+						}
+						else
+						{
+							Vector3 temp1 = p.locusHistories[p.locusHistories.size() - 1].pos;
+							for (int i = p.locusHistories.size() - 1; i > 0; --i)
+								p.locusHistories[i].pos = p.locusHistories[i - 1].pos;
+
+							if (p.locusHistories.size() < p.locusHistories.capacity())
+								p.locusHistories.push_back(history);
+
+							p.locusHistories[0].pos = temp;
+						}
+					}
+				}
+
+				if (particle->getUVIndexType() == UVIndexType::Fixed)
+				{
+					p.UVIndex = particle->getUVIndex();
+				}
+				else if (maxUV && interval && !((int)p.time % interval) && ((int)p.lastUVChange != (int)p.time))
+				{
+					switch (type)
+					{
+					case UVIndexType::ReverseOrder:
+					case UVIndexType::InitialRandomReverseOrder:
+						--p.UVIndex;
+						if (p.UVIndex < 0)
+							p.UVIndex = maxUV;
+						break;
+
+					case UVIndexType::SequentialOrder:
+					case UVIndexType::InitialRandomSequentialOrder:
+						p.UVIndex = (p.UVIndex + 1) % maxUV;
+						break;
+
+					case UVIndexType::RandomOrder:
+						p.UVIndex = Utilities::random(0, maxUV);
+						break;
+					}
+
+					p.lastUVChange = p.time;
+				}
+
+				p.uvScroll.x = p.animation.getValue(AnimationType::UScroll, p.time);
+				p.uvScroll.y = p.animation.getValue(AnimationType::VScroll, p.time);
+
+				++aliveCount;
+			}
+			
+			animationSet->markDirty(false);
+		}
+
+		void ParticleInstance::create(int n, float startTime, EmissionDirectionType dir, const std::vector<Vector3>& basePos)
+		{
+			int count = 0;
+			for (std::vector<ParticleStatus>::iterator it = pool.begin(); it != pool.end(); ++it)
+			{
+				if ((*it).dead)
+				{
+					ParticleStatus& p = (*it);
+					auto& particle = reference->getParticle();
+					p.startTime = startTime;
+					p.time = 0.0f;
+					p.dead = false;
+
+					float speed = Utilities::randomize(particle->getSpeed(), particle->getSpeedRandom());
+					float deceleration = Utilities::randomize(particle->getDeceleration(), particle->getDecelerationRandom());
+					Vector3 direction = Utilities::randomize(particle->getDirection(), particle->getDirectionRandom());
+					Vector3 accel = Utilities::randomize(particle->getExternalAccel(), particle->getExternalAccelRandom());
+					Vector3 dirAdd;
+
+					switch (dir)
+					{
+					case EmissionDirectionType::Inward:
+						dirAdd = basePos[count];
+						dirAdd = -dirAdd;
+						break;
+
+					case EmissionDirectionType::Outward:
+						dirAdd = basePos[count];
+						break;
+
+					default:
+						break;
+					}
+
+					Vector3 dirResult = direction + dirAdd;
+					dirResult.normalise();
+					p.direction = dirResult * speed;
+					p.basePos = basePos[count];
+					p.acceleration = (accel - deceleration) / 3600.0f;
+					p.scale = Utilities::randomize(particle->getSize(), particle->getSizeRandom());
+					p.UVIndex = particle->getUVIndex();
+					p.lastUVChange = p.time;
+
+					Vector3 rotation = Utilities::randomize(particle->getRotation(), particle->getRotationRandom());
+					Vector3 rotationAdd = Utilities::randomize(particle->getRotationAdd(), particle->getRotationAddRandom());
+					p.rotation = rotation + rotationAdd * (rotationAddCount++ % particle->getMaxCount());
+
+					p.locusHistories.clear();
+					if (particle->getType() == ParticleType::Locus)
+					{
+						int size = Utilities::randomize(particle->getLocusHistorySize(), particle->getLocusHistorySizeRandom());
+						p.locusHistories.reserve(size);
+					}
+
+					// InitialRandom UVIndex Types
+					if ((size_t)particle->getUVIndexType() >= 1 && (size_t)particle->getUVIndexType() < 5)
+					{
+						Vector2 uvSplit = Vector2(1.0f, 1.0f);
+						if (reference->getMaterialNode())
+							uvSplit = reference->getMaterialNode()->getMaterial()->getSplit();
+
+						unsigned int maxUV = (uvSplit.x * uvSplit.y) - 1;
+						p.UVIndex = Utilities::random(0, maxUV);
+					}
+
+					p.animation.buildCache(reference->getAnimationSet());
+					++count;
+				}
+
+				if (count >= n)
+					return;
+			}
+		}
 	}
 }

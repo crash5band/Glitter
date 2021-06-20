@@ -1,152 +1,138 @@
 #include "EffectNode.h"
 #include "UiHelper.h"
+#include "Utilities.h"
 #include "FileGUI.h"
 #include "ResourceManager.h"
 #include "IconsFontAwesome5.h"
 #include "File.h"
 
-EffectNode::EffectNode(std::shared_ptr<Glitter::GlitterEffect> &effect) :
-	effect{ effect }
+namespace Glitter
 {
-	animationNode = std::make_shared<AnimationNode>(&effect->getAnimations());
-	refModel = nullptr;
-
-	for (auto& particle : effect->getParticles())
-		particleNodes.push_back(std::make_shared<ParticleNode>(particle));
-
-	for (auto& emitter : effect->getEmitters())
-		emitterNodes.emplace_back(std::make_shared<EmitterNode>(emitter, this));
-}
-
-std::shared_ptr<Glitter::GlitterEffect> EffectNode::getEffect()
-{
-	return effect;
-}
-
-std::vector<std::shared_ptr<EmitterNode>> &EffectNode::getEmitterNodes()
-{
-	return emitterNodes;
-}
-
-std::vector<std::shared_ptr<ParticleNode>> &EffectNode::getParticleNodes()
-{
-	return particleNodes;
-}
-
-std::shared_ptr<AnimationNode> EffectNode::getAnimationNode()
-{
-	return animationNode;
-}
-
-std::shared_ptr<ModelData> EffectNode::getRefModel()
-{
-	return refModel;
-}
-
-NodeType EffectNode::getType()
-{
-	return NodeType::Effect;
-}
-
-float EffectNode::getLife()
-{
-	return effect->getLifeTime();
-}
-
-void EffectNode::changeMesh(const std::string &name)
-{
-	if (name.size())
+	namespace Editor
 	{
-		ResourceManager::loadModel(name);
-		refModel = ResourceManager::getModel(Glitter::File::getFileName(name));
-	}
-	else
-	{
-		refModel = nullptr;
-	}
-}
-
-void EffectNode::update(float time, const Camera &camera)
-{
-	float effectTime = time - effect->getStartTime();
-	float effectLife = fmodf(effectTime, effect->getLifeTime() + 1);
-
-	// effect started playing
-	if (effectTime >= 0.0f)
-	{
-		transform.position = effect->getTranslation() + animationNode->tryGetTranslation(effectLife);
-		transform.rotation.fromEulerDegrees(effect->getRotation() + animationNode->tryGetRotation(effectLife));
-		Glitter::Color color = effect->getColor() * animationNode->tryGetColor(effectLife);
-
-		for (auto& particle : particleNodes)
-			particle->setBaseColor(color);
-
-		for (auto& emitter : emitterNodes)
-			emitter->update(effectTime, camera, transform);
-	}
-}
-
-void EffectNode::kill()
-{
-	for (auto& emitter : emitterNodes)
-		emitter->kill();
-}
-
-void EffectNode::buildAnimations()
-{
-	animationNode->buildCache();
-	
-	for (auto& emitter : emitterNodes)
-		emitter->getAnimationNode()->buildCache();
-
-	for (auto& particle : particleNodes)
-		particle->getAnimationNode()->buildCache();
-}
-
-void EffectNode::populateInspector()
-{
-	using Effect = Glitter::GlitterEffect;
-	ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
-
-	if (ImGui::TreeNodeEx("Effect", treeFlags))
-	{
-		addTextProperty("Name", effect->getName(), effect, std::mem_fn(&Effect::setName));
-		addFloatProperty("Start", effect->getStartTime(), effect, std::mem_fn(&Effect::setStartTime));
-		addFloatProperty("Life", effect->getLifeTime(), effect, std::mem_fn(&Effect::setLifeTime));
-
-		addColorProperty("Color", effect->getColor(), effect, std::mem_fn(&Effect::setColor));
-		addVector3Property("Translation", effect->getTranslation(), effect, std::mem_fn(&Effect::setTranslation));
-		addVector3Property("Rotation", effect->getRotation(), effect, std::mem_fn(&Effect::setRotation));
-
-		ImGui::TreePop();
-	}
-	endPropertyColumn();
-
-	if (ImGui::TreeNodeEx("Flags", treeFlags))
-	{
-		addFlagsProperty("Loop", effect->getFlags(), 1, effect, std::mem_fn(&Effect::setFlags));
-		ImGui::Text("Flags: %d", effect->getFlags());
-
-		ImGui::TreePop();
-	}
-	endPropertyColumn();
-
-	if (ImGui::TreeNodeEx("Reference Model", treeFlags))
-	{
-		std::string lbl = refModel ? refModel->getName() : "None";
-		if (ImGui::Button(lbl.c_str(), ImVec2(ImGui::GetContentRegionAvail().x - btnHeight * 2, btnHeight)))
+		EffectNode::EffectNode(std::shared_ptr<GlitterEffect>& effect) :
+			effect{ effect }
 		{
-			std::string name;
-			if (FileGUI::openFileGUI(FileType::Model, name))
-				changeMesh(name);
+			animSet = std::make_shared<EditorAnimationSet>(effect->getAnimations());
+
+			for (auto& particle : effect->getParticles())
+				particleNodes.push_back(std::make_shared<ParticleNode>(particle));
+
+			for (auto& emitter : effect->getEmitters())
+				emitterNodes.emplace_back(std::make_shared<EmitterNode>(emitter, this));
+
+			animationCache.buildCache(animSet);
 		}
 
-		ImGui::SameLine();
-		if (ImGui::Button(ICON_FA_TIMES, ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
+		std::shared_ptr<GlitterEffect> EffectNode::getEffect()
 		{
-			changeMesh("");
+			return effect;
 		}
 
-		ImGui::TreePop();
+		std::vector<std::shared_ptr<EmitterNode>>& EffectNode::getEmitterNodes()
+		{
+			return emitterNodes;
+		}
+
+		std::vector<std::shared_ptr<ParticleNode>>& EffectNode::getParticleNodes()
+		{
+			return particleNodes;
+		}
+
+		std::shared_ptr<EditorAnimationSet> EffectNode::getAnimationSet()
+		{
+			return animSet;
+		}
+
+		NodeType EffectNode::getNodeType()
+		{
+			return NodeType::Effect;
+		}
+
+		void EffectNode::update(float time, const Camera& camera)
+		{
+			float effectTime = time - effect->getStartTime();
+			float effectLife = fmodf(effectTime, effect->getLifeTime() + 1);
+
+			if (animSet->isDirty())
+			{
+				animationCache.buildCache(animSet);
+				animSet->markDirty(false);
+			}
+
+			// effect started playing
+			if (effectTime >= 0.0f)
+			{
+				Vector3 position = effect->getTranslation() + animationCache.tryGetTranslation(effectLife);
+				Vector3 rotation = effect->getRotation() + animationCache.tryGetRotation(effectLife);
+				Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
+
+				Quaternion qX, qY, qZ, qR;
+				qX.fromAngleAxis(Utilities::toRadians(rotation.x), Vector3(1, 0, 0));
+				qY.fromAngleAxis(Utilities::toRadians(rotation.y), Vector3(0, 1, 0));
+				qZ.fromAngleAxis(Utilities::toRadians(rotation.z), Vector3(0, 0, 1));
+				qR = qZ * qY * qX;
+
+				mat4 = DirectX::XMMatrixIdentity();
+				mat4 *= DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+				mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ qR.x, qR.y, qR.z, qR.w });
+				mat4 *= DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+				for (auto& emitter : emitterNodes)
+					emitter->update(effectTime, effectLife, camera, mat4, qR);
+			}
+		}
+
+		void EffectNode::kill()
+		{
+			for (auto& emitter : emitterNodes)
+				emitter->kill();
+		}
+
+		void EffectNode::save(const std::string& filename)
+		{
+			// write animations
+			effect->getAnimations().clear();
+			for (const EditorAnimation& animation : animSet->animations)
+				effect->getAnimations().push_back(animation.toGlitterAnimation());
+
+			for (auto& node : emitterNodes)
+				node->saveAnimations();
+
+			for (auto& node : particleNodes)
+				node->saveAnimations();
+
+			// write GTE
+			effect->write(filename);
+		}
+
+		void EffectNode::populateInspector()
+		{
+			using Effect = GlitterEffect;
+			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
+
+			if (ImGui::TreeNodeEx("Effect", treeFlags))
+			{
+				addTextProperty("Name", effect->getName(), effect, std::mem_fn(&Effect::setName));
+				addFloatProperty("Start", effect->getStartTime(), effect, std::mem_fn(&Effect::setStartTime));
+				addFloatProperty("Life", effect->getLifeTime(), effect, std::mem_fn(&Effect::setLifeTime));
+
+				addColorProperty("Color", effect->getColor(), effect, std::mem_fn(&Effect::setColor));
+				addVector3Property("Translation", effect->getTranslation(), effect, std::mem_fn(&Effect::setTranslation));
+				addVector3Property("Rotation", effect->getRotation(), effect, std::mem_fn(&Effect::setRotation));
+
+				ImGui::TreePop();
+			}
+			endPropertyColumn();
+
+			if (ImGui::TreeNodeEx("Flags", treeFlags))
+			{
+				addFlagsProperty("Loop", effect->getFlags(), 1, effect, std::mem_fn(&Effect::setFlags));
+				ImGui::Text("Flags: %d", effect->getFlags());
+
+				ImGui::TreePop();
+			}
+			endPropertyColumn();
+		}
 	}
 }

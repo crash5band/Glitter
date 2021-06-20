@@ -5,8 +5,10 @@
 #include "ImGui/imgui_impl_opengl3.h"
 #include "Inspector.h"
 #include "GlitterPlayer.h"
+#include "ModelViewer.h"
+#include "TextureViewer.h"
 #include "InputManager.h"
-#include "UIFn.h"
+#include "UI.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
@@ -29,6 +31,7 @@ struct EditorSettings
 	bool statsOpen = false;
 	bool historyViewOpen = false;
 	bool imguiDemoOpen = false;
+	bool modelViewerOpen = false;
 };
 
 struct DeltaTime
@@ -68,7 +71,10 @@ private:
 	std::vector <std::weak_ptr<ParticleNode>> availableParticles;
 	Inspector* inspector;
 	GlitterPlayer* player;
+	ModelViewer* modelViewer;
 	InputManager* inputManager;
+	TextureViewer* textureViewer;
+	Renderer* renderer;
 	Stopwatch mainTimer;
 	int selectedParent;
 	int selectedChild;

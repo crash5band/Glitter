@@ -14,7 +14,7 @@ namespace Glitter
 		Vector3 translation;
 		Vector3 rotation;
 		unsigned int flags;
-		std::vector<Animation> animations;
+		std::vector<GlitterAnimation> animations;
 		std::vector<std::shared_ptr<Emitter>> emitters;
 		std::vector<std::shared_ptr<Particle>> particles;
 		std::string filename;
@@ -24,7 +24,6 @@ namespace Glitter
 	public:
 		GlitterEffect(const std::string& name, float life);
 		GlitterEffect(const std::string& filepath);
-		~GlitterEffect() { animations.clear(); }
 
 		std::string getName() const;
 		float getStartTime() const;
@@ -33,7 +32,7 @@ namespace Glitter
 		Vector3 getTranslation() const;
 		Vector3 getRotation() const;
 		unsigned int getFlags() const;
-		std::vector<Animation> &getAnimations();
+		std::vector<GlitterAnimation> &getAnimations();
 		std::vector<std::shared_ptr<Emitter>> getEmitters() const;
 		std::vector<std::shared_ptr<Particle>> getParticles() const;
 		std::string getFilename() const;

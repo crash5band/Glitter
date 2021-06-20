@@ -1,6 +1,6 @@
 #pragma once
 #include "Particle.h"
-#include "Animation.h"
+#include "GlitterAnimation.h"
 #include "MathGens.h"
 #include "GlitterEnums.h"
 #include <memory>
@@ -33,7 +33,7 @@ namespace Glitter
 		std::string mesh;
 		int pointCount;
 		unsigned int flags;
-		std::vector<Animation> animations;
+		std::vector<GlitterAnimation> animations;
 		std::vector<std::weak_ptr<Particle>> particles;
 
 		// box only
@@ -59,7 +59,6 @@ namespace Glitter
 	public:
 		Emitter();
 		Emitter(const std::string& n);
-		~Emitter() { animations.clear(); }
 
 		unsigned int getID() const;
 		std::string getName() const;
@@ -89,7 +88,7 @@ namespace Glitter
 		EmissionDirectionType getEmissionDirectionType() const;
 		std::string getMeshName() const;
 		std::vector<std::weak_ptr<Particle>> getParticles() const;
-		std::vector<Animation>& getAnimations();
+		std::vector<GlitterAnimation>& getAnimations();
 
 		void setID(unsigned int id);
 		void setName(std::string n);

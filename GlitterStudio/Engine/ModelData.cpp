@@ -3,6 +3,7 @@
 #include "File.h"
 #include "ResourceManager.h"
 #include "../Logger.h"
+#include <filesystem>
 
 ModelData::ModelData(const std::string& path)
 {
@@ -22,6 +23,20 @@ void ModelData::dispose()
 
 void ModelData::buildGensModel(Glitter::Model &model)
 {
+	// BAD: load all uv-anims in the current directory and check if any belongs to the model later
+	if (!std::filesystem::exists(directory))
+		return;
+
+	/*
+	for (const auto& file : std::filesystem::directory_iterator(directory))
+	{
+		if (file.path().extension().string() == ".uv-anim")
+		{
+			ResourceManager::loadUVAnimation(file.path().string());
+		}
+	}
+	*/
+
 	std::vector<Glitter::Mesh*> gensMeshes = model.getMeshes();
 	meshes.reserve(meshes.size());
 
@@ -81,11 +96,13 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 
 	// process materials
 	std::string materialName = submesh->getMaterialName();
-	Glitter::Material material(directory + materialName + ".material");
+	ResourceManager::loadMaterial(directory + materialName + ".material");
 
-	std::vector<Glitter::Texture*> textures = material.getTextures();
-	std::vector<std::shared_ptr<TextureData>> texturesData;
-	texturesData.reserve(textures.size());
+	MaterialData matData;
+	matData.material = ResourceManager::getMaterial(materialName);
+
+	std::vector<Glitter::Texture*> textures = matData.material->getTextures();
+	matData.textures.reserve(textures.size());
 
 	// process textures
 	for (std::vector<Glitter::Texture*>::iterator tIt = textures.begin(); tIt != textures.end(); ++tIt)
@@ -101,23 +118,41 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 			slot = TextureSlot::Normal;
 		else if (textureUnit == "specular")
 			slot = TextureSlot::Specular;
+		else if (textureUnit == "displacement")
+			slot = TextureSlot::Displacement;
+		else if (textureUnit == "reflection")
+			slot = TextureSlot::Reflection;
+		else if (textureUnit == "emissive")
+			slot = TextureSlot::Emissive;
 
 		ResourceManager::loadTexture(directory + textureName + ".dds", slot);
 		std::shared_ptr<TextureData> texture = ResourceManager::getTexture(textureName + ".dds");
 		
-		// some materials have weird texture internal names that do not reflect the texture filename
-		// or it could be that they are not located in the same directory
 		if (texture)
-			texturesData.emplace_back(texture);
+			matData.textures.emplace_back(texture);
 	}
 
-	return SubmeshData(vertexData, faceData, texturesData, PirimitveType::TriangleStrip);
+	// load uv animations
+	auto uvAnims = ResourceManager::getUVAnimationsList();
+	std::shared_ptr<Glitter::UVAnimation> uvAnim;
+
+	for (const auto& anim : uvAnims)
+	{
+		if (anim->getMaterial() == matData.material->getName() && anim->getTexset() == textures[0]->getTexSet())
+		{
+			Logger::log(Message(MessageType::Normal, "Assigned uv-anim" + anim->getName() + " to model " + modelName + "."));
+			uvAnim = anim;
+			break;
+		}
+	}
+
+	return SubmeshData(vertexData, faceData, matData, uvAnim, PirimitveType::TriangleStrip);
 }
 
-void ModelData::draw(Shader* shader)
+void ModelData::draw(Shader* shader, float time)
 {
 	for (auto& mesh : meshes)
-		mesh.draw(shader);
+		mesh.draw(shader, time);
 }
 
 std::vector<VertexData>& ModelData::getVertices()
@@ -141,7 +176,44 @@ bool ModelData::reload(const std::string& path)
 	return true;
 }
 
+void ModelData::move(Glitter::Vector3 pos)
+{
+	transform.position = pos;
+}
+
+void ModelData::rotate(Glitter::Quaternion q)
+{
+	transform.rotation = q;
+}
+
+void ModelData::scale(Glitter::Vector3 scale)
+{
+	transform.scale = scale;
+}
+
 std::string ModelData::getName() const
 {
 	return modelName;
+}
+
+Transform ModelData::getTransform()
+{
+	return transform;
+}
+
+std::vector<std::shared_ptr<Glitter::Material>> ModelData::getMaterials()
+{
+	std::vector<std::shared_ptr<Glitter::Material>> materials;
+	for (auto& mesh : meshes)
+	{
+		auto submeshes = mesh.getSubmeshes();
+		for (auto& submesh : submeshes)
+		{
+			std::shared_ptr<Glitter::Material> mat = submesh.material.material;
+			std::string name = mat->getName();
+			materials.emplace_back(mat);
+		}
+	}
+
+	return materials;
 }

@@ -35,6 +35,7 @@ private:
 	std::shared_ptr<Shader> billboardShader;
 	std::shared_ptr<Shader> meshParticleShader;
 	std::shared_ptr<Shader> gridShader;
+	std::shared_ptr<Shader> meshShader;
 
 	VertexBuffer buffer[maxVertices];
 	std::array<unsigned int, maxIndices> indices;
@@ -47,23 +48,26 @@ private:
 	void initQuad();
 	void initGrid();
 	void resetVPos();
-	void drawPoolQuad(ParticleInstance& instance, const Camera &camera);
-	void drawPoolMesh(ParticleInstance& instance, const Camera &camera);
-	void getUVCoords(std::shared_ptr<MaterialNode> mat);
-	Glitter::Vector3 getAnchorPoint(Glitter::PivotPosition pivot);
+	void drawPoolQuad(Glitter::Editor::ParticleInstance& instance, const Camera &camera);
+	void drawPoolMesh(Glitter::Editor::ParticleInstance& instance, const Camera &camera);
+	void getUVCoords(std::shared_ptr<Glitter::Editor::MaterialNode> mat);
 
 public:
 	Renderer();
 	~Renderer();
 
 	void bindShader(std::shared_ptr<Shader>& shader);
-	void configureShader(std::shared_ptr<Shader>& shader, const Viewport &vp, Glitter::BlendMode blend);
+	void configureShader(std::shared_ptr<Shader>& shader, const Glitter::Editor::Viewport &vp, Glitter::BlendMode blend);
 	void setBlendMode(Glitter::BlendMode mode);
 	void beginBatch();
-	void drawGrid(const Viewport &vp);
-	void drawEffect(EffectNode* eff, const Viewport &vp);
-	void drawQuad(Transform &transform, Glitter::Vector3 pivot, Glitter::Color &color, unsigned int uvIndex, std::shared_ptr<TextureData> tex);
-	void drawMesh(std::shared_ptr<ModelData> model, const Viewport &vp);
+	void drawGrid(const Glitter::Editor::Viewport &vp);
+	void drawEffect(Glitter::Editor::EffectNode* eff, const Glitter::Editor::Viewport &vp);
+	void drawQuad(const DirectX::XMMATRIX& m4, const Glitter::Color &color, unsigned int uvIndex,
+		const Glitter::Vector2 &uvS, std::shared_ptr<TextureData> tex);
+
+	void drawLocus(const Glitter::Editor::ParticleStatus& p, std::shared_ptr<TextureData> tex);
+
+	void drawMesh(std::shared_ptr<ModelData> model, const Glitter::Editor::Viewport &vp, float time);
 	void flush();
 	void endBatch();
 };

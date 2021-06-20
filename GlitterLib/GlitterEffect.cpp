@@ -54,7 +54,7 @@ namespace Glitter
 		return flags;
 	}
 
-	std::vector<Animation> &GlitterEffect::getAnimations()
+	std::vector<GlitterAnimation> &GlitterEffect::getAnimations()
 	{
 		return animations;
 	}
@@ -231,7 +231,7 @@ namespace Glitter
 		tinyxml2::XMLElement* animationElement = effectElement->FirstChildElement("Animation");
 		while (animationElement)
 		{
-			Animation animation;
+			GlitterAnimation animation;
 			animation.read(animationElement);
 			animations.push_back(animation);
 			animationElement = animationElement->NextSiblingElement("Animation");

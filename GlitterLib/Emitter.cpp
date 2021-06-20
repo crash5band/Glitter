@@ -184,7 +184,7 @@ namespace Glitter
 		return particles;
 	}
 
-	std::vector<Animation>& Emitter::getAnimations()
+	std::vector<GlitterAnimation>& Emitter::getAnimations()
 	{
 		return animations;
 	}
@@ -457,7 +457,7 @@ namespace Glitter
 		tinyxml2::XMLElement* animationElement = element->FirstChildElement("Animation");
 		while (animationElement)
 		{
-			Animation animation;
+			GlitterAnimation animation;
 			animation.read(animationElement);
 			animations.emplace_back(animation);
 			animationElement = animationElement->NextSiblingElement("Animation");

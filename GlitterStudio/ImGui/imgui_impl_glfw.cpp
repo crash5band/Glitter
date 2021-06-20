@@ -1,5 +1,5 @@
-// dear imgui: Platform Binding for GLFW
-// This needs to be used along with a Renderer (e.g. OpenGL3, Vulkan..)
+// dear imgui: Platform Backend for GLFW
+// This needs to be used along with a Renderer (e.g. OpenGL3, Vulkan, WebGPU..)
 // (Info: GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan graphics context creation, etc.)
 // (Requires: GLFW 3.1+. Prefer GLFW 3.3+ for full feature support.)
 
@@ -10,13 +10,16 @@
 //  [X] Platform: Keyboard arrays indexed using GLFW_KEY_* codes, e.g. ImGui::IsKeyPressed(GLFW_KEY_SPACE).
 //  [X] Platform: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 
-// You can copy and use unmodified imgui_impl_* files in your project. See main.cpp for an example of using this.
-// If you are new to dear imgui, read examples/README.txt and read the documentation at the top of imgui.cpp.
-// https://github.com/ocornut/imgui
+// Issues:
+//  [ ] Platform: Multi-viewport support: ParentViewportID not honored, and so io.ConfigViewportsNoDefaultParent has no effect (minor).
+
+// You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
+// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
+// Read online: https://github.com/ocornut/imgui/tree/master/docs
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
-//  2020-XX-XX: Platform: Added support for multiple windows via the ImGuiPlatformIO interface.
+//  2021-XX-XX: Platform: Added support for multiple windows via the ImGuiPlatformIO interface.
 //  2020-01-17: Inputs: Disable error callback while assigning mouse cursors because some X11 setup don't have them and it generates errors.
 //  2019-12-05: Inputs: Added support for new mouse cursors added in GLFW 3.4+ (resizing cursors, not allowed cursor).
 //  2019-10-18: Misc: Previously installed user callbacks are now restored on shutdown.
@@ -63,6 +66,11 @@
 #else
 #define GLFW_HAS_NEW_CURSORS          (0)
 #endif
+#ifdef GLFW_MOUSE_PASSTHROUGH         // Let's be nice to people who pulled GLFW between 2019-04-16 (3.4 define) and 2020-07-17 (passthrough)
+#define GLFW_HAS_MOUSE_PASSTHROUGH    (GLFW_VERSION_MAJOR * 1000 + GLFW_VERSION_MINOR * 100 >= 3400) // 3.4+ GLFW_MOUSE_PASSTHROUGH
+#else
+#define GLFW_HAS_MOUSE_PASSTHROUGH    (0)
+#endif
 
 // Data
 enum GlfwClientApi
@@ -76,6 +84,7 @@ static GlfwClientApi        g_ClientApi = GlfwClientApi_Unknown;
 static double               g_Time = 0.0;
 static bool                 g_MouseJustPressed[ImGuiMouseButton_COUNT] = {};
 static GLFWcursor*          g_MouseCursors[ImGuiMouseCursor_COUNT] = {};
+static GLFWwindow*          g_KeyOwnerWindows[512] = {};
 static bool                 g_InstalledCallbacks = false;
 static bool                 g_WantUpdateMonitors = true;
 
@@ -127,9 +136,15 @@ void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int a
 
     ImGuiIO& io = ImGui::GetIO();
     if (action == GLFW_PRESS)
+    {
         io.KeysDown[key] = true;
+        g_KeyOwnerWindows[key] = window;
+    }
     if (action == GLFW_RELEASE)
+    {
         io.KeysDown[key] = false;
+        g_KeyOwnerWindows[key] = NULL;
+    }
 
     // Modifiers are not reliable across systems
     io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
@@ -161,17 +176,17 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, Glfw
     g_Window = window;
     g_Time = 0.0;
 
-    // Setup back-end capabilities flags
+    // Setup backend capabilities flags
     ImGuiIO& io = ImGui::GetIO();
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
     io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
     io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;    // We can create multi-viewports on the Platform side (optional)
-#if GLFW_HAS_GLFW_HOVERED && defined(_WIN32)
+#if GLFW_HAS_MOUSE_PASSTHROUGH || (GLFW_HAS_WINDOW_HOVERED && defined(_WIN32))
     io.BackendFlags |= ImGuiBackendFlags_HasMouseHoveredViewport; // We can set io.MouseHoveredViewport correctly (optional, not easy)
 #endif
     io.BackendPlatformName = "imgui_impl_glfw";
 
-    // Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
+    // Keyboard mapping. Dear ImGui will use those indices to peek into the io.KeysDown[] array.
     io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
     io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
     io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
@@ -265,6 +280,11 @@ bool ImGui_ImplGlfw_InitForVulkan(GLFWwindow* window, bool install_callbacks)
     return ImGui_ImplGlfw_Init(window, install_callbacks, GlfwClientApi_Vulkan);
 }
 
+bool ImGui_ImplGlfw_InitForOther(GLFWwindow* window, bool install_callbacks)
+{
+    return ImGui_ImplGlfw_Init(window, install_callbacks, GlfwClientApi_Unknown);
+}
+
 void ImGui_ImplGlfw_Shutdown()
 {
     ImGui_ImplGlfw_ShutdownPlatformInterface();
@@ -344,12 +364,16 @@ static void ImGui_ImplGlfw_UpdateMousePosAndButtons()
         // Important: this information is not easy to provide and many high-level windowing library won't be able to provide it correctly, because
         // - This is _ignoring_ viewports with the ImGuiViewportFlags_NoInputs flag (pass-through windows).
         // - This is _regardless_ of whether another viewport is focused or being dragged from.
-        // If ImGuiBackendFlags_HasMouseHoveredViewport is not set by the back-end, imgui will ignore this field and infer the information by relying on the
+        // If ImGuiBackendFlags_HasMouseHoveredViewport is not set by the backend, imgui will ignore this field and infer the information by relying on the
         // rectangles and last focused time of every viewports it knows about. It will be unaware of other windows that may be sitting between or over your windows.
         // [GLFW] FIXME: This is currently only correct on Win32. See what we do below with the WM_NCHITTEST, missing an equivalent for other systems.
         // See https://github.com/glfw/glfw/issues/1236 if you want to help in making this a GLFW feature.
-#if GLFW_HAS_GLFW_HOVERED && defined(_WIN32)
-        if (glfwGetWindowAttrib(window, GLFW_HOVERED) && !(viewport->Flags & ImGuiViewportFlags_NoInputs))
+#if GLFW_HAS_MOUSE_PASSTHROUGH || (GLFW_HAS_WINDOW_HOVERED && defined(_WIN32))
+        const bool window_no_input = (viewport->Flags & ImGuiViewportFlags_NoInputs) != 0;
+#if GLFW_HAS_MOUSE_PASSTHROUGH
+        glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, window_no_input);
+#endif
+        if (glfwGetWindowAttrib(window, GLFW_HOVERED) && !window_no_input)
             io.MouseHoveredViewport = viewport->ID;
 #endif
     }
@@ -430,16 +454,16 @@ static void ImGui_ImplGlfw_UpdateMonitors()
         int x, y;
         glfwGetMonitorPos(glfw_monitors[n], &x, &y);
         const GLFWvidmode* vid_mode = glfwGetVideoMode(glfw_monitors[n]);
-#if GLFW_HAS_MONITOR_WORK_AREA
-        monitor.MainPos = ImVec2((float)x, (float)y);
-        monitor.MainSize = ImVec2((float)vid_mode->width, (float)vid_mode->height);
-        int w, h;
-        glfwGetMonitorWorkarea(glfw_monitors[n], &x, &y, &w, &h);
-        monitor.WorkPos = ImVec2((float)x, (float)y);;
-        monitor.WorkSize = ImVec2((float)w, (float)h);
-#else
         monitor.MainPos = monitor.WorkPos = ImVec2((float)x, (float)y);
         monitor.MainSize = monitor.WorkSize = ImVec2((float)vid_mode->width, (float)vid_mode->height);
+#if GLFW_HAS_MONITOR_WORK_AREA
+        int w, h;
+        glfwGetMonitorWorkarea(glfw_monitors[n], &x, &y, &w, &h);
+        if (w > 0 && h > 0) // Workaround a small GLFW issue reporting zero on monitor changes: https://github.com/glfw/glfw/pull/1761
+        {
+            monitor.WorkPos = ImVec2((float)x, (float)y);
+            monitor.WorkSize = ImVec2((float)w, (float)h);
+        }
 #endif
 #if GLFW_HAS_PER_MONITOR_DPI
         // Warning: the validity of monitor DPI information on Windows depends on the application DPI awareness settings, which generally needs to be set in the manifest or at runtime.
@@ -455,7 +479,7 @@ static void ImGui_ImplGlfw_UpdateMonitors()
 void ImGui_ImplGlfw_NewFrame()
 {
     ImGuiIO& io = ImGui::GetIO();
-    IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
+    IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer backend. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
     // Setup display size (every frame to accommodate for window resizing)
     int w, h;
@@ -470,7 +494,7 @@ void ImGui_ImplGlfw_NewFrame()
 
     // Setup time step
     double current_time = glfwGetTime();
-    io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f/60.0f);
+    io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f / 60.0f);
     g_Time = current_time;
 
     ImGui_ImplGlfw_UpdateMousePosAndButtons();
@@ -482,7 +506,7 @@ void ImGui_ImplGlfw_NewFrame()
 
 //--------------------------------------------------------------------------------------------------------
 // MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
-// This is an _advanced_ and _optional_ feature, allowing the back-end to create and handle multiple viewports simultaneously.
+// This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports simultaneously.
 // If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
 //--------------------------------------------------------------------------------------------------------
 
@@ -550,7 +574,7 @@ static void ImGui_ImplGlfw_CreateWindow(ImGuiViewport* viewport)
     glfwWindowHint(GLFW_VISIBLE, false);
     glfwWindowHint(GLFW_FOCUSED, false);
 #if GLFW_HAS_FOCUS_ON_SHOW
-     glfwWindowHint(GLFW_FOCUS_ON_SHOW, false);
+    glfwWindowHint(GLFW_FOCUS_ON_SHOW, false);
  #endif
     glfwWindowHint(GLFW_DECORATED, (viewport->Flags & ImGuiViewportFlags_NoDecoration) ? false : true);
 #if GLFW_HAS_WINDOW_TOPMOST
@@ -586,10 +610,17 @@ static void ImGui_ImplGlfw_DestroyWindow(ImGuiViewport* viewport)
     {
         if (data->WindowOwned)
         {
-#if GLFW_HAS_GLFW_HOVERED && defined(_WIN32)
+#if !GLFW_HAS_MOUSE_PASSTHROUGH && GLFW_HAS_WINDOW_HOVERED && defined(_WIN32)
             HWND hwnd = (HWND)viewport->PlatformHandleRaw;
             ::RemovePropA(hwnd, "IMGUI_VIEWPORT");
 #endif
+
+            // Release any keys that were pressed in the window being destroyed and are still held down,
+            // because we will not receive any release events after window is destroyed.
+            for (int i = 0; i < IM_ARRAYSIZE(g_KeyOwnerWindows); i++)
+                if (g_KeyOwnerWindows[i] == data->Window)
+                    ImGui_ImplGlfw_KeyCallback(data->Window, i, 0, GLFW_RELEASE, 0); // Later params are only used for main viewport, on which this function is never called.
+
             glfwDestroyWindow(data->Window);
         }
         data->Window = NULL;
@@ -600,13 +631,13 @@ static void ImGui_ImplGlfw_DestroyWindow(ImGuiViewport* viewport)
 
 // We have submitted https://github.com/glfw/glfw/pull/1568 to allow GLFW to support "transparent inputs".
 // In the meanwhile we implement custom per-platform workarounds here (FIXME-VIEWPORT: Implement same work-around for Linux/OSX!)
-#if defined(_WIN32) && GLFW_HAS_GLFW_HOVERED
+#if !GLFW_HAS_MOUSE_PASSTHROUGH && GLFW_HAS_WINDOW_HOVERED && defined(_WIN32)
 static WNDPROC g_GlfwWndProc = NULL;
 static LRESULT CALLBACK WndProcNoInputs(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_NCHITTEST)
     {
-        // Let mouse pass-through the window. This will allow the back-end to set io.MouseHoveredViewport properly (which is OPTIONAL).
+        // Let mouse pass-through the window. This will allow the backend to set io.MouseHoveredViewport properly (which is OPTIONAL).
         // The ImGuiViewportFlags_NoInputs flag is set while dragging a viewport, as want to detect the window behind the one we are dragging.
         // If you cannot easily access those viewport flags from your windowing/event code: you may manually synchronize its state e.g. in
         // your main loop after calling UpdatePlatformWindows(). Iterate all viewports/platform windows and pass the flag to your windowing system.
@@ -634,7 +665,7 @@ static void ImGui_ImplGlfw_ShowWindow(ImGuiViewport* viewport)
     }
 
     // GLFW hack: install hook for WM_NCHITTEST message handler
-#if GLFW_HAS_GLFW_HOVERED && defined(_WIN32)
+#if !GLFW_HAS_MOUSE_PASSTHROUGH && GLFW_HAS_WINDOW_HOVERED && defined(_WIN32)
     ::SetPropA(hwnd, "IMGUI_VIEWPORT", viewport);
     if (g_GlfwWndProc == NULL)
         g_GlfwWndProc = (WNDPROC)::GetWindowLongPtr(hwnd, GWLP_WNDPROC);
@@ -756,7 +787,7 @@ static void ImGui_ImplGlfw_SwapBuffers(ImGuiViewport* viewport, void*)
 //--------------------------------------------------------------------------------------------------------
 
 // We provide a Win32 implementation because this is such a common issue for IME users
-#if defined(_WIN32) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS) && !defined(IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS) && !defined(__GNUC__)
+#if defined(_WIN32) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS) && !defined(IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS)
 #define HAS_WIN32_IME   1
 #include <imm.h>
 #ifdef _MSC_VER

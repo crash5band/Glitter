@@ -1,23 +1,33 @@
 #pragma once
-#include "IGlitterNode.h"
-#include "AnimationNode.h"
+#include "INode.h"
 #include "AnimationTimeline.h"
 
-class Inspector
+class TextureData;
+
+namespace Glitter
 {
-private:
-	std::weak_ptr<IGlitterNode> node;
-	std::weak_ptr<AnimationNode> animationNode;
-	AnimationTimeline timeline;
-	std::vector<std::string_view> available;
-	int selectedAnimation;
+	namespace Editor
+	{
+		enum class ColorPickerMode
+		{
+			Normal,
+			HueWheel
+		};
 
-public:
-	Inspector();
+		class Inspector
+		{
+		private:
+			std::weak_ptr<INode> node;
+			ColorPickerMode colorMode;
+			bool showTextureSplits;
+			int texSize;
 
-	void inspectAnimation(int index);
-	void inspectKey(int index);
-	void setNode(std::shared_ptr<IGlitterNode> node);
-	std::vector<std::string_view> getAvailableAnimations();
-	void update();
-};
+		public:
+			Inspector();
+
+			void update();
+			void setNode(std::shared_ptr<INode> node);
+			void previewTexture(std::shared_ptr<TextureData> texture, Glitter::Vector2 split, bool showSplits, bool limitSizeByWindow);
+		};
+	}
+}

@@ -26,8 +26,17 @@
     <Filter Include="Engine\Render">
       <UniqueIdentifier>{6588d707-e7bb-45c0-acbf-eb5ccb800a8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\ParticleEditor">
+      <UniqueIdentifier>{b35c8c84-1282-4c1c-896e-e0f9ceaba7b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\ModeViewer">
+      <UniqueIdentifier>{f48d5782-106d-41bd-ad7d-d00d76496d2f}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Nodes">
       <UniqueIdentifier>{51d4849d-cfa2-44f1-a4f2-c38cf5a3cc2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animations">
+      <UniqueIdentifier>{cbf982bc-786c-4ae6-ba1f-8cf1aa8288af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -64,9 +73,6 @@
     <ClCompile Include="MaterialNode.cpp">
       <Filter>Nodes</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationNode.cpp">
-      <Filter>Nodes</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleInstance.cpp">
       <Filter>Nodes</Filter>
     </ClCompile>
@@ -79,31 +85,19 @@
     <ClCompile Include="AnimationTimeline.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="GlitterPlayer.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="EffectCommands.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="Utilities.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="Stopwatch.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
     <ClCompile Include="AnimationCommands.cpp">
       <Filter>Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialEditor.cpp">
-      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Camera.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\ResourceManager.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Shader.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\MeshData.cpp">
@@ -123,28 +117,61 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGlLoader.cpp" />
-    <ClCompile Include="EffectOperations.cpp" />
-    <ClCompile Include="Editor.cpp" />
-    <ClCompile Include="DebugInfo.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Renderer.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
-    <ClCompile Include="FileGUI.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="UIFn.cpp" />
-    <ClCompile Include="GlitterTreeView.cpp">
+    <ClCompile Include="InputListener.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="GlitterPlayer.cpp">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelViewer.cpp">
+      <Filter>Components\ModeViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEditor.cpp">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectOperations.cpp">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleTreeview.cpp">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelEditor.cpp">
+      <Filter>Components\ModeViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="GTMManager.cpp">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="Viewport.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shader.cpp">
       <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="FileGUI.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="About.cpp" />
+    <ClCompile Include="ApplicationUI.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorAnimation.cpp">
+      <Filter>Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorAnimationSet.cpp">
+      <Filter>Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="CachedAnimation.cpp">
+      <Filter>Animations</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,9 +205,6 @@
     <ClInclude Include="EffectNode.h">
       <Filter>Nodes</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationNode.h">
-      <Filter>Nodes</Filter>
-    </ClInclude>
     <ClInclude Include="EmitterNode.h">
       <Filter>Nodes</Filter>
     </ClInclude>
@@ -202,13 +226,7 @@
     <ClInclude Include="CommandManager.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="IGlitterNode.h">
-      <Filter>Nodes</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationTimeline.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="GlitterPlayer.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="EffectCommands.h">
@@ -223,28 +241,16 @@
     <ClInclude Include="Utilities.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="UiHelper.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Stopwatch.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="AnimationCommands.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialEditor.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Camera.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\ResourceManager.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Shader.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Transform.h">
@@ -265,25 +271,59 @@
     <ClInclude Include="Engine\RenderTarget.h">
       <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Editor.h" />
     <ClInclude Include="Renderer.h">
       <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="FileGUI.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
+    <ClInclude Include="InputLIstener.h">
       <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="UIFn.h" />
-    <ClInclude Include="Logger.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Viewport.h">
-      <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Light.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IViewer.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="GlitterPlayer.h">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelViewer.h">
+      <Filter>Components\ModeViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEditor.h">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelEditor.h">
+      <Filter>Components\ModeViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="INode.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GTMManager.h">
+      <Filter>Components\ParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h" />
+    <ClInclude Include="UiHelper.h" />
+    <ClInclude Include="Viewport.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shader.h">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="FileGUI.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorAnimation.h">
+      <Filter>Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorAnimationSet.h">
+      <Filter>Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="CachedAnimation.h">
+      <Filter>Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

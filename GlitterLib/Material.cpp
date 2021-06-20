@@ -446,7 +446,6 @@ namespace Glitter
 				textures[i]->write(writer);
 			}
 		}
-		writer->fixPadding();
 
 		// write textures addresses
 		for (int i = 0; i < texturesCount; ++i)

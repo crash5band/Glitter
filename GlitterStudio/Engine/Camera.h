@@ -12,7 +12,7 @@ class Camera
 {
 private:
 	float defaultYaw = -90;
-	float defaultPitch = 0;
+	float defaultPitch = 5;
 	float defaultSensitivity = 0.1f;
 	float defaultZoom = 45.0f;
 	float defaultRadius = 3.0f;
@@ -24,14 +24,16 @@ private:
 	DirectX::XMVECTOR front;
 	DirectX::XMVECTOR right;
 	DirectX::XMVECTOR up;
-	DirectX::XMVECTOR worldUp;
 	float yaw;
 	float pitch;
 	float speed;
 	float sensitivity;
 	float fov;
 	float radius;
+	float near;
+	float far;
 
+	void positionCamOrbit();
 	void updateCameraVectors();
 	void move(float x, float y);
 	void rotate(float x, float y);

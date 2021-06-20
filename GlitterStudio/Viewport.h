@@ -5,29 +5,39 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 
-class Viewport
+namespace Glitter
 {
-private:
-	Camera camera;
-	Light light;
-	RenderTarget fBuffer;
-	ImRect viewArea;
-	Glitter::Vector2 size;
-	bool mouseInViewArea;
-	bool lightEnabled;
+	namespace Editor
+	{
+		class Viewport
+		{
+		private:
+			Camera camera;
+			Light light;
+			Engine::RenderTarget fBuffer;
+			ImRect viewArea;
+			Glitter::Vector2 size;
+			bool mouseInViewArea;
+			bool lightEnabled;
+			int drawMode;
 
-public:
-	Viewport();
+		public:
+			Viewport();
+			~Viewport();
 
-	void use();
-	void end();
-	void cameraControl();
-	void setLight(Light l);
-	void resetCamera();
-	void setLightEnabled(bool v);
+			void use();
+			void end();
+			void cameraControl();
+			void resetCamera();
+			void lightControl();
+			void toggleLight();
+			void renderingControl();
+			void screenshot();
 
-	Glitter::Vector2 getSize() const;
-	Camera getCamera() const;
-	Light getLight() const;
-	bool isLightEnabled() const;
-};
+			Glitter::Vector2 getSize() const;
+			Camera getCamera() const;
+			Light getLight() const;
+			bool isLightEnabled() const;
+		};
+	}
+}

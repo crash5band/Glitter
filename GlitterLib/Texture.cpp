@@ -59,6 +59,7 @@ namespace Glitter
 
 		size_t unitAddress = writer->getCurrentAddress();
 		writer->writeString(unit.c_str());
+		writer->fixPadding();
 
 		writer->gotoAddress(headerAddress);
 		writer->writeAddress(fileAddress);

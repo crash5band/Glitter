@@ -49,7 +49,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -141,7 +141,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -149,7 +149,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Precise</FloatingPointModel>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>
@@ -164,12 +164,19 @@
       <AdditionalLibraryDirectories>..\Dependencies\GlitterLib\$(Configuration);..\Dependencies\GLFW\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>GlitterExternals.lib;GlitterLib.lib;glfw3.lib;opengl32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup </EntryPointSymbol>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)Res\" "$(OutDir)Res\" /E /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="About.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ApplicationUI.cpp" />
+    <ClCompile Include="CachedAnimation.cpp" />
+    <ClCompile Include="EditorAnimation.cpp" />
+    <ClCompile Include="EditorAnimationSet.cpp" />
     <ClCompile Include="Engine\Camera.cpp" />
     <ClCompile Include="Engine\MeshData.cpp" />
     <ClCompile Include="Engine\ModelData.cpp" />
@@ -179,11 +186,8 @@
     <ClCompile Include="Engine\SubmeshData.cpp" />
     <ClCompile Include="Engine\TextureData.cpp" />
     <ClCompile Include="AnimationCommands.cpp" />
-    <ClCompile Include="AnimationNode.cpp" />
     <ClCompile Include="AnimationTimeline.cpp" />
     <ClCompile Include="CommandManager.cpp" />
-    <ClCompile Include="DebugInfo.cpp" />
-    <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EffectCommands.cpp" />
     <ClCompile Include="EffectNode.cpp" />
     <ClCompile Include="EffectOperations.cpp" />
@@ -191,30 +195,37 @@
     <ClCompile Include="FileGUI.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GlitterPlayer.cpp" />
-    <ClCompile Include="GlitterTreeView.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_glfw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="ImGui\imgui_stdlib.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MaterialEditor.cpp" />
+    <ClCompile Include="GTMManager.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
+    <ClCompile Include="ModelEditor.cpp" />
+    <ClCompile Include="ModelViewer.cpp" />
+    <ClCompile Include="ParticleEditor.cpp" />
     <ClCompile Include="ParticleInstance.cpp" />
+    <ClCompile Include="ParticleTreeview.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="OpenGlLoader.cpp" />
     <ClCompile Include="ParticleNode.cpp" />
-    <ClCompile Include="UIFn.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="CachedAnimation.h" />
+    <ClInclude Include="EditorAnimation.h" />
+    <ClInclude Include="EditorAnimationSet.h" />
     <ClInclude Include="Engine\Camera.h" />
     <ClInclude Include="Engine\MeshData.h" />
     <ClInclude Include="Engine\ModelData.h" />
@@ -225,10 +236,8 @@
     <ClInclude Include="Engine\TextureData.h" />
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="AnimationCommands.h" />
-    <ClInclude Include="AnimationNode.h" />
     <ClInclude Include="AnimationTimeline.h" />
     <ClInclude Include="CommandManager.h" />
-    <ClInclude Include="Editor.h" />
     <ClInclude Include="EffectCommands.h" />
     <ClInclude Include="EffectNode.h" />
     <ClInclude Include="EmitterNode.h" />
@@ -237,7 +246,6 @@
     <ClInclude Include="Engine\Light.h" />
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="IconsFontAwesome5.h" />
-    <ClInclude Include="IGlitterNode.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_glfw.h" />
@@ -247,18 +255,22 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
-    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="INode.h" />
+    <ClInclude Include="InputLIstener.h" />
     <ClInclude Include="Inspector.h" />
+    <ClInclude Include="IViewer.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="MaterialEditor.h" />
+    <ClInclude Include="GTMManager.h" />
     <ClInclude Include="MaterialNode.h" />
+    <ClInclude Include="ModelEditor.h" />
+    <ClInclude Include="ModelViewer.h" />
+    <ClInclude Include="ParticleEditor.h" />
     <ClInclude Include="ParticleInstance.h" />
     <ClInclude Include="PropertyCommands.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="ParticleNode.h" />
-    <ClInclude Include="UIFn.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="UiHelper.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Viewport.h" />

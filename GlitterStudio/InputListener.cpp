@@ -1,23 +1,23 @@
-#include "InputManager.h"
+#include "InputListener.h"
 
-void InputManager::update(GLFWwindow* window)
+void InputListener::update(GLFWwindow* window)
 {
 	prevState = state;
 	for (int i = 0; i < GLFW_KEY_LAST; ++i)
 		state[i] = glfwGetKey(window, i);
 }
 
-bool InputManager::isTapped(int key)
+bool InputListener::isTapped(int key)
 {
 	return !prevState[key] && state[key];
 }
 
-bool InputManager::isDown(int key)
+bool InputListener::isDown(int key)
 {
 	return state[key];
 }
 
-bool InputManager::isUp(int key)
+bool InputListener::isUp(int key)
 {
 	return !state[key];
 }

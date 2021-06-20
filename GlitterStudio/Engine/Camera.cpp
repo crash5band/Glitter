@@ -3,14 +3,17 @@
 
 Camera::Camera(CameraMode _mode, DirectX::XMVECTOR pos) :
 	position{ pos }, front{ DirectX::XMVECTOR{0.0f, 0.0f, -1.0f, 1.0f} }, sensitivity{ defaultSensitivity }, fov{ defaultZoom },
-	worldUp{ DirectX::XMVECTOR{0.0f, 1.0f, 0.0f, 1.0f} }, yaw{ defaultYaw }, pitch{ defaultPitch }, mode{ _mode }
+	yaw{ defaultYaw }, pitch{ defaultPitch }, mode{ _mode }
 {
+	near = 0.1;
+	far = 150.0f;
 	defaultRadius = 5.0f;
 	radius = defaultRadius;
 
 	if (_mode == CameraMode::Orbit)
 	{
 		setDistance(radius);
+		positionCamOrbit();
 	}
 
 	target = DirectX::XMVECTOR{ 0 };
@@ -23,18 +26,19 @@ void Camera::reset()
 	position	= defaultPosition;
 	yaw			= defaultYaw;
 	pitch		= defaultPitch;
-	fov		= defaultZoom;
+	fov			= defaultZoom;
+	radius		= defaultRadius;
 	updateCameraVectors();
 }
 
 DirectX::XMMATRIX Camera::getViewMatrix() const
 {
-	return DirectX::XMMatrixLookAtRH(position, front, worldUp);
+	return DirectX::XMMatrixLookAtRH(position, front, DirectX::XMVECTOR{ 0.0f, 1.0f, 0.0f, 1.0f });
 }
 
 DirectX::XMMATRIX Camera::getProjectionMatrix(float aspect) const
 {
-	return DirectX::XMMatrixPerspectiveFovRH(DirectX::XMConvertToRadians(fov), aspect, 0.1f, 150.0f);
+	return DirectX::XMMatrixPerspectiveFovRH(DirectX::XMConvertToRadians(fov), aspect, near, far);
 }
 
 DirectX::XMVECTOR Camera::getPosition() const
@@ -50,6 +54,16 @@ DirectX::XMVECTOR Camera::getFront() const
 DirectX::XMVECTOR Camera::getTarget() const
 {
 	return target;
+}
+
+void Camera::positionCamOrbit()
+{
+	float rYaw = DirectX::XMConvertToRadians(yaw);
+	float rPitch = DirectX::XMConvertToRadians(pitch);
+
+	position.m128_f32[0] = cos(rYaw) * cos(rPitch) * radius;
+	position.m128_f32[1] = sin(rPitch) * radius;
+	position.m128_f32[2] = sin(rYaw) * cos(rPitch) * radius;
 }
 
 void Camera::move(float x, float y)
@@ -81,13 +95,8 @@ void Camera::setAngle(float y, float p)
 
 	if (mode == CameraMode::Orbit)
 	{
-		float r = DirectX::XMVector3Length(DirectX::XMVectorSubtract(target, position)).m128_f32[0];
-		float rYaw = DirectX::XMConvertToRadians(yaw);
-		float rPitch = DirectX::XMConvertToRadians(pitch);
-
-		position.m128_f32[0] = cos(rYaw) * cos(rPitch) * r;
-		position.m128_f32[1] = sin(rPitch) * r;
-		position.m128_f32[2] = sin(rYaw) * cos(rPitch) * r;
+		radius = DirectX::XMVector3Length(DirectX::XMVectorSubtract(target, position)).m128_f32[0];
+		positionCamOrbit();
 	}
 
 	updateCameraVectors();
@@ -95,7 +104,8 @@ void Camera::setAngle(float y, float p)
 
 void Camera::setFOV(float angle)
 {
-	fov = angle;
+	if (angle > 0 && angle < 120)
+		fov = angle;
 }
 
 void Camera::setMode(CameraMode m)
@@ -105,7 +115,7 @@ void Camera::setMode(CameraMode m)
 
 void Camera::setDistance(float d)
 {
-	float radius = d;
+	radius = d;
 	if (radius < 1.0f)
 		radius = 1.0f;
 	position = target;
@@ -150,7 +160,7 @@ void Camera::updateCameraVectors()
 		front = DirectX::XMVector3Normalize(direction);
 	}
 
-	right = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(front, worldUp));
+	right = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(front, DirectX::XMVECTOR{ 0.0f, 1.0f, 0.0f }));
 	up = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(right, front));
 }
 
@@ -171,7 +181,7 @@ void Camera::update(bool leftBtn, bool rightBtn, float x, float y, float wheel)
 	}
 	else
 	{
-		float r = DirectX::XMVector3Length(DirectX::XMVectorSubtract(target, position)).m128_f32[0];
+		radius = DirectX::XMVector3Length(DirectX::XMVectorSubtract(target, position)).m128_f32[0];
 
 		if (leftBtn)
 		{
@@ -180,12 +190,12 @@ void Camera::update(bool leftBtn, bool rightBtn, float x, float y, float wheel)
 			float rYaw = DirectX::XMConvertToRadians(yaw);
 			float rPitch = DirectX::XMConvertToRadians(pitch);
 
-			position.m128_f32[0] = cos(rYaw) * cos(rPitch) * r;
-			position.m128_f32[1] = sin(rPitch) * r;
-			position.m128_f32[2] = sin(rYaw) * cos(rPitch) * r;
+			position.m128_f32[0] = cos(rYaw) * cos(rPitch) * radius;
+			position.m128_f32[1] = sin(rPitch) * radius;
+			position.m128_f32[2] = sin(rYaw) * cos(rPitch) * radius;
 		}
 		
-		pollMouseWheel(wheel, r);
+		pollMouseWheel(wheel, radius);
 		updateCameraVectors();
 	}
 }

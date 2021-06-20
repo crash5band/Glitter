@@ -1,23 +1,29 @@
 #pragma once
-#include "IGlitterNode.h"
+#include "INode.h"
 #include "GlitterMaterial.h"
 #include "TextureData.h"
 
-class MaterialNode : public IGlitterNode
+namespace Glitter
 {
-private:
-	std::shared_ptr<Glitter::GlitterMaterial> material;
-	std::shared_ptr<TextureData> texture;
+	namespace Editor
+	{
+		class MaterialNode : public INode
+		{
+		private:
+			std::shared_ptr<GlitterMaterial> material;
+			std::shared_ptr<TextureData> texture;
 
-public:
-	MaterialNode(std::shared_ptr<Glitter::GlitterMaterial> &mat);
+		public:
+			MaterialNode(std::shared_ptr<GlitterMaterial>& mat);
+			MaterialNode(std::shared_ptr<MaterialNode>& rhs);
 
-	std::shared_ptr<Glitter::GlitterMaterial> getMaterial();
-	std::shared_ptr<TextureData> getTexture();
-	void changeTexture(const std::string& filepath);
+			std::shared_ptr<GlitterMaterial> getMaterial();
+			std::shared_ptr<TextureData> getTexture();
+			void changeTexture(const std::string& filepath);
 
-	virtual NodeType getType() override;
-	virtual void populateInspector() override;
-	virtual std::shared_ptr<AnimationNode> getAnimationNode() override;
-	virtual float getLife() override;
-};
+			virtual NodeType getNodeType() override;
+			virtual void populateInspector() override;
+			virtual std::shared_ptr<EditorAnimationSet> getAnimationSet() override;
+		};
+	}
+}

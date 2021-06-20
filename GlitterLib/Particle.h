@@ -1,5 +1,5 @@
 #pragma once
-#include "Animation.h"
+#include "GlitterAnimation.h"
 #include "Emitter.h"
 #include "MathGens.h"
 #include "GlitterEnums.h"
@@ -18,7 +18,7 @@ namespace Glitter
 		unsigned int ID;
 		std::string name;
 		ParticleType type;
-		std::vector<Animation> animations;
+		std::vector<GlitterAnimation> animations;
 		std::vector<std::weak_ptr<Emitter>> childEmitters;
 		std::vector<unsigned int> pendingChildEmitters;
 
@@ -81,7 +81,6 @@ namespace Glitter
 	public:
 		Particle();
 		Particle(const std::string& name);
-		~Particle() { animations.clear(); }
 
 		unsigned int getID() const;
 		std::string getName() const;
@@ -141,7 +140,7 @@ namespace Glitter
 		unsigned int getFlags() const;
 		std::vector<std::weak_ptr<Emitter>> getChildEmitters() const;
 		std::vector<unsigned int> getPendingChildEmitters() const;
-		std::vector<Animation>& getAnimations();
+		std::vector<GlitterAnimation>& getAnimations();
 
 		void setID(unsigned int id);
 		void setName(std::string n);

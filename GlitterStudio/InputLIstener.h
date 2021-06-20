@@ -3,7 +3,7 @@
 #include "GLFW/glfw3.h"
 #include <array>
 
-class InputManager
+class InputListener
 {
 private:
 	std::array<bool, GLFW_KEY_LAST> prevState;

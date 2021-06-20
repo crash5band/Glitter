@@ -1,6 +1,6 @@
 #include "Logger.h"
 #include "UiHelper.h"
-#include "UIFn.h"
+#include "UI.h"
 #include <sstream>
 #include <ctime>
 
@@ -28,9 +28,9 @@ void Logger::log(Message msg)
 
 void Logger::show()
 {
-	if (ImGui::Begin(logWindow))
+	if (ImGui::Begin("Log"))
 	{
-		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, btnHeight)))
+		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 			clear();
 
 		ImGui::Separator();

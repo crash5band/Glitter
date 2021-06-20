@@ -21,8 +21,8 @@ void MeshData::addSubmesh(SubmeshData &submesh)
 	submeshes.push_back(submesh);
 }
 
-void MeshData::draw(Shader* shader)
+void MeshData::draw(Shader* shader, float time)
 {
 	for (auto& submesh : submeshes)
-		submesh.draw(shader);
+		submesh.draw(shader, time);
 }

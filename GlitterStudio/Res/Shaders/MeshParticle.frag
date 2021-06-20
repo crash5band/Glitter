@@ -13,11 +13,12 @@ struct Material
 
 uniform Material material;
 uniform vec4 color;
+uniform vec2 uvOffset;
 uniform int blendMode;
 
 void main()
 {
-    vec4 result = texture(material.diffuse0, uv) * color * vColor;
+    vec4 result = texture(material.diffuse0, uv + uvOffset) * color * vColor;
     if (blendMode == 5 && result.a < 0.5)
         discard;
 

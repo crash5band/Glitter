@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -188,6 +188,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationSet.cpp" />
+    <ClCompile Include="GlitterAnimation.cpp" />
     <ClCompile Include="BinaryReader.cpp" />
     <ClCompile Include="BinaryWriter.cpp" />
     <ClCompile Include="BIXF.cpp" />
@@ -197,6 +199,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GlitterEffect.cpp" />
     <ClCompile Include="GlitterMaterial.cpp" />
+    <ClCompile Include="KeyFrameSet.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MathGens.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -205,11 +208,15 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Submesh.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="UVAnimation.cpp" />
+    <ClCompile Include="UVAnimationSet.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationSet.h" />
+    <ClInclude Include="GlitterAnimation.h" />
     <ClInclude Include="BinaryReader.h" />
     <ClInclude Include="BinaryWriter.h" />
     <ClInclude Include="BIXF.h" />
@@ -221,6 +228,8 @@
     <ClInclude Include="GlitterEffect.h" />
     <ClInclude Include="GlitterEnums.h" />
     <ClInclude Include="GlitterMaterial.h" />
+    <ClInclude Include="KeyFrame.h" />
+    <ClInclude Include="KeyFrameSet.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MathGens.h" />
     <ClInclude Include="Mesh.h" />
@@ -229,6 +238,8 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Submesh.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="UVAnimation.h" />
+    <ClInclude Include="UVAnimationSet.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexFormat.h" />
   </ItemGroup>

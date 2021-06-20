@@ -2,7 +2,7 @@
 #include "File.h"
 #include "FileGUI.h"
 #include "ResourceManager.h"
-#include "MaterialEditor.h"
+#include "GTMEditor.h"
 #include "CommandManager.h"
 #include "Utilities.h"
 #include "Logger.h"
@@ -25,10 +25,14 @@ Editor::Editor(const std::string& dir) : frameDelta{ 0 }, lastFrame{ 0 }, select
 	ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle");
 	ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle");
 	ResourceManager::loadShader("Grid", shadersDir + "GridShader");
+	ResourceManager::loadShader("Mesh", shadersDir + "Mesh");
 
 	inspector = new Inspector();
 	player = new GlitterPlayer();
 	inputManager = new InputManager();
+	modelViewer = new ModelViewer();
+	textureViewer = new TextureViewer();
+	renderer = new Renderer();
 
 	dockspaceID = 39765;
 
@@ -67,7 +71,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 		for (auto& particle : effect->getParticles())
 			openGlitterFile(filepath + particle->getMaterial() + ".gtm");
 
-		std::vector<std::shared_ptr<MaterialNode>> materials = MaterialEditor::getNodes();
+		std::vector<std::shared_ptr<MaterialNode>> materials = GTMEditor::getNodes();
 		for (auto& p : effectNode->getParticleNodes())
 		{
 			for (auto& m : materials)
@@ -80,7 +84,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 	}
 	else if (extension == "gtm")
 	{
-		std::vector<std::shared_ptr<MaterialNode>> materials = MaterialEditor::getNodes();
+		std::vector<std::shared_ptr<MaterialNode>> materials = GTMEditor::getNodes();
 		for (const auto& m : materials)
 		{
 			if (m->getMaterial()->getFilename() == filename)
@@ -89,7 +93,7 @@ bool Editor::openGlitterFile(const std::string& filename)
 
 		auto material = std::make_shared<Glitter::GlitterMaterial>(filename);
 		auto materialNode = std::make_shared<MaterialNode>(material);
-		MaterialEditor::add(materialNode);
+		GTMEditor::add(materialNode);
 	}
 	else
 	{
@@ -122,7 +126,7 @@ void Editor::openFolder(const std::string& directory)
 	Logger::log(Message(MessageType::Normal, "Found " + std::to_string(files.size()) + " GTE files."));
 
 	effectNodes.reserve(effectNodes.size() + files.size());
-	MaterialEditor::reserve(matCount);
+	GTMEditor::reserve(matCount);
 
 	for (const std::string& file : files)
 		openGlitterFile(file);
@@ -159,7 +163,7 @@ void Editor::closeAllEffects()
 void Editor::cleanUp()
 {
 	CommandManager::clean();
-	MaterialEditor::clean();
+	GTMEditor::clean();
 	ResourceManager::cleanModels();
 	ResourceManager::cleanTextures();
 }
@@ -193,7 +197,7 @@ void Editor::saveEffect(int index, bool saveAs)
 
 			// save materials used by effect's particles
 			auto &particles = effectNodes[index]->getParticleNodes();
-			auto materials = MaterialEditor::getNodes();
+			auto materials = GTMEditor::getNodes();
 			for (auto& particle : particles)
 			{
 				for (int m = 0; m < materials.size(); ++m)
@@ -211,7 +215,7 @@ void Editor::saveEffect(int index, bool saveAs)
 
 void Editor::saveMaterial(int index, bool saveAs)
 {
-	std::vector<std::shared_ptr<MaterialNode>> nodes = MaterialEditor::getNodes();
+	std::vector<std::shared_ptr<MaterialNode>> nodes = GTMEditor::getNodes();
 	if (index > -1 && index < nodes.size())
 	{
 		std::string name = nodes[index]->getMaterial()->getFilename();
@@ -394,7 +398,7 @@ void Editor::processInput()
 		if (inputManager->isDown(GLFW_KEY_LEFT_SHIFT) || inputManager->isDown(GLFW_KEY_RIGHT_SHIFT))
 		{
 			if (inputManager->isTapped(GLFW_KEY_S))
-				saveMaterial(MaterialEditor::getSelection(), false);
+				saveMaterial(GTMEditor::getSelection(), false);
 		}
 		else
 		{
@@ -437,7 +441,7 @@ void Editor::reset()
 	selectedParent = -1;
 	selectedChild = -1;
 	effectNodes.clear();
-	MaterialEditor::clear();
+	GTMEditor::clear();
 	CommandManager::clearAll();
 	ResourceManager::disposeAll();
 	Logger::clear();
@@ -469,9 +473,11 @@ void Editor::go()
 			ImGui::ShowDemoWindow(&settings.imguiDemoOpen);
 
 		updateGlitterTreeView();
-		MaterialEditor::update();
+		GTMEditor::update();
 		inspector->update();
-		player->update(frameDelta);
+		player->update(renderer, frameDelta);
+		modelViewer->update(renderer, frameDelta);
+		textureViewer->update();
 		Logger::show();
 
 		logTime("Main Timer", mainTimer);
@@ -480,6 +486,13 @@ void Editor::go()
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// Update and Render additional Platform Windows
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 
 		glfwSwapBuffers(window);
 	}

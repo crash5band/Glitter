@@ -1,12 +1,21 @@
 #pragma once
 #include <string>
 
+namespace Glitter
+{
+	enum class TextureWrapMode : uint8_t;
+}
+
 enum class TextureSlot
 {
 	Diffuse,
 	Gloss,
 	Normal,
-	Specular
+	Specular,
+	Emissive,
+	Displacement,
+	Reflection,
+	SlotMax
 };
 
 class TextureData
@@ -31,9 +40,12 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 
+	unsigned int glWrapMode(Glitter::TextureWrapMode mode);
+
 	bool reload(const std::string& path, TextureSlot slot);
 	void read();
 	void use();
+	void setWrapMode(Glitter::TextureWrapMode u, Glitter::TextureWrapMode v);
 	void dispose();
 };
 

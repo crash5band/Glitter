@@ -1,4 +1,5 @@
 #include "TextureData.h"
+#include "Texture.h"
 #include "File.h"
 #include "BinaryReader.h"
 #include "../Logger.h"
@@ -46,9 +47,36 @@ int TextureData::getHeight() const
 	return height;
 }
 
+unsigned int TextureData::glWrapMode(Glitter::TextureWrapMode mode)
+{
+	switch (mode)
+	{
+	case Glitter::TextureWrapMode::Repeat:
+		return GL_REPEAT;
+	case Glitter::TextureWrapMode::Mirror:
+		return GL_MIRRORED_REPEAT;
+	case Glitter::TextureWrapMode::Clamp:
+		return GL_CLAMP_TO_EDGE;
+	case Glitter::TextureWrapMode::MirrorOnce:
+		return GL_MIRRORED_REPEAT;
+	case Glitter::TextureWrapMode::Border:
+		return GL_CLAMP_TO_BORDER;
+	default:
+		return GL_REPEAT;
+	}
+}
+
 void TextureData::use()
 {
 	glBindTexture(GL_TEXTURE_2D, ID);
+}
+
+void TextureData::setWrapMode(Glitter::TextureWrapMode u, Glitter::TextureWrapMode v)
+{
+	glBindTexture(GL_TEXTURE_2D, ID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapMode(u));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapMode(v));
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void TextureData::dispose()
@@ -82,8 +110,8 @@ void TextureData::read()
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, tex.levels() - 1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
 	for (int i = 0; i < 4; ++i)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R + i, fmt.Swizzles[i]);

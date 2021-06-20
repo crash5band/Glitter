@@ -12,6 +12,8 @@ public:
 
 	void dispose();
 	void addSubmesh(SubmeshData &submesh);
-	void draw(Shader* shader);
+	void draw(Shader* shader, float time);
+	
+	inline std::vector<SubmeshData>& getSubmeshes() { return submeshes; }
 };
 

@@ -23,6 +23,9 @@
     <Filter Include="BIXF">
       <UniqueIdentifier>{ef84064a-e686-48e4-b32d-894b36635ba9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{f055a0f6-7352-448a-8b00-ae1172f10466}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VertexFormat.cpp">
@@ -73,9 +76,6 @@
     <ClCompile Include="Emitter.cpp">
       <Filter>Glitter</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Glitter</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Glitter</Filter>
     </ClCompile>
@@ -84,6 +84,24 @@
     </ClCompile>
     <ClCompile Include="BIXF.cpp">
       <Filter>BIXF</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyFrameSet.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="UVAnimation.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="UVAnimationSet.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="GlitterAnimation.cpp">
+      <Filter>Glitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSet.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +147,6 @@
     <ClInclude Include="Material.h">
       <Filter>Material</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Glitter</Filter>
-    </ClInclude>
     <ClInclude Include="Emitter.h">
       <Filter>Glitter</Filter>
     </ClInclude>
@@ -150,6 +165,27 @@
     </ClInclude>
     <ClInclude Include="GlitterEnums.h">
       <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyFrame.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyFrameSet.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="UVAnimation.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="UVAnimationSet.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="GlitterAnimation.h">
+      <Filter>Glitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSet.h">
+      <Filter>Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

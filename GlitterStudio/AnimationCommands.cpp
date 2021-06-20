@@ -1,121 +1,136 @@
 #include "AnimationCommands.h"
 
-AddAnimationCommand::AddAnimationCommand(std::shared_ptr<AnimationNode> &node, Glitter::Animation anim, size_t pos) :
-	animationNode{ node }, anim{ anim }, position{ pos }
+namespace Glitter
 {
-
-}
-
-void AddAnimationCommand::execute()
-{
-	animationNode.lock()->add(anim, position);
-	animationNode.lock()->buildCache();
-}
-
-void AddAnimationCommand::undo()
-{
-	animationNode.lock()->remove(position);
-	animationNode.lock()->buildCache();
-}
-
-RemoveAnimationCommand::RemoveAnimationCommand(std::shared_ptr<AnimationNode> &node, size_t pos) :
-	animationNode{ node }, position{ pos }
-{
-	anim = (*animationNode.lock()->getAnimationList())[pos];
-}
-
-void RemoveAnimationCommand::execute()
-{
-	animationNode.lock()->remove(position);
-	animationNode.lock()->buildCache();
-}
-
-void RemoveAnimationCommand::undo()
-{
-	animationNode.lock()->add(anim, position);
-	animationNode.lock()->buildCache();
-}
-
-ChangeAnimationCommand::ChangeAnimationCommand(std::shared_ptr<AnimationNode>& node, size_t pos, Glitter::Animation& val) :
-	animationNode{ node }, position{ pos }
-{
-	oldValue = node->getAnimationList()->at(pos);
-	newValue = val;
-}
-
-void ChangeAnimationCommand::execute()
-{
-	animationNode.lock()->getAnimationList()->at(position) = newValue;
-}
-
-void ChangeAnimationCommand::undo()
-{
-	animationNode.lock()->getAnimationList()->at(position) = oldValue;
-}
-
-AddKeyCommand::AddKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, int frame) :
-	animationNode{ node }, animIndex{ a }
-{
-	size_t type = (size_t)node->getAnimationList()->at(a).getType();
-	float value = 0;
-	if ((size_t)type >= 6 && (size_t)type < 10)
+	namespace Editor
 	{
-		// scale
-		value = 1;
+		
+		AddAnimationCommand::AddAnimationCommand(std::shared_ptr<EditorAnimationSet>& aSet, EditorAnimation anim, size_t pos) :
+			set{ aSet }, animation{ anim }, position{ pos }
+		{
+
+		}
+
+		void AddAnimationCommand::execute()
+		{
+			set.lock()->add(animation, position);
+			set.lock()->markDirty(true);
+		}
+
+		void AddAnimationCommand::undo()
+		{
+			set.lock()->remove(position);
+			set.lock()->markDirty(true);
+		}
+
+		RemoveAnimationCommand::RemoveAnimationCommand(std::shared_ptr<EditorAnimationSet>& aSet, size_t pos) :
+			set{ aSet }, position{ pos }
+		{
+			animation = set.lock()->animations[pos];
+		}
+
+		void RemoveAnimationCommand::execute()
+		{
+			set.lock()->remove(position);
+			set.lock()->markDirty(true);
+		}
+
+		void RemoveAnimationCommand::undo()
+		{
+			set.lock()->add(animation, position);
+			set.lock()->markDirty(true);
+		}
+
+		ChangeAnimationCommand::ChangeAnimationCommand(std::shared_ptr<EditorAnimationSet>& aSet, EditorAnimation& anim, size_t pos) :
+			set{ aSet }, position{ pos }
+		{
+			oldValue = set.lock()->animations.at(pos);
+			newValue = anim;
+		}
+
+		void ChangeAnimationCommand::execute()
+		{
+			set.lock()->animations[position] = newValue;
+			set.lock()->markDirty(true);
+		}
+
+		void ChangeAnimationCommand::undo()
+		{
+			set.lock()->animations[position] = oldValue;
+			set.lock()->markDirty(true);
+		}
+
+		AddKeyCommand::AddKeyCommand(std::shared_ptr<EditorAnimationSet>& aSet, size_t aIndex, int frame) :
+			set{ aSet }, animIndex{ aIndex }
+		{
+			size_t type = (size_t)set.lock()->animations[animIndex].type;
+			float value = 0;
+			if ((size_t)type >= 6 && (size_t)type < 10)
+			{
+				// scale
+				value = 1;
+			}
+			else if ((size_t)type >= 10 && (size_t)type < 14)
+			{
+				// color
+				value = 255;
+			}
+
+			key = EditorKeyframe{ (float)frame,  value };
+		}
+
+		AddKeyCommand::AddKeyCommand(std::shared_ptr<EditorAnimationSet>& aSet, size_t aIndex, EditorKeyframe k) :
+			set{ aSet }, animIndex{ aIndex }, key{ k }
+		{
+
+		}
+
+		void AddKeyCommand::execute()
+		{
+			keyPos = set.lock()->animations[animIndex].insertKey(key);
+			set.lock()->markDirty(true);
+		}
+
+		void AddKeyCommand::undo()
+		{
+			set.lock()->animations[animIndex].removeKey(keyPos);
+			set.lock()->markDirty(true);
+		}
+
+		RemoveKeyCommand::RemoveKeyCommand(std::shared_ptr<EditorAnimationSet>& aSet, size_t aIndex, size_t pos) :
+			set{ aSet }, animIndex{ aIndex }, keyPos{ pos }
+		{
+			key = set.lock()->animations[animIndex].keys[keyPos];
+		}
+
+		void RemoveKeyCommand::execute()
+		{
+			set.lock()->animations[animIndex].removeKey(keyPos);
+			set.lock()->markDirty(true);
+		}
+
+		void RemoveKeyCommand::undo()
+		{
+			set.lock()->animations[animIndex].insertKey(key);
+			set.lock()->markDirty(true);
+		}
+
+		ChangeKeyCommand::ChangeKeyCommand(std::shared_ptr<EditorAnimationSet>& aSet, size_t aIndex, EditorKeyframe& k, size_t pos) :
+			set{ aSet }, animIndex{ aIndex }, keyPos{ pos }, newValue{ k }
+		{
+			oldValue = set.lock()->animations[animIndex].keys[keyPos];
+		}
+
+		void ChangeKeyCommand::execute()
+		{
+			set.lock()->animations[animIndex].keys[keyPos] = newValue;
+			set.lock()->markDirty(true);
+		}
+
+		void ChangeKeyCommand::undo()
+		{
+			set.lock()->animations[animIndex].keys[keyPos] = oldValue;
+			set.lock()->markDirty(true);
+		}
 	}
-	else if ((size_t)type >= 10 && (size_t)type < 14)
-	{
-		// color
-		value = 255;
-	}
-
-	key = Glitter::Key{ (float)frame,  value};
-}
-
-void AddKeyCommand::execute()
-{
-	keyPos = animationNode.lock()->getAnimationList()->at(animIndex).insertKey(key);
-	animationNode.lock()->buildCache();
-}
-
-void AddKeyCommand::undo()
-{
-	animationNode.lock()->getAnimationList()->at(animIndex).removeKey(keyPos);
-	animationNode.lock()->buildCache();
-}
-
-RemoveKeyCommand::RemoveKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, size_t pos) :
-	animationNode{ node }, animIndex{ a }, keyPos{ pos }
-{
-	key = animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos];
-}
-
-void RemoveKeyCommand::execute()
-{
-	animationNode.lock()->getAnimationList()->at(animIndex).removeKey(keyPos);
-	animationNode.lock()->buildCache();
-}
-
-void RemoveKeyCommand::undo()
-{
-	animationNode.lock()->getAnimationList()->at(animIndex).insertKey(key);
-	animationNode.lock()->buildCache();
-}
-
-ChangeKeyCommand::ChangeKeyCommand(std::shared_ptr<AnimationNode> &node, size_t a, size_t pos, Glitter::Key &k) :
-	animationNode{ node }, animIndex{ a }, keyPos{ pos }, newVal{ k }
-{
-	oldVal = animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos];
-}
-
-void ChangeKeyCommand::execute()
-{
-	animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos] = newVal;
-	animationNode.lock()->buildCache();
-}
-
-void ChangeKeyCommand::undo()
-{
-	animationNode.lock()->getAnimationList()->at(animIndex).getKeys()[keyPos] = oldVal;
-	animationNode.lock()->buildCache();
 }

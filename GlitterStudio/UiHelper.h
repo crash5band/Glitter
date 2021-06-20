@@ -1,20 +1,14 @@
 #pragma once
-#include <string>
 #include "MathGens.h"
-#include "Animation.h"
+#include "GlitterAnimation.h"
 #include "CommandManager.h"
 #include "PropertyCommands.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
-#include "MaterialEditor.h"
-#include "Editor.h"
+#include "UI.h"
 #include <stack>
 
-constexpr float btnHeight = 25.0f;
-static ImVec2 btnSmall = ImVec2(20.0f, 20.0f);
-static ImVec2 btnNormal = ImVec2(btnHeight, btnHeight);
-static ImVec2 btnWide = ImVec2(50.0f, btnHeight);
-
+using namespace Glitter::Editor;
 
 static void beginPropertyColumn(const char* label)
 {
@@ -147,8 +141,7 @@ static void addColorProperty(const char* label, Glitter::Color val, std::shared_
 
 	beginPropertyColumn(label);
 	ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_DisplayRGB;
-	if (Editor::settings.colorWheel)
-		flags |= ImGuiColorEditFlags_PickerHueWheel;
+	flags |= ImGuiColorEditFlags_PickerHueWheel;
 
 	if (ImGui::ColorEdit4(std::string("##").append(label).c_str(), v4, flags))
 		func(obj.get(), Glitter::Color(v4[0], v4[1], v4[2], v4[3]));
@@ -213,7 +206,7 @@ static void addComboBoxProperty(const char* label, const std::string* items, con
 	}
 }
 
-static void addListProperty(const char* label, const std::vector<Glitter::Animation>& items, int& selectedIndex)
+static void addListProperty(const char* label, const std::vector<Glitter::GlitterAnimation>& items, int& selectedIndex)
 {
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 	const size_t itemCount = items.size();
@@ -234,7 +227,7 @@ static void addListProperty(const char* label, const std::vector<Glitter::Animat
 static void addStackView(const char* label, std::stack<ICommand*>& items, float xRatio)
 {
 	const size_t itemCount = items.size();
-	if (ImGui::ListBoxHeader(label, ImVec2(ImGui::GetContentRegionAvail().x * xRatio, ImGui::GetContentRegionAvail().y - btnHeight - 10.0f)))
+	if (ImGui::ListBoxHeader(label, ImVec2(ImGui::GetContentRegionAvail().x * xRatio, ImGui::GetContentRegionAvail().y - UI::btnHeight - 10.0f)))
 	{
 		for (int n = 0; n < itemCount; ++n)
 		{

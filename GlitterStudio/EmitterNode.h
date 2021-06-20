@@ -1,49 +1,56 @@
 #pragma once
-#include "IGlitterNode.h"
+#include "INode.h"
 #include "ParticleNode.h"
 #include "Transform.h"
 #include "Emitter.h"
 #include "ParticleInstance.h"
 #include "ModelData.h"
+#include "CachedAnimation.h"
 
-class EffectNode;
-
-class EmitterNode : public IGlitterNode
+namespace Glitter
 {
-private:
-	std::shared_ptr<Glitter::Emitter> emitter;
-	std::shared_ptr<AnimationNode> animationNode;
-	Transform transform;
-	std::shared_ptr<ModelData> mesh;
-	std::vector<ParticleInstance> particleInstances;
+	namespace Editor
+	{
+		class EffectNode;
 
-	bool visible;
-	int emissionCount;
-	float emissionInterval;
-	float lastEmissionTime;
-	float lastRotIncrement;
-	Glitter::Vector3 lastEmissionPosition;
-	Glitter::Vector3 rotationAdd;
+		class EmitterNode : public INode
+		{
+		private:
+			std::shared_ptr<Emitter> emitter;
+			std::shared_ptr<EditorAnimationSet> animSet;
+			DirectX::XMMATRIX mat4;
+			CachedAnimation animationCache;
+			std::shared_ptr<ModelData> mesh;
+			std::vector<ParticleInstance> particleInstances;
 
-	void updateTransform(float time, const Camera &camera, Transform& effT);
+			bool visible;
+			int emissionCount;
+			float emissionInterval;
+			float lastEmissionTime;
+			float lastRotIncrement;
+			Vector3 lastEmissionPosition;
+			Vector3 rotationAdd;
 
-public:
-	EmitterNode(std::shared_ptr<Glitter::Emitter> &em, EffectNode* parent);
+		public:
+			EmitterNode(std::shared_ptr<Emitter>& em, EffectNode* parent);
+			EmitterNode(std::shared_ptr<EmitterNode>& rhs);
 
-	std::shared_ptr<Glitter::Emitter> getEmitter();
-	std::vector<ParticleInstance>& getParticles();
+			std::shared_ptr<Emitter> getEmitter();
+			std::vector<ParticleInstance>& getParticles();
 
-	virtual NodeType getType() override;
-	virtual void populateInspector() override;
-	virtual std::shared_ptr<AnimationNode> getAnimationNode() override;
-	virtual float getLife() override;
+			virtual NodeType getNodeType() override;
+			virtual void populateInspector() override;
+			virtual std::shared_ptr<EditorAnimationSet> getAnimationSet() override;
 
-	void update(float time, const Camera &camera, Transform& transform);
-	void emit(float time, Transform& baseTransform);
-	void kill();
-	void changeMesh(const std::string& filename);
-	void changeDirection(Glitter::EmitterDirectionType type, const Camera &camera, Glitter::Vector3& rot);
-	void setVisible(bool val);
-	void setVisibleAll(bool val);
-	bool isVisible() const;
-};
+			void update(float time, float effTime, const Camera& camera, const DirectX::XMMATRIX &effM4, const Quaternion &effRot);
+			void emit(float time, int count);
+			void kill();
+			void changeMesh(const std::string& filename);
+			void saveAnimations();
+			void setVisible(bool val);
+			void setVisibleAll(bool val);
+			bool isVisible() const;
+		};
+
+	}
+}

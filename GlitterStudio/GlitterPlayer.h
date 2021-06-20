@@ -1,37 +1,40 @@
 #pragma once
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
-#include "RenderTarget.h"
-#include "Shader.h"
-#include "Renderer.h"
-#include "Stopwatch.h"
+#include "IViewer.h"
 #include "Viewport.h"
 
-class GlitterPlayer
+namespace Glitter
 {
-private:
-	float time;
-	float maxTime;
-	float playbackSpeed;
-	bool playing;
-	bool loop;
-	bool drawGrid;
-	bool drawRefModel;
-	Stopwatch timer;
-	EffectNode* selectedEffect;
-	Renderer* renderer;
-	Viewport viewport;
+	namespace Editor
+	{
+		class GlitterPlayer : public IViewer
+		{
+		private:
+			float time;
+			float maxTime;
+			float playbackSpeed;
+			bool playing;
+			bool loop;
+			bool drawGrid;
+			bool drawRefModel;
+			EffectNode* selectedEffect;
+			Viewport viewport;
+			std::shared_ptr<ModelData> refModel;
 
-public:
-	GlitterPlayer();
-	~GlitterPlayer();
+			virtual void updatePreview(Renderer* renderer, float deltaT);
 
-	void update(float deltaT);
-	void updatePreview(float deltaT);
-	void togglePlayback();
-	void stopPlayback();
-	void replay();
-	void setEffect(EffectNode* node);
-	bool isEffectLoop();
-};
+		public:
+			GlitterPlayer();
+			~GlitterPlayer();
 
+			virtual void update(Renderer* renderer, float deltaT);
+			virtual void togglePlayback();
+			virtual void stopPlayback();
+			virtual void replay();
+			virtual bool isPlaying();
+			virtual bool isLoop();
+			void setEffect(EffectNode* node);
+			void changeRefMesh(const std::string& path);
+			bool isEffectLoop();
+		};
+	}
+}

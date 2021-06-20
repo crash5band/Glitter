@@ -2,6 +2,8 @@
 #include "MathGens.h"
 #include "TextureData.h"
 #include "Shader.h"
+#include "Material.h"
+#include "UVAnimation.h"
 #include <memory>
 #include <vector>
 
@@ -21,24 +23,32 @@ struct VertexData
 	Glitter::Color color;
 };
 
+struct MaterialData
+{
+	std::shared_ptr<Glitter::Material> material;
+	std::vector<std::shared_ptr<TextureData>> textures;
+};
+
 class SubmeshData
 {
 private:
 	std::vector<VertexData> vertices;
 	std::vector<unsigned int> faces;
-	std::vector<std::shared_ptr<TextureData>> textures;
 	PirimitveType pirimitiveType;
 
 	unsigned int vao, vbo, ebo;
 
 	void build();
+	void setMaterialParams(Shader* shader);
 
 public:
-	SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const std::vector<std::shared_ptr<TextureData>>& t, PirimitveType pirimitive);
-	SubmeshData(const std::vector<VertexData>& v, const std::vector<unsigned int>& i, std::shared_ptr<TextureData> & t, PirimitveType pirimitive);
+	MaterialData material;
+	std::shared_ptr<Glitter::UVAnimation> uvAnim;
+
+	SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const MaterialData &mat, std::shared_ptr<Glitter::UVAnimation> uvAnim, PirimitveType pirimitive);
 	~SubmeshData();
 
 	void dispose();
 	void appendVerticesTo(std::vector<VertexData>& list);
-	void draw(Shader* shader);
+	void draw(Shader* shader, float time);
 };

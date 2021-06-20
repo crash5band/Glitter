@@ -2,24 +2,31 @@
 #include "ICommand.h"
 #include <stack>
 
-class CommandManager
+namespace Glitter
 {
-private:
-	static std::stack<ICommand*> undoStack;
-	static std::stack<ICommand*> redoStack;
+	namespace Editor
+	{
+		class CommandManager
+		{
+		private:
+			static std::stack<ICommand*> undoStack;
+			static std::stack<ICommand*> redoStack;
 
-	static const size_t maxSize;
+			static const size_t maxSize;
 
-public:
-	static void pushNew(ICommand* command);
-	static void undo();
-	static void redo();
-	static void clearAll();
-	static void clearUndo();
-	static void clearRedo();
-	static void clean();
+		public:
+			static void pushNew(ICommand* command);
+			static void undo();
+			static void redo();
+			static void clearAll();
+			static void clearUndo();
+			static void clearRedo();
+			static void clean();
 
-	static std::stack<ICommand*> getUndoHistory() { return undoStack; }
-	static std::stack<ICommand*> getRedoHistory() { return redoStack; }
-};
+			static std::stack<ICommand*> getUndoHistory() { return undoStack; }
+			static std::stack<ICommand*> getRedoHistory() { return redoStack; }
+		};
 
+
+	}
+}

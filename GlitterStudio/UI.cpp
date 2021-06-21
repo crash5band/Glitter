@@ -139,7 +139,7 @@ namespace Glitter
 		bool UI::selectNode(int& selection1, int val1, int& selection2, int val2)
 		{
 			bool result = false;
-			if (ImGui::IsItemActivated())
+			if (ImGui::IsItemActivated() && !ImGui::IsItemToggledOpen())
 			{
 				selection1 = val1;
 				selection2 = val2;

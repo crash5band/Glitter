@@ -30,6 +30,7 @@ namespace Glitter
 			bool fpsMeter;
 			bool vsync;
 			bool aboutOpen;
+			bool debugView;
 
 			GLFWwindow* window;
 			ImGuiID pDockSpaceID;

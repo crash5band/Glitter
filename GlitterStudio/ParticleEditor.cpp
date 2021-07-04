@@ -333,6 +333,44 @@ namespace Glitter
 				ImGui::EndMenu();
 			}
 
+#ifdef _DEBUG
+			if (ImGui::BeginMenu("Debug"))
+			{
+				if (ImGui::MenuItem("Dump Effect XML"))
+				{
+					if (selectedEffect >= 0 && selectedEffect < effects.size())
+					{
+						std::string filename = effects[selectedEffect]->getEffect()->getFilename();
+						if (filename.size())
+							filename = File::getFileNameWithoutExtension(filename).append(".xml");
+						else
+							filename = effects[selectedEffect]->getEffect()->getName().append(".xml");
+
+						if (filename.size())
+							effects[selectedEffect]->getEffect()->writeXML(filename);
+					}
+				}
+
+				if (ImGui::MenuItem("Dump Material XML"))
+				{
+					if (selectedMaterial >= 0 && selectedMaterial < GTMManager::count())
+					{
+						std::vector<std::shared_ptr<MaterialNode>> materialNodes = GTMManager::getNodes();
+						std::string filename = materialNodes[selectedMaterial]->getMaterial()->getFilename();
+						if (filename.size())
+							filename = File::getFileNameWithoutExtension(filename).append(".xml");
+						else
+							filename = materialNodes[selectedMaterial]->getMaterial()->getName().append(".xml");
+
+						if (filename.size())
+							materialNodes[selectedMaterial]->getMaterial()->writeXML(filename);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
+#endif // _DEBUG
+
 			ImGui::EndMainMenuBar();
 		}
 
@@ -347,10 +385,10 @@ namespace Glitter
 
 		void ParticleEditor::cleanUp()
 		{
-			ResourceManager::cleanModels();
-			ResourceManager::cleanTextures();
 			GTMManager::clean();
 			CommandManager::clean();
+			ResourceManager::cleanModels();
+			ResourceManager::cleanTextures();
 		}
 	}
 }

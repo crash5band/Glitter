@@ -17,6 +17,7 @@ namespace Glitter
 			imguiDemoWindow = false;
 			fpsMeter = false;
 			aboutOpen = false;
+			debugView = false;
 
 			setDirectory(dir);
 			initOpenGL();

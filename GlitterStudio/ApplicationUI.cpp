@@ -2,6 +2,7 @@
 #include "ImGui/imgui.h"
 #include "IconsFontAwesome5.h"
 #include "CommandManager.h"
+#include "ResourceManager.h"
 #include "FileGUI.h"
 #include "UI.h"
 
@@ -52,6 +53,8 @@ namespace Glitter
 				mode = EditorMode::Particle;
 
 			ImGui::End();
+
+			debugInfo();
 			updateMenubar();
 		}
 
@@ -97,6 +100,7 @@ namespace Glitter
 			{
 				ImGui::MenuItem("Show ImGui Demo Window", NULL, &imguiDemoWindow);
 				ImGui::MenuItem("FPS Meter", NULL, &fpsMeter);
+				ImGui::MenuItem("Debug Info", NULL, &debugView);
 				ImGui::EndMenu();
 			}
 #endif // _DEBUG
@@ -123,6 +127,51 @@ namespace Glitter
 			}
 
 			about();
+		}
+
+		void Application::debugInfo()
+		{
+			if (!debugView)
+				return;
+
+			ImGuiWindow* debugWindow = ImGui::FindWindowByName(ICON_FA_BUG " Debug Info");
+			if (debugWindow)
+			{
+				ImGui::BringWindowToDisplayFront(debugWindow);
+			}
+
+			if (ImGui::Begin(ICON_FA_BUG " Debug Info", &debugView))
+			{
+				ImGuiTreeNodeFlags f = ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
+				if (ImGui::TreeNodeEx("Performance", f | ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Frametime: %.3fms (%.2f FPS)", frameDelta * 1000, 1 / frameDelta);
+
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNodeEx("Resources", f))
+				{
+					ImGui::Text("Models: %d", ResourceManager::getModelCount());
+					ImGui::Text("Textures: %d", ResourceManager::getTextureCount());
+
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNodeEx("Command history", f))
+				{
+					ImGui::Text("Undo history size: %d", CommandManager::getUndoHistory().size());
+					ImGui::Text("Redo history size: %d", CommandManager::getRedoHistory().size());
+
+					ImGui::Separator();
+					if (ImGui::Button("Clear Command History", ImVec2(ImGui::GetContentRegionAvail().x - ImGui::GetTreeNodeToLabelSpacing(), UI::btnHeight)))
+						CommandManager::clearAll();
+
+					ImGui::TreePop();
+				}
+
+			}
+			ImGui::End();
 		}
 	}
 }

@@ -29,9 +29,12 @@ namespace Glitter
 
 			std::string root = File::getFilePath(eff->getEffect()->getFilename());
 			if (em->getType() == EmitterType::Mesh && em->getMeshName().size())
-				changeMesh(root + "\\" + em->getMeshName());
+			{
+				ResourceManager::loadModel(root + "\\" + em->getMeshName() + ".model");
+				changeMesh(ResourceManager::getModel(em->getMeshName() + ".model"));
+			}
 
-			animationCache.buildCache(animSet);
+			animSet->markDirty(true);
 		}
 
 		EmitterNode::EmitterNode(std::shared_ptr<EmitterNode>& rhs)
@@ -41,6 +44,8 @@ namespace Glitter
 
 			particleInstances = rhs->particleInstances;
 			mesh = std::shared_ptr<ModelData>(rhs->mesh);
+
+			animSet->markDirty(true);
 		}
 
 		std::vector<ParticleInstance>& EmitterNode::getParticles()
@@ -58,11 +63,15 @@ namespace Glitter
 			return animSet;
 		}
 
-		void EmitterNode::changeMesh(const std::string& filename)
+		std::shared_ptr<ModelData> EmitterNode::getMesh() const
 		{
-			ResourceManager::loadModel(filename);
-			mesh = ResourceManager::getModel(File::getFileName(filename));
-			emitter->setMeshName(File::getFileNameWithoutExtension(filename));
+			return mesh;
+		}
+
+		void EmitterNode::changeMesh(std::shared_ptr<ModelData> mesh)
+		{
+			this->mesh = mesh;
+			if (mesh) emitter->setMeshName(File::getFileNameWithoutExtension(mesh->getName()));
 		}
 
 		bool EmitterNode::isVisible() const
@@ -199,12 +208,12 @@ namespace Glitter
 				animSet->markDirty(false);
 			}
 
-			// emitter has started
 			Vector3 effTranslation = Vector3(effM4.r[3].m128_f32[0], effM4.r[3].m128_f32[1], effM4.r[3].m128_f32[2]);
 			Vector3 translation = emitter->getTranslation() + animationCache.tryGetTranslation(emitterLife) + effTranslation;
 			Vector3 rotation = emitter->getRotation() + rotationAdd + animationCache.tryGetRotation(emitterLife);
 			Vector3 scale = emitter->getScaling() *= animationCache.tryGetScale(emitterLife);
 			Quaternion qR;
+
 			if (emitterLife >= 0.0f)
 			{
 				Quaternion qX, qY, qZ;
@@ -295,9 +304,7 @@ namespace Glitter
 			}
 
 			for (auto& particle : particleInstances)
-			{
 				particle.update(emitterTime, camera, mat4, qR);
-			}
 		}
 
 		void EmitterNode::kill()

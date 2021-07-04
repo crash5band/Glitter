@@ -37,6 +37,7 @@ namespace Glitter
 		std::vector<std::shared_ptr<Particle>> getParticles() const;
 		std::string getFilename() const;
 
+		void setFilename(const std::string& filename);
 		void setName(std::string n);
 		void setStartTime(float time);
 		void setLifeTime(float time);
@@ -52,6 +53,8 @@ namespace Glitter
 		void removeParticle(unsigned int index);
 		void removeParticle(std::shared_ptr<Particle> particle);
 		void removeParticleByID(unsigned int id);
+		void clearEmitters();
+		void clearParticles();
 
 		void read(const std::string& filename);
 		void write(const std::string& filename);

@@ -52,25 +52,10 @@ namespace Glitter
 		void setEndTime(float time);
 		void setRepeatType(RepeatType type);
 		void setRandomFlags(unsigned int flags);
-		void verifyKeyOrder(unsigned int keyIndex);
-		size_t insertKey(GlitterKey key);
 		void addKey(GlitterKey key);
 		void removeKey(unsigned int index);
-		float interpolate(float time, const GlitterKey& k1, const GlitterKey& k2);
 
 		void read(tinyxml2::XMLElement* element);
 		void write(tinyxml2::XMLElement* element);
-
-		inline bool operator==(const GlitterAnimation& anim)
-		{
-			return startTime == anim.startTime && endTime == anim.endTime && repeatType == anim.repeatType
-				&& randomFlags == anim.randomFlags;
-		}
-
-		inline bool operator!=(const GlitterAnimation& anim)
-		{
-			return !(*this == anim);
-		}
-
 	};
 }

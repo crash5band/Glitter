@@ -62,11 +62,10 @@ namespace Glitter
 			particle->setMaterial(materialNode->getMaterial()->getName());
 		}
 
-		void ParticleNode::changeMesh(const std::string& filepath)
+		void ParticleNode::changeMesh(std::shared_ptr<ModelData> m)
 		{
-			ResourceManager::loadModel(filepath);
-			mesh = ResourceManager::getModel(File::getFileName(filepath));
-			particle->setMeshName(File::getFileNameWithoutExtension(filepath));
+			mesh = m;
+			if (m) particle->setMeshName(File::getFileNameWithoutExtension(m->getName()));
 		}
 
 		void ParticleNode::initMesh()
@@ -77,7 +76,8 @@ namespace Glitter
 			std::string materialPath = File::getFilePath(materialNode->getMaterial()->getFilename());
 			if (particle->getType() == ParticleType::Mesh && particle->getName().size())
 			{
-				changeMesh(materialPath + "\\" + particle->getMeshName() + ".model");
+				ResourceManager::loadModel(materialPath + "\\" + particle->getMeshName() + ".model");
+				changeMesh(ResourceManager::getModel(particle->getMeshName() + ".model"));
 			}
 		}
 

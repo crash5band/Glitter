@@ -45,11 +45,13 @@ namespace Glitter
 			void update(float time, float effTime, const Camera& camera, const DirectX::XMMATRIX &effM4, const Quaternion &effRot);
 			void emit(float time, int count);
 			void kill();
-			void changeMesh(const std::string& filename);
+			void changeMesh(std::shared_ptr<ModelData> mesh);
 			void saveAnimations();
 			void setVisible(bool val);
 			void setVisibleAll(bool val);
 			bool isVisible() const;
+
+			std::shared_ptr<ModelData> getMesh() const;
 		};
 
 	}

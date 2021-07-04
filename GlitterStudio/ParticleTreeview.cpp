@@ -25,19 +25,22 @@ namespace Glitter
 					createParticle(effects[index], "particle");
 
 				ImGui::Separator();
-				if (ImGui::MenuItem(ICON_FA_PASTE " Paste"))
+				if (ImGui::MenuItem("Duplicate"))
+				{
+					duplicateEffect(index);
+				}
+
+				if (ImGui::MenuItem("Paste", "Ctrl + V"))
 				{
 					selectedEffect = index;
 					paste();
 				}
 
 				ImGui::Separator();
-
-				ImGui::Separator();
-				if (ImGui::MenuItem("Save"))
+				if (ImGui::MenuItem("Save", "Ctrl + S"))
 					save(index, false);
 
-				if (ImGui::MenuItem("Save As..."))
+				if (ImGui::MenuItem("Save As...", "Ctrl + Alt + S"))
 					save(index, true);
 
 				ImGui::Separator();
@@ -81,19 +84,19 @@ namespace Glitter
 					}
 					else
 					{
-						ImGui::MenuItem("None Available");
+						ImGui::Text("None Available");
 					}
 
 					ImGui::EndMenu();
 				}
 
 				ImGui::Separator();
-				if (ImGui::MenuItem(ICON_FA_COPY " Copy"))
+				if (ImGui::MenuItem("Copy", "Ctrl + C"))
 				{
 					nodeCopy = em;
 				}
 
-				if (ImGui::MenuItem(ICON_FA_PASTE " Paste"))
+				if (ImGui::MenuItem("Paste", "Ctrl + V"))
 				{
 					selectedEffect = parent;
 					paste();
@@ -124,12 +127,12 @@ namespace Glitter
 			bool removed = false;
 			if (ImGui::BeginPopupContextItem())
 			{
-				if (ImGui::MenuItem(ICON_FA_COPY " Copy"))
+				if (ImGui::MenuItem("Copy", "Ctrl + C"))
 				{
 					nodeCopy = effects[parent]->getParticleNodes().at(index);
 				}
 
-				if (ImGui::MenuItem(ICON_FA_PASTE " Paste"))
+				if (ImGui::MenuItem("Paste", "Ctrl + V"))
 				{
 					selectedEffect = parent;
 					paste();

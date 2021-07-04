@@ -56,6 +56,11 @@ namespace Glitter
 		return shader;
 	}
 
+	void GlitterMaterial::setFilename(const std::string& filename)
+	{
+		this->filename = filename;
+	}
+
 	void GlitterMaterial::setName(std::string n)
 	{
 		if (n.size())

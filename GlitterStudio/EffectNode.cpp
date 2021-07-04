@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 #include "IconsFontAwesome5.h"
 #include "File.h"
+#include <map>
 
 namespace Glitter
 {
@@ -21,7 +22,70 @@ namespace Glitter
 			for (auto& emitter : effect->getEmitters())
 				emitterNodes.emplace_back(std::make_shared<EmitterNode>(emitter, this));
 
-			animationCache.buildCache(animSet);
+			animSet->markDirty(true);
+		}
+
+		EffectNode::EffectNode(std::shared_ptr<EffectNode>& rhs)
+		{
+			effect = std::make_shared<GlitterEffect>(*rhs->effect);
+			effect->setFilename("");
+			std::map<int, std::vector<int>> emitterParticleIndices;
+
+			int particleCount = effect->getParticles().size();
+			int emitterCount = effect->getEmitters().size();
+
+			// determine which particles each emitter references
+			for (int i = 0; i < emitterCount; ++i)
+			{
+				emitterParticleIndices.insert(std::pair<int, std::vector<int>>{i, std::vector<int>()});
+				auto emParticles = rhs->effect->getEmitters()[i]->getParticles();
+				for (int j = 0; j < emParticles.size(); ++j)
+				{
+					for (int k = 0; k < particleCount; ++k)
+					{
+						if (emParticles[j].lock() == rhs->effect->getParticles()[k])
+							emitterParticleIndices[i].push_back(k);
+					}
+				}
+			}
+
+			effect->clearParticles();
+			effect->clearEmitters();
+
+			for (int i = 0; i < particleCount; ++i)
+				effect->addParticle(std::make_shared<Particle>(*rhs->effect->getParticles()[i]));
+
+			// create copies of the emitters and particles and add them to the new effect
+			for (int i = 0; i < emitterCount; ++i)
+			{
+				std::shared_ptr<Emitter> emitter = std::make_shared<Emitter>(*rhs->effect->getEmitters()[i]);
+				emitter->clearParticles();
+
+				effect->addEmitter(emitter);
+				std::vector<int> indices = emitterParticleIndices[i];
+
+				for (int j = 0; j < indices.size(); ++j)
+					effect->getEmitters()[i]->addParticle(effect->getParticles()[indices[j]]);
+			}
+
+			// create emitter nodes and particles nodes
+			for (int i = 0; i < particleCount; ++i)
+			{
+				auto pNode = std::make_shared<ParticleNode>(effect->getParticles()[i]);
+				pNode->changeMaterial(rhs->getParticleNodes()[i]->getMaterialNode());
+				pNode->changeMesh(rhs->getParticleNodes()[i]->getMesh());
+				particleNodes.push_back(pNode);
+			}
+
+			for (int i = 0; i < emitterCount; ++i)
+			{
+				auto eNode = std::make_shared<EmitterNode>(effect->getEmitters()[i], this);
+				eNode->changeMesh(rhs->getEmitterNodes()[i]->getMesh());
+				emitterNodes.push_back(eNode);
+			}
+
+			animSet = std::make_shared<EditorAnimationSet>(effect->getAnimations());
+			animSet->markDirty(true);
 		}
 
 		std::shared_ptr<GlitterEffect> EffectNode::getEffect()

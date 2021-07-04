@@ -59,6 +59,7 @@ namespace Glitter
 		Shader &getShader();
 		std::string getFilename() const;
 
+		void setFilename(const std::string& filename);
 		void setName(std::string n);
 		void setTexture(std::string tex);
 		void setSecondaryTexture(std::string tex);

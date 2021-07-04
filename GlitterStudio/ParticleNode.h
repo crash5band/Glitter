@@ -23,7 +23,7 @@ namespace Glitter
 			std::shared_ptr<Particle>& getParticle();
 			std::shared_ptr<MaterialNode>& getMaterialNode();
 			std::shared_ptr<ModelData> getMesh();
-			void changeMesh(const std::string& filepath);
+			void changeMesh(std::shared_ptr<ModelData> mesh);
 			void setMaterial(std::shared_ptr<MaterialNode>& matNode);
 			void changeMaterial(std::shared_ptr<MaterialNode>& matNode);
 			void initMesh();

@@ -20,6 +20,7 @@ namespace Glitter
 
 		public:
 			EffectNode(std::shared_ptr<GlitterEffect>& eff);
+			EffectNode(std::shared_ptr<EffectNode>& rhs);
 
 			std::shared_ptr<GlitterEffect> getEffect();
 			std::vector<std::shared_ptr<EmitterNode>>& getEmitterNodes();

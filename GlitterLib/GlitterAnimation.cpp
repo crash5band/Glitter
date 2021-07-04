@@ -17,20 +17,7 @@ namespace Glitter
 		endTime = startTime + 10;
 		repeatType = RepeatType::Constant;
 		randomFlags = 0;
-
-		float value = 0.0f;
-		if ((size_t)type >= 6 && (size_t)type < 10)
-		{
-			// scale
-			value = 1;
-		}
-		else if ((size_t)type >= 10 && (size_t)type < 14)
-		{
-			// color
-			value = 255;
-		}
-
-		keys.push_back(GlitterKey{ start, value, InterpolationType::Linear, 0.0f, 0.0f, 0.0f });
+		keys.push_back(GlitterKey{ start, 0, InterpolationType::Linear, 0.0f, 0.0f, 0.0f });
 	}
 
 	AnimationType GlitterAnimation::getType() const
@@ -107,66 +94,7 @@ namespace Glitter
 	void GlitterAnimation::removeKey(unsigned int index)
 	{
 		if (index < keys.size())
-		{
 			keys.erase(keys.begin() + index);
-		}
-	}
-
-	size_t GlitterAnimation::insertKey(GlitterKey key)
-	{
-		for (size_t index = 0; index < keys.size(); ++index)
-		{
-			if (keys[index].time > key.time)
-			{
-				keys.insert(keys.begin() + index, key);
-				return index;
-			}
-		}
-
-		keys.emplace_back(key);
-		return keys.size() - 1;
-	}
-
-	void GlitterAnimation::verifyKeyOrder(unsigned int keyIndex)
-	{
-		if (keys.size() < 2)
-			return;
-
-		Glitter::GlitterKey& key = keys[keyIndex];
-		if (keyIndex > 0)
-		{
-			if (key.time <= keys[keyIndex - 1].time)
-				key.time = keys[keyIndex - 1].time + 1;
-
-			if (keyIndex < keys.size() - 1)
-			{
-				if (key.time >= keys[keyIndex + 1].time)
-					key.time = keys[keyIndex + 1].time - 1;
-			}
-		}
-		else
-		{
-			if (keys.size() > 1)
-			{
-				if (key.time >= keys[keyIndex + 1].time)
-					key.time = keys[keyIndex + 1].time - 1;
-			}
-		}
-	}
-
-	float GlitterAnimation::interpolate(float time, const Glitter::GlitterKey &k1, const Glitter::GlitterKey &k2)
-	{
-		float bias = (time - k1.time) / (k2.time - k1.time);
-
-		if (k1.interpolationType == Glitter::InterpolationType::Hermite)
-		{
-			float factor = 1 - bias;
-			return ((factor - 1.0f) * 2.0f - 1.0f) * (factor * factor) * (k2.value - k1.value) +
-				((factor - 1.0f) * k2.inParam + factor * k1.outParam) *
-				(factor - 1.0f) * (time - k2.time) + k2.value;
-		}
-		
-		return k1.value + bias * (k2.value - k1.value);
 	}
 
 	void GlitterAnimation::read(tinyxml2::XMLElement* element)

@@ -69,6 +69,11 @@ namespace Glitter
 		return particles;
 	}
 
+	void GlitterEffect::setFilename(const std::string& filename)
+	{
+		this->filename = filename;
+	}
+
 	void GlitterEffect::setName(std::string n)
 	{
 		if (n.size())
@@ -207,6 +212,16 @@ namespace Glitter
 		}
 
 		particles.erase(it);
+	}
+
+	void GlitterEffect::clearEmitters()
+	{
+		emitters.clear();
+	}
+
+	void GlitterEffect::clearParticles()
+	{
+		particles.clear();
 	}
 
 	void GlitterEffect::read(const std::string& filename)

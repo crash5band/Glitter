@@ -121,6 +121,7 @@ namespace Glitter
 		void removeParticle(unsigned int index);
 		void removeParticle(std::weak_ptr<Particle> particle);
 		void removeParticleByID(unsigned int id);
+		void clearParticles();
 
 		std::vector<unsigned int> getPendingParticleIDs() const;
 		void clearPendingParticleIDs();

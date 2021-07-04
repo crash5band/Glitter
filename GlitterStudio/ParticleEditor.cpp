@@ -243,6 +243,11 @@ namespace Glitter
 			}
 		}
 
+		void ParticleEditor::duplicateEffect(int index)
+		{
+			effects.push_back(std::make_shared<EffectNode>(effects[index]));
+		}
+
 		void ParticleEditor::updateMenubar()
 		{
 			ImGui::BeginMainMenuBar();

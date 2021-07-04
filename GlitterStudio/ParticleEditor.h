@@ -44,6 +44,7 @@ namespace Glitter
 			void save(int index, bool saveAs);
 			void copy();
 			void paste();
+			void duplicateEffect(int index);
 			void updateMenubar();
 			void update(Renderer* renderer, float deltaT);
 			void setSelectedNode();

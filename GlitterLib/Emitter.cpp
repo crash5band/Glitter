@@ -375,6 +375,11 @@ namespace Glitter
 		}
 	}
 
+	void Emitter::clearParticles()
+	{
+		particles.clear();
+	}
+
 	std::vector<unsigned int> Emitter::getPendingParticleIDs() const
 	{
 		return pendingParticleIDs;

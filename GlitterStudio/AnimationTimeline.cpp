@@ -19,7 +19,9 @@ namespace Glitter
 			holdingTan = false;
 			showKeyTooltip = false;
 			canPaste = false;
+			showTangentHandles = true;
 			frameStart = frameEnd = currentFrame = 0;
+			frameStep = 1;
 			timelineMinOffset = ImVec2(-100, 0);
 			timelinePosOffset = ImVec2(timelineMinOffset.x, 0);
 
@@ -163,7 +165,9 @@ namespace Glitter
 			UI::transparentButton(ICON_FA_WRENCH, UI::btnNormal);
 			if (ImGui::BeginPopupContextItem("timeline_settings", ImGuiPopupFlags_MouseButtonLeft))
 			{
-				ImGui::Checkbox("Show key tooltip", &showKeyTooltip);
+				ImGui::Checkbox("Show Key Tooltip", &showKeyTooltip);
+				ImGui::Checkbox("Show Tangent Handles", &showTangentHandles);
+				ImGui::DragInt("Frame Step", &frameStep, 1, 1, 100);
 				ImGui::Separator();
 
 				const bool disabled = limitIndex == -1;
@@ -197,87 +201,99 @@ namespace Glitter
 
 		void AnimationTimeline::timelineContextMenu()
 		{
+			bool validAnim = true;
 			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
 			if (!set)
-				return;
-
-			if (animationIndex < 0 || animationIndex >= set->animations.size())
-				return;
+				validAnim = false;
+			else
+			{
+				if (animationIndex < 0 || animationIndex >= set->animations.size())
+					validAnim = false;
+			}
 
 			if (ImGui::BeginPopupContextWindow("timleine_context_menu"))
 			{
-				if (ImGui::MenuItem("Set Animation Start"))
+				if (validAnim)
 				{
-					EditorAnimation a = set->animations[animationIndex];
-					a.setStart(currentFrame);
-
-					if (a.getStart() != set->animations[animationIndex].getStart())
-						CommandManager::pushNew(new ChangeAnimationCommand(set, a, animationIndex));
-				}
-
-				if (ImGui::MenuItem("Set Animation End"))
-				{
-					EditorAnimation a = set->animations[animationIndex];
-					a.setEnd(currentFrame);
-
-					if (a.getEnd() != set->animations[animationIndex].getEnd())
-						CommandManager::pushNew(new ChangeAnimationCommand(set, a, animationIndex));
-				}
-
-				if (ImGui::BeginMenu("Repeat Type"))
-				{
-					EditorAnimation a = set->animations[animationIndex];
-					RepeatType repeat = a.repeat;
-
-					if (ImGui::MenuItem("Constant", NULL, a.repeat == RepeatType::Constant))
-						a.repeat = RepeatType::Constant;
-					if (ImGui::MenuItem("Repeat", NULL, a.repeat == RepeatType::Repeat))
-						a.repeat = RepeatType::Repeat;
-
-					if (a.repeat != repeat)
-						CommandManager::pushNew(new ChangeAnimationCommand(set, a, animationIndex));
-
-					ImGui::EndMenu();
-				}
-
-				ImGui::Separator();
-
-				if (selectedKey == -1)
-				{
-					if (currentFrame >= set->animations[animationIndex].getStart() && currentFrame <= set->animations[animationIndex].getEnd())
+					if (ImGui::MenuItem("Set Animation Start"))
 					{
-						if (ImGui::MenuItem("Add Key"))
-							CommandManager::pushNew(new AddKeyCommand(set, animationIndex, currentFrame));
+						EditorAnimation a = set->animations[animationIndex];
+						a.setStart(currentFrame);
 
-						if (ImGui::MenuItem("Paste"))
-							pasteKey();
+						if (a.getStart() != set->animations[animationIndex].getStart())
+							CommandManager::pushNew(new ChangeAnimationCommand(set, a, animationIndex));
 					}
-				}
-				else
-				{
-					if (ImGui::MenuItem("Copy"))
-						copyKey();
 
-					if (ImGui::BeginMenu("Interpolation"))
+					if (ImGui::MenuItem("Set Animation End"))
 					{
-						EditorKeyframe k = set->animations[animationIndex].keys[selectedKey];
-						InterpolationType current = k.interpolation;
-						if (ImGui::MenuItem("Linear", NULL, current == InterpolationType::Linear))
-							k.interpolation = InterpolationType::Linear;
-						if (ImGui::MenuItem("Hermite", NULL, current == InterpolationType::Hermite))
-							k.interpolation = InterpolationType::Hermite;
-						if (ImGui::MenuItem("Constant", NULL, current == InterpolationType::Constant))
-							k.interpolation = InterpolationType::Constant;
+						EditorAnimation a = set->animations[animationIndex];
+						a.setEnd(currentFrame);
 
-						if (k.interpolation != current)
-							CommandManager::pushNew(new ChangeKeyCommand(set, animationIndex, k, selectedKey));
+						if (a.getEnd() != set->animations[animationIndex].getEnd())
+							CommandManager::pushNew(new ChangeAnimationCommand(set, a, animationIndex));
+					}
+
+					if (ImGui::BeginMenu("Repeat Type"))
+					{
+						EditorAnimation a = set->animations[animationIndex];
+						RepeatType repeat = a.repeat;
+
+						if (ImGui::MenuItem("Constant", NULL, a.repeat == RepeatType::Constant))
+							a.repeat = RepeatType::Constant;
+						if (ImGui::MenuItem("Repeat", NULL, a.repeat == RepeatType::Repeat))
+							a.repeat = RepeatType::Repeat;
+
+						if (a.repeat != repeat)
+							CommandManager::pushNew(new ChangeAnimationCommand(set, a, animationIndex));
 
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem("Remove Key"))
-						CommandManager::pushNew(new RemoveKeyCommand(set, animationIndex, selectedKey));
+					ImGui::Separator();
+
+					if (selectedKey == -1)
+					{
+						if (currentFrame >= set->animations[animationIndex].getStart() && currentFrame <= set->animations[animationIndex].getEnd())
+						{
+							if (ImGui::MenuItem("Add Key"))
+								CommandManager::pushNew(new AddKeyCommand(set, animationIndex, currentFrame));
+
+							if (ImGui::MenuItem("Paste"))
+								pasteKey();
+						}
+					}
+					else
+					{
+						if (ImGui::MenuItem("Copy"))
+							copyKey();
+
+						if (ImGui::BeginMenu("Interpolation"))
+						{
+							EditorKeyframe k = set->animations[animationIndex].keys[selectedKey];
+							InterpolationType current = k.interpolation;
+							if (ImGui::MenuItem("Linear", NULL, current == InterpolationType::Linear))
+								k.interpolation = InterpolationType::Linear;
+							if (ImGui::MenuItem("Hermite", NULL, current == InterpolationType::Hermite))
+								k.interpolation = InterpolationType::Hermite;
+							if (ImGui::MenuItem("Constant", NULL, current == InterpolationType::Constant))
+								k.interpolation = InterpolationType::Constant;
+
+							if (k.interpolation != current)
+								CommandManager::pushNew(new ChangeKeyCommand(set, animationIndex, k, selectedKey));
+
+							ImGui::EndMenu();
+						}
+
+						if (ImGui::MenuItem("Remove Key"))
+							CommandManager::pushNew(new RemoveKeyCommand(set, animationIndex, selectedKey));
+					}
 				}
+
+				if (ImGui::MenuItem("Zoom In"))
+					zoom += 0.5f;
+
+				if (ImGui::MenuItem("Zoom Out"))
+					zoom -= 0.5f;
 
 				ImGui::EndPopup();
 			}
@@ -317,7 +333,7 @@ namespace Glitter
 			ImGui::PushButtonRepeat(true);
 			if (UI::transparentButton(ICON_FA_BACKWARD, UI::btnNormal))
 			{
-				--currentFrame;
+				currentFrame -= frameStep;
 				float curPos = ((currentFrame - frameStart) * effectiveFrameWidth);
 				if (timelinePosOffset.x + 100 > curPos)
 					timelinePosOffset.x = curPos - 100;
@@ -326,7 +342,7 @@ namespace Glitter
 			ImGui::SameLine();
 			if (UI::transparentButton(ICON_FA_FORWARD, UI::btnNormal))
 			{
-				++currentFrame;
+				currentFrame += frameStep;
 				float curPos = ((currentFrame - frameStart) * effectiveFrameWidth);
 				if (curPos > timelinePosOffset.x + canvasSize.x - 100)
 					timelinePosOffset.x = curPos - (canvasSize.x - 100);
@@ -859,16 +875,6 @@ namespace Glitter
 				if (currentFrame == keys[i].time)
 					selectedKey = i;
 			}
-
-			// draw cursor
-			ImVec2 cursorPos = ImVec2(canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth), canvasPos.y);
-			if (Utilities::isWithinRange(cursorPos.x, canvasPos.x + timelinePosOffset.x - 10, canvasPos.x + timelinePosOffset.x + canvasSize.x + 10))
-			{
-				ImU32 cursorColor = ImGui::GetColorU32(ImVec4(0.8, 0.8, 0.8, 0.75));
-				ImDrawList* drawList = ImGui::GetWindowDrawList();
-				drawList->AddLine(cursorPos, ImVec2(cursorPos.x, canvasPos.y + canvasSize.y), cursorColor, 2.5f);
-				drawList->AddTriangleFilled(ImVec2(cursorPos.x - 10, cursorPos.y), ImVec2(cursorPos.x, cursorPos.y + 10), ImVec2(cursorPos.x + 10, cursorPos.y), cursorColor);
-			}
 		}
 
 		void AnimationTimeline::updateDopesheet()
@@ -914,7 +920,7 @@ namespace Glitter
 					if (ImGui::IsItemActivated()) k = keys[i];
 					if (ImGui::IsItemActive())
 					{
-						keyTooltip(keys[i]);
+						//keyTooltip(keys[i]);
 						if (ImGui::IsMouseDragging(0))
 						{
 							ImGuiIO& io = ImGui::GetIO();
@@ -926,19 +932,22 @@ namespace Glitter
 							keys[i].time = currentFrame;
 							keys[i].time = set->animations[animationIndex].verifyKeyOrder(i, keys[i].time);
 							keys[i].value = std::clamp(heightToValue(y), lowerLimits[limitIndex], higherLimits[limitIndex]);
-
 							edit = true;
 						}
+
+						ImGui::BeginTooltip();
+						ImGui::Text("Value: %.3f", keys[i].value);
+						ImGui::EndTooltip();
 					}
 
 					anyDeactivated |= ImGui::IsItemDeactivated();
 
 					ImDrawList* drawList = ImGui::GetWindowDrawList();
-					drawList->AddCircleFilled(ImVec2(x, y), keyRadiusOut, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
+					drawList->AddCircleFilled(ImVec2(x, y), keyRadiusOut, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 1.0))), 12);
 					drawList->AddCircleFilled(ImVec2(x, y), keyRadiusIn, circleColor, 12);
 
 					// Tangent adjustment for GlitterAnimation keys
-					if (set->type == AnimationSetType::Glitter)
+					if (set->type == AnimationSetType::Glitter && showTangentHandles)
 					{
 						ImVec2 circlePos = ImVec2(x - 50, y + keys[i].inParam * 10);
 						drawList->AddLine(ImVec2(x, y), circlePos, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 3);
@@ -992,9 +1001,6 @@ namespace Glitter
 							drawList->AddCircleFilled(circlePos, keyRadiusIn, ImU32(ImGui::GetColorU32(ImVec4(1.0, 1.0, 1.0, 0.75))), 12);
 						}
 					}
-
-					if (edit && k != keys[i])
-						set->markDirty(true);
 
 					if (anyDeactivated && k != keys[i])
 					{
@@ -1053,6 +1059,16 @@ namespace Glitter
 					timelinePosOffset.x = timelineMinOffset.x;
 
 				drawTimelineBase();
+
+				// draw cursor below keys
+				ImVec2 cursorPos = ImVec2(canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth), canvasPos.y);
+				if (Utilities::isWithinRange(cursorPos.x, canvasPos.x + timelinePosOffset.x - 10, canvasPos.x + timelinePosOffset.x + canvasSize.x + 10))
+				{
+					ImU32 cursorColor = ImGui::GetColorU32(ImVec4(0.8, 0.8, 0.8, 0.75));
+					ImDrawList* drawList = ImGui::GetWindowDrawList();
+					drawList->AddLine(cursorPos, ImVec2(cursorPos.x, canvasPos.y + canvasSize.y), cursorColor, 2.5f);
+					drawList->AddTriangleFilled(ImVec2(cursorPos.x - 10, cursorPos.y), ImVec2(cursorPos.x, cursorPos.y + 10), ImVec2(cursorPos.x + 10, cursorPos.y), cursorColor);
+				}
 
 				if (mode == TimelineMode::DopeSheet)
 					updateDopesheet();

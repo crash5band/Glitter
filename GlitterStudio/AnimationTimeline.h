@@ -33,6 +33,7 @@ namespace Glitter
 			const int frameWidth;
 			int frameStart;
 			int frameEnd;
+			int frameStep;
 			float zoom;
 			const float minZoom;
 			const float maxZoom;
@@ -41,6 +42,7 @@ namespace Glitter
 			const float heightOffset;
 			int currentFrame;
 			int selectedKey;
+			bool showTangentHandles;
 			bool hovered;
 			bool holdingTan;
 			bool showKeyTooltip;

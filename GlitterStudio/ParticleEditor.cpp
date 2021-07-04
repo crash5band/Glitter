@@ -14,7 +14,7 @@ namespace Glitter
 	{
 		ParticleEditor::ParticleEditor() :
 			selectedEffect{ -1 }, selectedChild{ -1 }, selectedMaterial{ -1 }, selectionMode{ SelectionMode::GTE },
-			animationTimeline{ AnimationTimeline(UI::pTimelineWindow) }
+			animationTimeline{ AnimationTimeline(UI::pTimelineWindow) }, previewMaterials{ true }
 		{
 
 		}
@@ -295,7 +295,6 @@ namespace Glitter
 						createParticle(effects[selectedEffect], "particle");
 				}
 
-				ImGui::Separator();
 				if (ImGui::MenuItem("New Material"))
 					createMaterial("material");
 
@@ -311,8 +310,7 @@ namespace Glitter
 
 			if (ImGui::BeginMenu("View"))
 			{
-				// Blank to preserve menu order.
-				// Actual contents are filled in GlitterPlayer::update
+				ImGui::MenuItem("Preview Materials", NULL, &previewMaterials);
 				ImGui::EndMenu();
 			}
 

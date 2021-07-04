@@ -371,7 +371,7 @@ namespace Glitter
 
 				materialMenu(m);
 
-				if (ImGui::IsItemHovered() && materials[m]->getTexture())
+				if (ImGui::IsItemHovered() && materials[m]->getTexture() && previewMaterials)
 				{
 					ImGui::BeginTooltipEx(0, 0);
 					inspector.previewTexture(materials[m]->getTexture(), materials[m]->getMaterial()->getSplit(), false, false);

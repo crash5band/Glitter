@@ -30,7 +30,7 @@ void Logger::show()
 {
 	if (ImGui::Begin("Log"))
 	{
-		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
+		if (ImGui::Button("Clear Log", ImVec2(ImGui::GetContentRegionAvail().x, Glitter::Editor::UI::btnHeight)))
 			clear();
 
 		ImGui::Separator();

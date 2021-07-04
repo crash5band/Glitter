@@ -173,10 +173,12 @@ namespace Glitter
 		void EffectNode::populateInspector()
 		{
 			using Effect = GlitterEffect;
-			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
+			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
 			if (ImGui::TreeNodeEx("Effect", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addTextProperty("Name", effect->getName(), effect, std::mem_fn(&Effect::setName));
 				addFloatProperty("Start", effect->getStartTime(), effect, std::mem_fn(&Effect::setStartTime));
 				addFloatProperty("Life", effect->getLifeTime(), effect, std::mem_fn(&Effect::setLifeTime));
@@ -191,6 +193,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Flags", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addFlagsProperty("Loop", effect->getFlags(), 1, effect, std::mem_fn(&Effect::setFlags));
 				ImGui::Text("Flags: %d", effect->getFlags());
 

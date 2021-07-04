@@ -21,6 +21,7 @@ namespace Glitter
 		MaterialNode::MaterialNode(std::shared_ptr<MaterialNode>& rhs)
 		{
 			material = std::make_shared<GlitterMaterial>(*rhs->material);
+			material->setFilename("");
 			texture = rhs->texture;
 		}
 
@@ -49,17 +50,20 @@ namespace Glitter
 		void MaterialNode::populateInspector()
 		{
 			using Material = GlitterMaterial;
-			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding;
+			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
 			if (ImGui::TreeNodeEx("Material", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addTextProperty("Name", material->getName(), material, std::mem_fn(&Material::setName));
 
 				std::string textureLbl = material->getTexture();
 				if (!texture.get())
 					textureLbl.append(" (Not Loaded)");
 
-				beginPropertyColumn("Texture");
+				ImGui::Text("Texture");
+				ImGui::NextColumn();
 				if (ImGui::Button(textureLbl.c_str(), ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 				{
 					std::string name;
@@ -84,7 +88,10 @@ namespace Glitter
 			{
 				Shader& shader = material->getShader();
 
-				beginPropertyColumn("Name");
+				beginPropertyColumn();
+				ImGui::Text("Name");
+				ImGui::NextColumn();
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##shader_name", &shader.name);
 				endPropertyColumn();
 
@@ -113,6 +120,5 @@ namespace Glitter
 		{
 			return nullptr;
 		}
-
 	}
 }

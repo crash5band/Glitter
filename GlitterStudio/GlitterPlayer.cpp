@@ -116,16 +116,13 @@ namespace Glitter
 					viewport.resetCamera();
 
 				ImGui::Separator();
-
 				if (ImGui::MenuItem(playing ? "Pause" : "Play"))
 					togglePlayback();
 
 				if (ImGui::MenuItem("Stop"))
 					stopPlayback();
 
-				ImGui::Separator();
 				ImGui::MenuItem("Loop", NULL, &loop);
-				ImGui::Separator();
 
 				if (ImGui::BeginMenu("Playback speed"))
 				{

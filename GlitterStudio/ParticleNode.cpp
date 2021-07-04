@@ -91,11 +91,13 @@ namespace Glitter
 		void ParticleNode::populateInspector()
 		{
 			using Particle = Particle;
-			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_FramePadding;
+			ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 			ImGuiTreeNodeFlags defaultOpen = ImGuiTreeNodeFlags_DefaultOpen | treeFlags;
 
 			if (ImGui::TreeNodeEx("Particle", defaultOpen))
 			{
+				beginPropertyColumn();
+
 				addTextProperty("Name", particle->getName(), particle, std::mem_fn(&Particle::setName));
 				addComboBoxProperty("Type", particleTypeTable, particleTypeTableSize, particle->getType(),
 					particle, std::mem_fn(&Particle::setType));
@@ -125,6 +127,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Force", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addVector3Property("Direction", particle->getDirection(), particle, std::mem_fn(&Particle::setDirection));
 				addVector3Property("Direction Random", particle->getDirectionRandom(), particle, std::mem_fn(&Particle::setDirectionRandom));
 				addFloatProperty("Speed", particle->getSpeed(), particle, std::mem_fn(&Particle::setSpeed));
@@ -152,12 +156,17 @@ namespace Glitter
 			{
 				if (ImGui::TreeNodeEx("Mesh", defaultOpen))
 				{
-					beginPropertyColumn("Mesh");
+					beginPropertyColumn();
+					ImGui::Text("Mesh");
+					ImGui::NextColumn();
 					if (ImGui::Button(mesh.get() ? particle->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 					{
 						std::string name;
 						if (FileGUI::openFileGUI(FileType::Model, name))
-							changeMesh(name);
+						{
+							ResourceManager::loadModel(name);
+							changeMesh(ResourceManager::getModel(name));
+						}
 					}
 					ImGui::NextColumn();
 					ImGui::TreePop();
@@ -168,6 +177,8 @@ namespace Glitter
 			{
 				if (ImGui::TreeNodeEx("Locus Properties", defaultOpen))
 				{
+					beginPropertyColumn();
+
 					addUIntProperty("History Size", particle->getLocusHistorySize(), particle, std::mem_fn(&Particle::setLocusHistorySize));
 					addUIntProperty("History Size Random", particle->getLocusHistorySizeRandom(), particle, std::mem_fn(&Particle::setLocusHistorySizeRandom));
 					ImGui::TreePop();
@@ -179,19 +190,18 @@ namespace Glitter
 			{
 				std::string comboLbl = materialNode ? materialNode->getMaterial()->getName() : std::string(particle->getMaterial() + "(Not Loaded)");
 				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getNodes();
-				static int selectedIndex = -1;
 
-				beginPropertyColumn("Material");
+				beginPropertyColumn();
+				ImGui::Text("Material");
+				ImGui::NextColumn();
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				if (ImGui::BeginCombo("##material_list", comboLbl.c_str()))
 				{
 					for (int n = 0; n < materials.size(); ++n)
 					{
-						const bool selected = selectedIndex == n;
+						const bool selected = materialNode == materials[n];
 						if (ImGui::Selectable(materials[n]->getMaterial()->getName().c_str(), selected))
-						{
-							selectedIndex = n;
 							changeMaterial(materials[n]);
-						}
 
 						if (selected)
 							ImGui::SetItemDefaultFocus();
@@ -199,7 +209,7 @@ namespace Glitter
 
 					ImGui::EndCombo();
 				}
-				endPropertyColumn();
+				ImGui::NextColumn();
 
 				addUIntProperty("Texture Index", particle->getTextureIndex(), particle, std::mem_fn(&Particle::setTextureIndex));
 				addComboBoxProperty("UV Index Type", uvIndexTypeTable, uvIndexTypeTableSize, particle->getUVIndexType(),
@@ -214,6 +224,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Color", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addVector2Property("Color Scroll", particle->getColorScroll(), particle, std::mem_fn(&Particle::setColorScroll));
 				addVector2Property("Color Scroll Random", particle->getColorScrollRandom(), particle, std::mem_fn(&Particle::setColorScrollRandom));
 				addFloatProperty("Color Scroll Speed", particle->getColorScrollSpeed(), particle, std::mem_fn(&Particle::setColorScrollSpeed));
@@ -230,6 +242,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Alpha", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addVector2Property("Alpha Scroll", particle->getAlphaScroll(), particle, std::mem_fn(&Particle::setAlphaScroll));
 				addVector2Property("Alpha Scroll Random", particle->getAlphaScrollRandom(), particle, std::mem_fn(&Particle::setAlphaScrollRandom));
 				addFloatProperty("Alpha Scroll Speed", particle->getAlphaScrollSpeed(), particle, std::mem_fn(&Particle::setAlphaScrollSpeed));
@@ -246,6 +260,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Emitter Translation", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addFloatProperty("Emitter Translation Effect Ratio", particle->getEmitterTranslationEffectRatio(), particle, std::mem_fn(&Particle::setEmitterTranslationEffectRatio));
 				addFloatProperty("Follow Emitter Translation Ratio", particle->getFollowEmitterTranslationRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationRatio));
 				addFloatProperty("Follow Emitter Translation Y Ratio", particle->getFollowEmitterTranslationYRatio(), particle, std::mem_fn(&Particle::setFollowEmitterTranslationYRatio));
@@ -256,6 +272,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Blending", treeFlags))
 			{
+				beginPropertyColumn();
+
 				addComboBoxProperty("Blending Mode", blendModeTable, blendModeTableSize, particle->getBlendMode(),
 					particle, std::mem_fn(&Particle::setBlendMode));
 
@@ -270,6 +288,8 @@ namespace Glitter
 
 			if (ImGui::TreeNodeEx("Flags", defaultOpen))
 			{
+				beginPropertyColumn();
+
 				addFlagsProperty("Flag1", particle->getFlags(), 1, particle, std::mem_fn(&Particle::setFlags));
 				addFlagsProperty("Flag2", particle->getFlags(), 2, particle, std::mem_fn(&Particle::setFlags));
 				addFlagsProperty("Emitter Local", particle->getFlags(), 4, particle, std::mem_fn(&Particle::setFlags));
@@ -285,7 +305,7 @@ namespace Glitter
 				//addUIntProperty("Flags", particle->getFlags(), particle, std::mem_fn(&Particle::setFlags));
 				ImGui::TreePop();
 			}
+			endPropertyColumn();
 		}
-
 	}
 }

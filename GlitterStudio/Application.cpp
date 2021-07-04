@@ -65,7 +65,7 @@ namespace Glitter
 				if (inputListener.isDown(GLFW_KEY_LEFT_ALT) || inputListener.isDown(GLFW_KEY_RIGHT_ALT))
 				{
 					if (mode == EditorMode::Particle)
-						particleEditor->save(particleEditor->getSelectedEffect(), false);
+						particleEditor->save(particleEditor->getSelectedEffect(), true);
 				}
 				else
 				{
@@ -89,6 +89,11 @@ namespace Glitter
 						{
 							modelEditor->openModel();
 						}
+					}
+					else if (inputListener.isTapped(GLFW_KEY_S))
+					{
+						if (mode == EditorMode::Particle)
+							particleEditor->save(particleEditor->getSelectedEffect(), false);
 					}
 				}
 			}

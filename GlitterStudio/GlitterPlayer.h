@@ -16,6 +16,7 @@ namespace Glitter
 			bool loop;
 			bool drawGrid;
 			bool drawRefModel;
+			bool playOnSelect;
 			EffectNode* selectedEffect;
 			Viewport viewport;
 			std::shared_ptr<ModelData> refModel;
@@ -30,6 +31,7 @@ namespace Glitter
 			virtual void togglePlayback();
 			virtual void stopPlayback();
 			virtual void replay();
+			virtual void stepFrame();
 			virtual bool isPlaying();
 			virtual bool isLoop();
 			void setEffect(EffectNode* node);

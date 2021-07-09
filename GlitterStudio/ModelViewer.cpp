@@ -60,6 +60,12 @@ namespace Glitter
 			togglePlayback();
 		}
 
+		void ModelViewer::stepFrame()
+		{
+			if (selectedModel && !playing)
+				time += 1;
+		}
+
 		bool ModelViewer::isPlaying()
 		{
 			return playing;

@@ -30,6 +30,7 @@ namespace Glitter
 			virtual void update(Renderer* renderer, float deltaT);
 			virtual void togglePlayback();
 			virtual void stopPlayback();
+			virtual void stepFrame();
 			virtual void replay();
 			virtual bool isPlaying();
 			virtual bool isLoop();

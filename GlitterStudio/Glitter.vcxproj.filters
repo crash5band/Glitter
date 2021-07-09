@@ -296,9 +296,6 @@
     <ClInclude Include="ModelEditor.h">
       <Filter>Components\ModeViewer</Filter>
     </ClInclude>
-    <ClInclude Include="INode.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="GTMManager.h">
       <Filter>Components\ParticleEditor</Filter>
     </ClInclude>
@@ -324,6 +321,9 @@
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="INode.h">
+      <Filter>Nodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

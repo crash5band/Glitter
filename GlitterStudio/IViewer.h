@@ -18,6 +18,7 @@ namespace Glitter
 			virtual void togglePlayback() = 0;
 			virtual void stopPlayback() = 0;
 			virtual void replay() = 0;
+			virtual void stepFrame() = 0;
 			virtual bool isPlaying() = 0;
 			virtual bool isLoop() = 0;
 		};

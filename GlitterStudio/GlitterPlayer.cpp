@@ -10,7 +10,7 @@ namespace Glitter
 	namespace Editor
 	{
 		GlitterPlayer::GlitterPlayer() :
-			playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, drawRefModel{ true }
+			playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, drawRefModel{ true }, playOnSelect{ true }
 		{
 			time = maxTime = 0;
 			selectedEffect = nullptr;
@@ -43,6 +43,12 @@ namespace Glitter
 			togglePlayback();
 		}
 
+		void GlitterPlayer::stepFrame()
+		{
+			if (selectedEffect && !playing)
+				time += 1;
+		}
+
 		bool GlitterPlayer::isPlaying()
 		{
 			return playing;
@@ -68,7 +74,9 @@ namespace Glitter
 			{
 				selectedEffect = node;
 				stopPlayback();
-				togglePlayback();
+				
+				if (playOnSelect)
+					togglePlayback();
 			}
 		}
 
@@ -121,6 +129,12 @@ namespace Glitter
 
 				if (ImGui::MenuItem("Stop"))
 					stopPlayback();
+
+				if (!playing)
+				{
+					if (ImGui::MenuItem("Step Frame"))
+						stepFrame();
+				}
 
 				ImGui::MenuItem("Loop", NULL, &loop);
 
@@ -216,6 +230,8 @@ namespace Glitter
 				ImGui::BeginMainMenuBar();
 				if (ImGui::BeginMenu("View"))
 				{
+					ImGui::MenuItem("Play On Select", NULL, &playOnSelect);
+
 					if (ImGui::MenuItem(playing ? "Pause" : "Play"))
 						togglePlayback();
 

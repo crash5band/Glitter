@@ -62,7 +62,7 @@ namespace Glitter
 
 				float height = ImGui::GetContentRegionAvail().x;
 				ImGui::SliderFloat("Yaw", &y, -180, 90, "%g", ImGuiSliderFlags_ClampOnInput);
-				ImGui::VSliderFloat("Pitch", ImVec2(ImGui::GetFrameHeight(), height), &p, -89, 89, "%g", ImGuiSliderFlags_ClampOnInput);
+				ImGui::SliderFloat("Pitch", &p, -89, 89, "%g", ImGuiSliderFlags_ClampOnInput);
 
 				if (ImGui::DragFloat("FOV", &fov, 1.0f, 10.0f, 120.0f, "%g"))
 					camera.setFOV(fov);

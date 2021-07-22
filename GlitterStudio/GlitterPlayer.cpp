@@ -179,27 +179,17 @@ namespace Glitter
 				if (UI::transparentButton(ICON_FA_REDO_ALT, UI::btnNormal))
 					replay();
 
-				static const char* speedsChar[]{ "0.25x", "0.50x", "0.75x", "1.00x" };
-				static float speeds[]{ 0.25f, 0.5f, 0.75f, 1.0f };
-				int selectedIndex = (playbackSpeed * 4) - 1;
-
 				ImGui::SameLine();
-				ImGui::SetNextItemWidth(100);
-				if (ImGui::BeginCombo("Playback Speed", speedsChar[selectedIndex]))
-				{
-					for (int i = 0; i < 4; ++i)
-					{
-						const bool selected = selectedIndex == i;
-						if (ImGui::Selectable(speedsChar[i], selected))
-						{
-							selectedIndex = i;
-							playbackSpeed = speeds[i];
-						}
+				ImGui::SetNextItemWidth(150);
+				ImGui::SliderFloat("Preview speed", &playbackSpeed, 0.1f, 2.0f, "%.2f");
+				playbackSpeed = std::clamp(playbackSpeed, 0.1f, 2.0f);
 
-						if (selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					ImGui::EndCombo();
+				if (ImGui::BeginPopupContextItem("speed_context_menu"))
+				{
+					if (ImGui::MenuItem("Reset"))
+						playbackSpeed = 1.0f;
+
+					ImGui::EndPopup();
 				}
 
 				ImGui::SameLine();

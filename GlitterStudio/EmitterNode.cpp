@@ -91,7 +91,7 @@ namespace Glitter
 				p.setVisible(val);
 		}
 
-		void EmitterNode::saveAnimations()
+		void EmitterNode::save()
 		{
 			emitter->getAnimations().clear();
 			for (const EditorAnimation& animation : animSet->animations)
@@ -285,9 +285,9 @@ namespace Glitter
 				{
 					if (emitter->getEmitCondition() == EmitCondition::Time)
 					{
-						if (((fmodf(emissionTime, emissionInterval) <= 0.1f) || emissionTime == 0) && (emissionTime != lastEmissionTime))
+						if ((!((int)emissionTime % (int)emissionInterval) || emissionTime == 0) && ((int)emissionTime != (int)lastEmissionTime))
 						{
-							lastEmissionTime = emissionTime;
+							lastEmissionTime = (int)emissionTime;
 							emit(emitterTime, emissionCount);
 						}
 					}

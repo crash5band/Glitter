@@ -161,10 +161,10 @@ namespace Glitter
 				effect->getAnimations().push_back(animation.toGlitterAnimation());
 
 			for (auto& node : emitterNodes)
-				node->saveAnimations();
+				node->save();
 
 			for (auto& node : particleNodes)
-				node->saveAnimations();
+				node->save();
 
 			// write GTE
 			effect->write(filename);

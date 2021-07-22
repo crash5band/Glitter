@@ -46,7 +46,7 @@ namespace Glitter
 			void emit(float time, int count);
 			void kill();
 			void changeMesh(std::shared_ptr<ModelData> mesh);
-			void saveAnimations();
+			void save();
 			void setVisible(bool val);
 			void setVisibleAll(bool val);
 			bool isVisible() const;

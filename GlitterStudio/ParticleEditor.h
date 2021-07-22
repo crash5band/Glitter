@@ -42,6 +42,7 @@ namespace Glitter
 			void closeEffect(int index);
 			void closeAllEffects();
 			void save(int index, bool saveAs);
+			void saveAll();
 			void copy();
 			void paste();
 			void duplicateEffect(int index);

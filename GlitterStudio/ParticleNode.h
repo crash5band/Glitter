@@ -27,7 +27,7 @@ namespace Glitter
 			void setMaterial(std::shared_ptr<MaterialNode>& matNode);
 			void changeMaterial(std::shared_ptr<MaterialNode>& matNode);
 			void initMesh();
-			void saveAnimations();
+			void save();
 
 			virtual NodeType getNodeType() override;
 			virtual void populateInspector() override;

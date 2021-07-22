@@ -159,6 +159,12 @@ namespace Glitter
 			}
 		}
 
+		void ParticleEditor::saveAll()
+		{
+			for (int e = 0; e < effects.size(); ++e)
+				save(e, false);
+		}
+
 		void ParticleEditor::copy()
 		{
 			if (selectedEffect >= 0 && selectedEffect < effects.size())
@@ -274,6 +280,9 @@ namespace Glitter
 
 				if (ImGui::MenuItem("Save As..."))
 					save(selectedEffect, true);
+
+				if (ImGui::MenuItem("Save All"))
+					saveAll();
 
 				ImGui::EndMenu();
 			}

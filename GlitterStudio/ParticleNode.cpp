@@ -81,11 +81,13 @@ namespace Glitter
 			}
 		}
 
-		void ParticleNode::saveAnimations()
+		void ParticleNode::save()
 		{
 			particle->getAnimations().clear();
 			for (const EditorAnimation& animation : animSet->animations)
 				particle->getAnimations().push_back(animation.toGlitterAnimation());
+
+			particle->setMaterial(materialNode->getMaterial()->getName());
 		}
 
 		void ParticleNode::populateInspector()

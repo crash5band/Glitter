@@ -113,7 +113,7 @@ namespace Glitter
 			style->FramePadding.y = 2;
 			style->ItemSpacing.x = 10;
 			style->ItemSpacing.y = 3;
-			style->WindowPadding.x = 5;
+			style->WindowPadding.x = 8;
 			style->WindowRounding = 2;
 			style->WindowBorderSize = 1;
 			style->FrameBorderSize = 0;

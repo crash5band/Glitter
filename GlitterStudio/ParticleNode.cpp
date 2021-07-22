@@ -87,7 +87,7 @@ namespace Glitter
 			for (const EditorAnimation& animation : animSet->animations)
 				particle->getAnimations().push_back(animation.toGlitterAnimation());
 
-			particle->setMaterial(materialNode->getMaterial()->getName());
+			particle->setMaterial(File::getFileNameWithoutExtension(materialNode->getMaterial()->getFilename()));
 		}
 
 		void ParticleNode::populateInspector()

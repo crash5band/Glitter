@@ -59,7 +59,7 @@ namespace Glitter
 		void ParticleNode::changeMaterial(std::shared_ptr<MaterialNode>& matNode)
 		{
 			materialNode = matNode;
-			particle->setMaterial(materialNode->getMaterial()->getName());
+			particle->setMaterial(File::getFileNameWithoutExtension(matNode->getMaterial()->getFilename()));
 		}
 
 		void ParticleNode::changeMesh(std::shared_ptr<ModelData> m)

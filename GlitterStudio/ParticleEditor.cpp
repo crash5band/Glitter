@@ -55,7 +55,7 @@ namespace Glitter
 					for (auto& m : materials)
 					{
 						if (filepath == Glitter::File::getFilePath(m->getMaterial()->getFilename())
-							&& m->getMaterial()->getName() == p->getParticle()->getMaterial())
+							&& File::getFileNameWithoutExtension(m->getMaterial()->getFilename()) == p->getParticle()->getMaterial())
 							p->setMaterial(m);
 					}
 				}

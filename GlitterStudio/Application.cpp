@@ -61,40 +61,38 @@ namespace Glitter
 		void Application::processInput()
 		{
 			inputListener.update(window);
+			if (ImGui::GetIO().WantCaptureKeyboard)
+				return;
+
 			if (inputListener.isDown(GLFW_KEY_LEFT_CONTROL) || inputListener.isDown(GLFW_KEY_RIGHT_CONTROL))
 			{
-				if (inputListener.isDown(GLFW_KEY_LEFT_ALT) || inputListener.isDown(GLFW_KEY_RIGHT_ALT))
+				if (inputListener.isTapped(GLFW_KEY_Z))
+					CommandManager::undo();
+				else if (inputListener.isTapped(GLFW_KEY_Y))
+					CommandManager::redo();
+				else if (inputListener.isTapped(GLFW_KEY_C))
+					particleEditor->copy();
+				else if (inputListener.isTapped(GLFW_KEY_V))
+					particleEditor->paste();
+				else if (inputListener.isTapped(GLFW_KEY_O))
+				{
+					std::string name;
+					if (mode == EditorMode::Particle)
+					{
+						if (FileGUI::openFileGUI(FileType::Effect, name))
+							particleEditor->open(name);
+					}
+					else if (mode == EditorMode::Model)
+					{
+						modelEditor->openModel();
+					}
+				}
+				else if (inputListener.isTapped(GLFW_KEY_S))
 				{
 					if (mode == EditorMode::Particle)
-						particleEditor->save(particleEditor->getSelectedEffect(), true);
-				}
-				else
-				{
-					if (inputListener.isTapped(GLFW_KEY_Z))
-						CommandManager::undo();
-					else if (inputListener.isTapped(GLFW_KEY_Y))
-						CommandManager::redo();
-					else if (inputListener.isTapped(GLFW_KEY_C))
-						particleEditor->copy();
-					else if (inputListener.isTapped(GLFW_KEY_V))
-						particleEditor->paste();
-					else if (inputListener.isTapped(GLFW_KEY_O))
 					{
-						std::string name;
-						if (mode == EditorMode::Particle)
-						{
-							if (FileGUI::openFileGUI(FileType::Effect, name))
-								particleEditor->open(name);
-						}
-						else if (mode == EditorMode::Model)
-						{
-							modelEditor->openModel();
-						}
-					}
-					else if (inputListener.isTapped(GLFW_KEY_S))
-					{
-						if (mode == EditorMode::Particle)
-							particleEditor->save(particleEditor->getSelectedEffect(), false);
+						bool saveAs = inputListener.isDown(GLFW_KEY_LEFT_SHIFT) || inputListener.isDown(GLFW_KEY_RIGHT_SHIFT);
+						particleEditor->save(particleEditor->getSelectedEffect(), saveAs);
 					}
 				}
 			}
@@ -115,6 +113,12 @@ namespace Glitter
 							modelEditor->openTexture();
 						}
 					}
+
+					if (inputListener.isTapped(GLFW_KEY_S))
+					{
+						bool saveAs = inputListener.isDown(GLFW_KEY_LEFT_SHIFT) || inputListener.isDown(GLFW_KEY_RIGHT_SHIFT);
+						particleEditor->saveMaterial(particleEditor->getSelectedMaterial(), saveAs);
+					}
 				}
 			}
 		}
@@ -131,12 +135,11 @@ namespace Glitter
 				glClearColor(0.1, 0.1, 0.1, 1.0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				processInput();
-
 				ImGui_ImplOpenGL3_NewFrame();
 				ImGui_ImplGlfw_NewFrame();
 				ImGui::NewFrame();
 
+				processInput();
 				updateUI();
 
 				ImGui::Render();

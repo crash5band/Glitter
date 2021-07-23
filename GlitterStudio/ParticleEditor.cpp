@@ -23,6 +23,11 @@ namespace Glitter
 		{
 			return selectedEffect;
 		}
+
+		int ParticleEditor::getSelectedMaterial() const
+		{
+			return selectedMaterial;
+		}
 		
 		void ParticleEditor::open(const std::string& filename)
 		{
@@ -165,6 +170,11 @@ namespace Glitter
 				save(e, false);
 		}
 
+		void ParticleEditor::saveMaterial(int index, bool saveAs)
+		{
+			GTMManager::save(index, saveAs);
+		}
+
 		void ParticleEditor::copy()
 		{
 			if (selectedEffect >= 0 && selectedEffect < effects.size())
@@ -278,7 +288,7 @@ namespace Glitter
 				if (ImGui::MenuItem("Save", "Ctrl + S"))
 					save(selectedEffect, false);
 
-				if (ImGui::MenuItem("Save As..."))
+				if (ImGui::MenuItem("Save As...", "Ctrl + Shift + S"))
 					save(selectedEffect, true);
 
 				if (ImGui::MenuItem("Save All"))
@@ -333,10 +343,10 @@ namespace Glitter
 						open(name);
 				}
 
-				if (ImGui::MenuItem("Save", "Ctrl + S"))
+				if (ImGui::MenuItem("Save", "Alt + S"))
 					GTMManager::save(selectedMaterial, false);
 
-				if (ImGui::MenuItem("Save As..."))
+				if (ImGui::MenuItem("Save As...", "Shift + Alt + S"))
 					GTMManager::save(selectedMaterial, true);
 
 				ImGui::EndMenu();

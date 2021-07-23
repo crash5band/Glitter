@@ -40,7 +40,7 @@ namespace Glitter
 				if (ImGui::MenuItem("Save", "Ctrl + S"))
 					save(index, false);
 
-				if (ImGui::MenuItem("Save As...", "Ctrl + Alt + S"))
+				if (ImGui::MenuItem("Save As...", "Ctrl + Shift + S"))
 					save(index, true);
 
 				ImGui::Separator();
@@ -103,7 +103,7 @@ namespace Glitter
 				}
 
 				ImGui::Separator();
-				if (ImGui::MenuItem("Remove", "Del"))
+				if (ImGui::MenuItem("Remove"))
 				{
 					removeEmitter(effects[parent], index);
 					ImGui::EndPopup();
@@ -139,7 +139,7 @@ namespace Glitter
 				}
 
 				ImGui::Separator();
-				if (ImGui::MenuItem("Remove", "Del"))
+				if (ImGui::MenuItem("Remove"))
 				{
 					removeParticle(effects[parent], index);
 					removed = true;

@@ -42,6 +42,7 @@ namespace Glitter
 			void closeEffect(int index);
 			void closeAllEffects();
 			void save(int index, bool saveAs);
+			void saveMaterial(int index, bool saveAs);
 			void saveAll();
 			void copy();
 			void paste();
@@ -61,6 +62,7 @@ namespace Glitter
 			void createMaterial(const std::string& name);
 
 			int getSelectedEffect() const;
+			int getSelectedMaterial() const;
 			std::vector<std::weak_ptr<ParticleNode>> getAvailableParticles(std::shared_ptr<EffectNode> effect, std::shared_ptr<EmitterNode> emitter);
 		};
 	}

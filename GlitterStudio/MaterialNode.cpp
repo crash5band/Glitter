@@ -12,10 +12,14 @@ namespace Glitter
 			material{ mat }
 		{
 			const std::string path = File::getFilePath(mat->getFilename());
-			const std::string texturePath = std::string(path) + mat->getTexture() + ".dds";
+			const std::string filename = std::string(path) + mat->getTexture() + ".dds";
 			texture = nullptr;
+
 			if (mat->getTexture().size())
-				changeTexture(texturePath);
+			{
+				ResourceManager::loadTexture(filename, TextureSlot::Diffuse);
+				changeTexture(ResourceManager::getTexture(File::getFileName(filename)));
+			}
 		}
 
 		MaterialNode::MaterialNode(std::shared_ptr<MaterialNode>& rhs)
@@ -40,11 +44,10 @@ namespace Glitter
 			return NodeType::GTMaterial;
 		}
 
-		void MaterialNode::changeTexture(const std::string& filepath)
+		void MaterialNode::changeTexture(std::shared_ptr<TextureData> tex)
 		{
-			ResourceManager::loadTexture(filepath, TextureSlot::Diffuse);
-			texture = ResourceManager::getTexture(File::getFileName(filepath));
-			material->setTexture(File::getFileNameWithoutExtension(filepath));
+			texture = tex;
+			if (tex) material->setTexture(tex->getName());
 		}
 
 		void MaterialNode::populateInspector()
@@ -68,7 +71,10 @@ namespace Glitter
 				{
 					std::string name;
 					if (FileGUI::openFileGUI(FileType::Texture, name))
-						changeTexture(name);
+					{
+						ResourceManager::loadTexture(name, TextureSlot::Diffuse);
+						changeTexture(ResourceManager::getTexture(File::getFileName(name)));
+					}
 				}
 				ImGui::NextColumn();
 

@@ -19,7 +19,7 @@ namespace Glitter
 
 			std::shared_ptr<GlitterMaterial> getMaterial();
 			std::shared_ptr<TextureData> getTexture();
-			void changeTexture(const std::string& filepath);
+			void changeTexture(std::shared_ptr<TextureData> tex);
 
 			virtual NodeType getNodeType() override;
 			virtual void populateInspector() override;

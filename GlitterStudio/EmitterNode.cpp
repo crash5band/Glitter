@@ -420,7 +420,7 @@ namespace Glitter
 						if (FileGUI::openFileGUI(FileType::Model, name))
 						{
 							ResourceManager::loadModel(name);
-							changeMesh(ResourceManager::getModel(name));
+							changeMesh(ResourceManager::getModel(File::getFileName(name)));
 						}
 					}
 					ImGui::NextColumn();

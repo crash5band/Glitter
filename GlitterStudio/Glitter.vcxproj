@@ -256,7 +256,7 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="INode.h" />
-    <ClInclude Include="InputLIstener.h" />
+    <ClInclude Include="InputListener.h" />
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="IViewer.h" />
     <ClInclude Include="Logger.h" />

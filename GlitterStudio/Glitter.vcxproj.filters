@@ -274,7 +274,7 @@
     <ClInclude Include="Renderer.h">
       <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="InputLIstener.h">
+    <ClInclude Include="InputListener.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Light.h">

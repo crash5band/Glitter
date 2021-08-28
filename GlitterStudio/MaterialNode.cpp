@@ -47,7 +47,7 @@ namespace Glitter
 		void MaterialNode::changeTexture(std::shared_ptr<TextureData> tex)
 		{
 			texture = tex;
-			if (tex) material->setTexture(tex->getName());
+			if (tex) material->setTexture(File::getFileNameWithoutExtension(tex->getName()));
 		}
 
 		void MaterialNode::populateInspector()

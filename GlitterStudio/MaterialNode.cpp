@@ -97,7 +97,7 @@ namespace Glitter
 				beginPropertyColumn();
 				ImGui::Text("Name");
 				ImGui::NextColumn();
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(-1);
 				ImGui::InputText("##shader_name", &shader.name);
 				endPropertyColumn();
 

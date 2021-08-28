@@ -29,7 +29,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputText(std::string("##").append(label).c_str(), &val))
 				func(obj.get(), val);
 
@@ -48,7 +48,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputInt(std::string("##").append(label).c_str(), &val, 1, 10))
 				func(obj.get(), val);
 
@@ -68,7 +68,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputInt(std::string("##").append(label).c_str(), &num, 1, 10))
 			{
 				if (num < 0)
@@ -91,7 +91,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputFloat(std::string("##").append(label).c_str(), &val, 1.0f, 5.0f, "%g"))
 				func(obj.get(), val);
 
@@ -111,7 +111,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::DragFloat2(std::string("##").append(label).c_str(), v2, 0.1f, 0.0f, 0.0f, "%g"))
 				func(obj.get(), Glitter::Vector2(v2[0], v2[1]));
 
@@ -131,7 +131,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::DragFloat3(std::string("##").append(label).c_str(), v3, 0.1f, 0.0f, 0.0f, "%g"))
 				func(obj.get(), Glitter::Vector3(v3[0], v3[1], v3[2]));
 
@@ -151,7 +151,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_DisplayRGB;
 			flags |= ImGuiColorEditFlags_PickerHueWheel;
 
@@ -174,7 +174,7 @@ namespace Glitter
 
 			ImGui::Text(label);
 			ImGui::NextColumn();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::BeginCombo(std::string("##").append(label).c_str(), comboLabel.c_str()))
 			{
 				for (int n = 0; n < count; ++n)

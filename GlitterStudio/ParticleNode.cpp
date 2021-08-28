@@ -196,7 +196,7 @@ namespace Glitter
 				beginPropertyColumn();
 				ImGui::Text("Material");
 				ImGui::NextColumn();
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(-1);
 				if (ImGui::BeginCombo("##material_list", comboLbl.c_str()))
 				{
 					for (int n = 0; n < materials.size(); ++n)

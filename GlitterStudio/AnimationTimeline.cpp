@@ -447,7 +447,7 @@ namespace Glitter
 			ImGui::Text("Start");
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputFloat("##start", &start, 1, 5, "%g", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				edit = true;
@@ -458,7 +458,7 @@ namespace Glitter
 			ImGui::Text("End");
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputFloat("##end", &end, 1, 5, "%g", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				edit = true;
@@ -469,7 +469,7 @@ namespace Glitter
 			ImGui::Text("Flags");
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputInt("##flags", &flags, 1, 2, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				edit = true;
@@ -483,7 +483,7 @@ namespace Glitter
 			int selectedIndex = disabled ? dummy2 : (size_t)repeat;
 			std::string comboLabel = Glitter::glitterEnumToString(repeatTypeTable, repeatTypeTableSize, selectedIndex);
 			
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::BeginCombo("##repeat", comboLabel.c_str()))
 			{
 				for (int n = 0; n < repeatTypeTableSize; ++n)
@@ -564,7 +564,7 @@ namespace Glitter
 			ImGui::Text(properties[str++]);
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::InputFloat("##time", &k.time, 1, 5, "%g", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				k.time = std::clamp(k.time, set->animations[animationIndex].getStart(), set->animations[animationIndex].getEnd());
@@ -577,7 +577,7 @@ namespace Glitter
 			ImGui::Text(properties[str++]);
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			edit |= ImGui::InputFloat("##value", &k.value, 1, 5, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::NextColumn();
 
@@ -587,7 +587,7 @@ namespace Glitter
 			int selectedIndex = disabled ? 0 : (int)k.interpolation;
 			std::string comboLabel = Glitter::glitterEnumToString(interpolationTypeTable, interpolationTypeTableSize, selectedIndex);
 			
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			if (ImGui::BeginCombo("##interpolation", comboLabel.c_str()))
 			{
 				for (int n = 0; n < interpolationTypeTableSize; ++n)
@@ -611,21 +611,21 @@ namespace Glitter
 			ImGui::Text(properties[str++]);
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			edit |= ImGui::InputFloat("##in_param", &k.inParam, 0.01, 0.1, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::NextColumn();
 
 			ImGui::Text(properties[str++]);
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			edit |= ImGui::InputFloat("##out_param", &k.outParam, 0.01, 0.1, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::NextColumn();
 
 			ImGui::Text(properties[str++]);
 			ImGui::NextColumn();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(-1);
 			edit |= ImGui::InputFloat("##rnd_rng", &k.randomRange, 1, 5, "%g", ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::EndColumns();
 

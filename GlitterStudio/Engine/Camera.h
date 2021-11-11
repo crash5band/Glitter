@@ -11,7 +11,7 @@ enum class CameraMode
 class Camera
 {
 private:
-	float defaultYaw = -90;
+	float defaultYaw = 90;
 	float defaultPitch = 5;
 	float defaultSensitivity = 0.1f;
 	float defaultZoom = 45.0f;

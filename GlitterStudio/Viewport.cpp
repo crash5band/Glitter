@@ -45,7 +45,9 @@ namespace Glitter
 			fBuffer.end();
 			auto texture = fBuffer.getTexture();
 
-			ImGui::Image((void*)texture, ImGui::GetContentRegionAvail(), ImVec2(1, 1), ImVec2(0, 0),
+			// The renderered texture should start from (0, 0) to (1, 1).
+			// However, we reverse the v coordinates to flip the image so that it is upright.
+			ImGui::Image((void*)texture, ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0),
 				ImVec4(1, 1, 1, 1), ImVec4(0.2, 0.2, 0.2, 0.85));
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

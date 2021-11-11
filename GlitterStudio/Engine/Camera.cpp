@@ -83,7 +83,7 @@ void Camera::rotate(float x, float y)
 	x *= sensitivity;
 	y *= sensitivity;
 
-	yaw		+= -x;
+	yaw		+= x;
 	pitch	+= y;
 	pitch	 = std::clamp(pitch, -89.0f, 89.0f);
 }

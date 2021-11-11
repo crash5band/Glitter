@@ -1,3 +1,5 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "Viewport.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -5,6 +7,10 @@
 #include "UiHelper.h"
 #include "ImGui/imgui_internal.h"
 #include "stb_image.h"
+#include "stb_image_write.h"
+#include "Application.h"
+#include "Utilities.h"
+#include <filesystem>
 
 namespace Glitter
 {
@@ -13,7 +19,7 @@ namespace Glitter
 		Viewport::Viewport() : mouseInViewArea{ false }, lightEnabled{ true }, drawMode{ 2 },
 			camera{ Camera(CameraMode::Orbit) }, fBuffer{ Engine::RenderTarget(1920, 1080, 4) }
 		{
-
+			stbi_flip_vertically_on_write(1);
 		}
 
 		Viewport::~Viewport()
@@ -50,12 +56,36 @@ namespace Glitter
 			ImGui::Image((void*)texture, ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0),
 				ImVec4(1, 1, 1, 1), ImVec4(0.2, 0.2, 0.2, 0.85));
 
+			if (pendingScreenshot)
+			{
+				saveScreenshot();
+				pendingScreenshot = false;
+			}
+
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+
+		void Viewport::saveScreenshot()
+		{
+			unsigned char* data = (unsigned char*)malloc((size_t)(fBuffer.getWidth() * fBuffer.getHeight() * 4));
+			if (data)
+			{
+				glBindTexture(GL_TEXTURE_2D, fBuffer.getTexture());
+				glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+				if (!std::filesystem::exists(Application::getScreenshotsDirectory()))
+					std::filesystem::create_directory(Application::getScreenshotsDirectory());
+
+				std::string filename = Application::getScreenshotsDirectory() + Utilities::getCurrentDateTime() + ".png";
+				stbi_write_png(filename.c_str(), fBuffer.getWidth(), fBuffer.getHeight(), 4, data, 0);
+
+				free(data);
+			}
 		}
 
 		void Viewport::cameraControl()
 		{
-			UI::transparentButton(ICON_FA_VIDEO, UI::UI::btnNormal);
+			UI::transparentButton(ICON_FA_VIDEO, UI::btnNormal);
 			if (ImGui::BeginPopupContextItem("cam_popup", ImGuiMouseButton_Left))
 			{
 				float y = camera.getYaw();
@@ -201,6 +231,12 @@ namespace Glitter
 
 				ImGui::EndPopup();
 			}
+		}
+
+		void Viewport::screenshotControl()
+		{
+			if (UI::transparentButton(ICON_FA_CAMERA, UI::btnNormal))
+				pendingScreenshot = true;
 		}
 
 		void Viewport::resetCamera()

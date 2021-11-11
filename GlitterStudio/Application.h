@@ -21,11 +21,14 @@ namespace Glitter
 		{
 		private:
 			EditorMode mode;
-			std::string appDir;
-			std::string shadersDir;
-			std::string fontsDir;
+
+			static std::string appDir;
+			static std::string shadersDir;
+			static std::string fontsDir;
+			static std::string screenshotsDir;
 			std::string imguiConfig = "imgui.ini";
 			std::string editorConfig = "config.dat";
+
 			bool imguiDemoWindow;
 			bool fpsMeter;
 			bool vsync;
@@ -67,6 +70,9 @@ namespace Glitter
 			void setDirectory(const std::string& dir);
 			void loadSettings(const std::string& filename);
 			void saveSettings(const std::string& filename);
+
+			static std::string getDirectory();
+			static std::string getScreenshotsDirectory();
 		};
 	}
 }

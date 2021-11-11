@@ -14,6 +14,7 @@ public:
 	static Glitter::Vector2 randomize(const Glitter::Vector2& v1, const Glitter::Vector2& v2);
 	static float interpolate(float f, float t1, float v1, float p1, float t2, float v2, float p2);
 	static float interpolate(float f, float t1, float v1, float t2, float v2);
+	static const std::string getCurrentDateTime();
 
 	inline static float lerp(const float v1, const float v2, const float bias)
 	{

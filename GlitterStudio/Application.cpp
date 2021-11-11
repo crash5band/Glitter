@@ -10,6 +10,11 @@ namespace Glitter
 {
 	namespace Editor
 	{
+		std::string Application::appDir;
+		std::string Application::shadersDir;
+		std::string Application::fontsDir;
+		std::string Application::screenshotsDir;
+
 		Application::Application(const std::string& dir) : mode{ EditorMode::Particle }, vsync{ true }
 		{
 			screenWidth = 1366;
@@ -49,6 +54,17 @@ namespace Glitter
 			appDir = Glitter::File::getFilePath(dir);
 			shadersDir = appDir + "Res\\Shaders\\";
 			fontsDir = appDir + "Res\\Fonts\\";
+			screenshotsDir = appDir + "Screenshots\\";
+		}
+
+		std::string Application::getDirectory()
+		{
+			return appDir;
+		}
+
+		std::string Application::getScreenshotsDirectory()
+		{
+			return screenshotsDir;
 		}
 
 		void Application::frameTime()

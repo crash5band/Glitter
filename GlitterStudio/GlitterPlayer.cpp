@@ -158,6 +158,8 @@ namespace Glitter
 		{
 			if (ImGui::Begin(UI::gPlayerWindow, NULL, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
+				viewport.screenshotControl();
+				ImGui::SameLine();
 				viewport.cameraControl();
 				ImGui::SameLine();
 				viewport.lightControl();

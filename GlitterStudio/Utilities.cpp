@@ -1,4 +1,5 @@
 #include "Utilities.h"
+#include <ctime>
 
 void Utilities::initRandom()
 {
@@ -47,4 +48,17 @@ float Utilities::interpolate(float f, float t1, float v1, float p1, float t2, fl
 float Utilities::interpolate(float f, float t1, float v1, float t2, float v2)
 {
 	return lerp(v1, v2, f / (t1 + t2));
+}
+
+const std::string Utilities::getCurrentDateTime()
+{
+	std::time_t now = std::time(0);
+	std::tm timeStruct;
+
+	timeStruct = *std::localtime(&now);
+
+	char buf[128];
+	strftime(buf, 128, "%Y_%m_%d_%H_%M_%S", &timeStruct);
+
+	return buf;
 }

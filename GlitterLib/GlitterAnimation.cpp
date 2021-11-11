@@ -120,7 +120,7 @@ namespace Glitter
 			std::string interpolationStr = BIXF::toString(keyElement->FirstChildElement("InterpolationType"));
 			key.interpolationType = (InterpolationType)glitterStringToEnum(interpolationTypeTable, interpolationTypeTableSize, interpolationStr);
 			key.inParam	= BIXF::toFloat(keyElement->FirstChildElement("InParam"));
-			key.outParam	= BIXF::toFloat(keyElement->FirstChildElement("OutParam"));
+			key.outParam = BIXF::toFloat(keyElement->FirstChildElement("OutParam"));
 			
 			tinyxml2::XMLElement* randomRangeElement = keyElement->FirstChildElement("RandomRange");
 			key.randomRange = randomRangeElement ? randomRangeElement->FirstAttribute()->FloatValue() : 0;

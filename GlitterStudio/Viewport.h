@@ -19,7 +19,10 @@ namespace Glitter
 			Glitter::Vector2 size;
 			bool mouseInViewArea;
 			bool lightEnabled;
+			bool pendingScreenshot;
 			int drawMode;
+
+			void saveScreenshot();
 
 		public:
 			Viewport();
@@ -32,7 +35,7 @@ namespace Glitter
 			void lightControl();
 			void toggleLight();
 			void renderingControl();
-			void screenshot();
+			void screenshotControl();
 
 			Glitter::Vector2 getSize() const;
 			Camera getCamera() const;

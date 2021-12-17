@@ -126,6 +126,7 @@ namespace Glitter
 						float angle = Utilities::toRadians(Utilities::random(emitter->getStartAngle(), emitter->getEndAngle()));
 						float height = Utilities::randomize(0, emitter->getHeight() / 2);
 
+						// get x and z points
 						float cAngle = cosf(angle);
 						float sAngle = sinf(angle);
 						float factor = 1.0f / sqrtf(sAngle * sAngle + cAngle * cAngle);
@@ -171,6 +172,10 @@ namespace Glitter
 						return;
 					}
 
+					/* 
+						include emitter translation in particles' base position if they do not follow the emitter,
+						since we do not update the base position if the flag is set.
+					*/
 					if ((particle.getParticle()->getFlags() & 4) == 0)
 					{
 						DirectX::XMVECTOR bp{ basePos.x, basePos.y, basePos.z };
@@ -263,6 +268,7 @@ namespace Glitter
 				if (mulViewM4)
 					mat4 = mat4 * view;
 
+				// rotate emitter around effect
 				DirectX::XMMATRIX effM4Origin = effM4;
 				effM4Origin.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -275,6 +281,7 @@ namespace Glitter
 				if (count > -1)
 					emissionCount = count;
 
+				// return -1 if no interval animation is applied since the animation can have a value of 0.
 				emissionInterval = emitter->getEmissionInterval();
 				float interval = animationCache.getValue(AnimationType::EmissionInterval, emitterLife, -1.0f);
 				if (interval > -1.0f)

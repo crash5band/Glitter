@@ -116,6 +116,7 @@ namespace Glitter
 
 			auto& particle = reference->getParticle();
 
+			// calculate UV params.
 			unsigned int maxUV = 0;
 			int interval = particle->getUVChangeInterval();
 			UVIndexType type = particle->getUVIndexType();
@@ -162,6 +163,7 @@ namespace Glitter
 				if (particle->getFlags() & 4)
 				{
 					// FLAGS: Emitter Local
+					// transform particle local to emitter axis.
 					DirectX::XMVECTOR pTransform{ basePos.x, basePos.y, + basePos.z };
 					pTransform = DirectX::XMVector3Transform(pTransform, emM4Origin);
 					pTransform = DirectX::XMVectorAdd(pTransform, emM4.r[3]);
@@ -172,6 +174,7 @@ namespace Glitter
 					velocity = Vector3(vTransform.m128_f32[0], vTransform.m128_f32[1], vTransform.m128_f32[2]);
 				}
 
+				// animations not included in emitter local transform
 				DirectX::XMVECTOR aTransform{ animT.x, animT.y, animT.z };
 				aTransform = DirectX::XMVector3Transform(aTransform, emM4Origin);
 				animT = Vector3(aTransform.m128_f32[0], aTransform.m128_f32[1], aTransform.m128_f32[2]);
@@ -179,6 +182,8 @@ namespace Glitter
 				Vector3 translation = basePos + (velocity * p.time) + animT + gravity;
 				Vector3 rotation = p.rotation + p.animation.tryGetRotation(p.time);
 				Vector3 scaling = p.animation.tryGetScale(p.time);
+
+				// mesh particles are only scaled using animations
 				if (particle->getType() != ParticleType::Mesh)
 				{
 					// FLAGS: Uniform Scale
@@ -313,10 +318,12 @@ namespace Glitter
 						history.scale = p.scale;
 						history.color = p.color;
 
+						// no history
 						if (p.locusHistories.size() < 1)
 							p.locusHistories.push_back(history);
 						else if (p.locusHistories.size() == 1)
 						{
+							// first entry. append normally
 							history.pos = p.locusHistories[0].pos;
 							if (p.locusHistories.size() < p.locusHistories.capacity())
 								p.locusHistories.push_back(history);

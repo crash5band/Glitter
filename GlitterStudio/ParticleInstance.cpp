@@ -325,12 +325,18 @@ namespace Glitter
 						}
 						else
 						{
-							Vector3 temp1 = p.locusHistories[p.locusHistories.size() - 1].pos;
+							// shift histories to end of array
+							Vector3 last = p.locusHistories[p.locusHistories.size() - 1].pos;
 							for (int i = p.locusHistories.size() - 1; i > 0; --i)
 								p.locusHistories[i].pos = p.locusHistories[i - 1].pos;
 
+							// then add new history with oldest position
 							if (p.locusHistories.size() < p.locusHistories.capacity())
-								p.locusHistories.push_back(history);
+							{
+								LocusHistory h = history;
+								h.pos = last;
+								p.locusHistories.push_back(h);
+							}
 
 							p.locusHistories[0].pos = temp;
 						}

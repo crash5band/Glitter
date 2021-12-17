@@ -132,7 +132,7 @@ namespace Glitter
 
 			DirectX::XMMATRIX directionM4 = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX inverseViewM4 = DirectX::XMMatrixIdentity();
-			inverseViewM4 = DirectX::XMMatrixRotationY(PI);
+			//inverseViewM4 = DirectX::XMMatrixRotationY(PI);
 			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 			inverseViewM4 *= DirectX::XMMatrixInverse(nullptr, camera.getViewMatrix());
 			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -244,7 +244,7 @@ namespace Glitter
 
 					if (dType == ParticleDirectionType::DirectionalAngleBillboard)
 					{
-						directionM4 *= DirectX::XMMatrixRotationY(PI);
+						//directionM4 *= DirectX::XMMatrixRotationY(PI);
 						directionM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 						directionM4 *= DirectX::XMMatrixRotationY(Utilities::toRadians(90 - camera.getYaw()));
 						directionM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };

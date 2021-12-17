@@ -233,7 +233,6 @@ namespace Glitter
 				{
 				case EmitterDirectionType::Billboard:
 					view = camera.getViewMatrix();
-					view *= DirectX::XMMatrixRotationY(PI);
 					view.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 					view = DirectX::XMMatrixInverse(nullptr, view);
 					view.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };

@@ -291,7 +291,7 @@ namespace Glitter
 				{
 					if (emitter->getEmitCondition() == EmitCondition::Time)
 					{
-						if ((!((int)emissionTime % (int)emissionInterval) || emissionTime == 0) && ((int)emissionTime != (int)lastEmissionTime))
+						if ((fmodf(emissionTime, emissionInterval) <= 0.1f || emissionTime == 0) && ((int)emissionTime != (int)lastEmissionTime))
 						{
 							lastEmissionTime = (int)emissionTime;
 							emit(emitterTime, emissionCount);
@@ -451,7 +451,6 @@ namespace Glitter
 				beginPropertyColumn();
 
 				addFlagsProperty("Loop", emitter->getFlags(), 1, emitter, std::mem_fn(&Emitter::setFlags));
-				addUIntProperty("Flags", emitter->getFlags(), emitter, std::mem_fn(&Emitter::setFlags));
 				ImGui::TreePop();
 			}
 			endPropertyColumn();

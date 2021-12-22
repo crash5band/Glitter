@@ -10,7 +10,7 @@ namespace Glitter
 	namespace Editor
 	{
 		GlitterPlayer::GlitterPlayer() :
-			playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, drawRefModel{ true }, playOnSelect{ true }
+			playbackSpeed{ 1.0f }, playing{ false }, loop{ true }, drawGrid{ true }, drawRefModel{ true }, playOnSelect{ true }, showTime{ false }
 		{
 			time = maxTime = 0;
 			selectedEffect = nullptr;
@@ -186,6 +186,19 @@ namespace Glitter
 				ImGui::SliderFloat("Preview speed", &playbackSpeed, 0.1f, 2.0f, "%.2f");
 				playbackSpeed = std::clamp(playbackSpeed, 0.1f, 2.0f);
 
+				if (showTime)
+				{
+					ImGui::SameLine();
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+					ImGui::SameLine();
+
+					ImGui::Text("Time: %.2f", time);
+
+					ImGui::SameLine();
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+					ImGui::SameLine();
+				}
+
 				if (ImGui::BeginPopupContextItem("speed_context_menu"))
 				{
 					if (ImGui::MenuItem("Reset"))
@@ -232,6 +245,9 @@ namespace Glitter
 
 					if (ImGui::MenuItem("Replay"))
 						replay();
+
+					ImGui::Separator();
+					ImGui::MenuItem("Show Effect Time", NULL, &showTime);
 
 					ImGui::MenuItem("Loop", NULL, &loop);
 					ImGui::Separator();

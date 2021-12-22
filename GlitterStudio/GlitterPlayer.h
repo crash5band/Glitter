@@ -17,6 +17,7 @@ namespace Glitter
 			bool drawGrid;
 			bool drawRefModel;
 			bool playOnSelect;
+			bool showTime;
 			EffectNode* selectedEffect;
 			Viewport viewport;
 			std::shared_ptr<ModelData> refModel;

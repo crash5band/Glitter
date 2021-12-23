@@ -19,6 +19,7 @@ namespace Glitter
 		Viewport::Viewport() : mouseInViewArea{ false }, lightEnabled{ true }, drawMode{ 2 },
 			camera{ Camera(CameraMode::Orbit) }, fBuffer{ Engine::RenderTarget(1920, 1080, 4) }
 		{
+			renderScale = 1.0f;
 			stbi_flip_vertically_on_write(1);
 		}
 
@@ -40,7 +41,7 @@ namespace Glitter
 
 			size = Glitter::Vector2(viewArea.Max.x - viewArea.Min.x, viewArea.Max.y - viewArea.Min.y);
 
-			fBuffer.resize(size.x * 1.5f, size.y * 1.5f);
+			fBuffer.resize(size.x * renderScale, size.y * renderScale);
 			fBuffer.use();
 			fBuffer.clear();
 			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT + drawMode);
@@ -202,17 +203,36 @@ namespace Glitter
 					ImGui::EndCombo();
 				}
 
+				static const char* scales[]{ "x1.00", "x1.25", "x1.50", "x2.00" };
+				static int scaleSelection = 0;
+				if (ImGui::BeginCombo("Rendering Scale", scales[scaleSelection]))
+				{
+					for (int i = 0; i < 4; ++i)
+					{
+						const bool selected = scaleSelection == i;
+						if (ImGui::Selectable(scales[i], selected))
+						{
+							scaleSelection = i;
+							renderScale = 1 + (i * 0.25f);
+						}
+
+						if (selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+
 				static int msaa[]{ 1, 2, 4, 8, 16 };
-				static int selection = 2;
-				if (ImGui::BeginCombo("MSAA", std::to_string(msaa[selection]).c_str()))
+				static int msaaSelection = 2;
+				if (ImGui::BeginCombo("MSAA", std::to_string(msaa[msaaSelection]).c_str()))
 				{
 					for (int i = 0; i < 5; ++i)
 					{
-						const bool selected = selection == i;
+						const bool selected = msaaSelection == i;
 						if (ImGui::Selectable(std::to_string(msaa[i]).c_str(), selected))
 						{
-							selection = i;
-							fBuffer.setSampleCount(msaa[selection]);
+							msaaSelection = i;
+							fBuffer.setSampleCount(msaa[msaaSelection]);
 						}
 
 						if (selected)

@@ -21,6 +21,7 @@ namespace Glitter
 			bool lightEnabled;
 			bool pendingScreenshot;
 			int drawMode;
+			float renderScale;
 
 			void saveScreenshot();
 

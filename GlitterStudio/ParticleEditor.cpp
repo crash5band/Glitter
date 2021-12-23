@@ -294,6 +294,9 @@ namespace Glitter
 				if (ImGui::MenuItem("Save All"))
 					saveAll();
 
+				if (ImGui::MenuItem("Close All"))
+					closeAllEffects();
+
 				ImGui::EndMenu();
 			}
 

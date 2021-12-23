@@ -82,6 +82,7 @@ namespace Glitter
 				ImGui::EndMenu();
 			}
 
+			// editors fill this menu
 			if (ImGui::BeginMenu("View"))
 			{
 				ImGui::EndMenu();
@@ -91,6 +92,8 @@ namespace Glitter
 			{
 				if (ImGui::MenuItem("VSync", NULL, &vsync))
 					glfwSwapInterval((int)vsync);
+
+				ImGui::MenuItem("FPS", NULL, &fpsMeter);
 
 				ImGui::EndMenu();
 			}

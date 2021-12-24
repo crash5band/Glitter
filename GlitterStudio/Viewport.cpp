@@ -16,10 +16,9 @@ namespace Glitter
 {
 	namespace Editor
 	{
-		Viewport::Viewport() : mouseInViewArea{ false }, lightEnabled{ true }, drawMode{ 2 },
-			camera{ Camera(CameraMode::Orbit) }, fBuffer{ Engine::RenderTarget(1920, 1080, 4) }
+		Viewport::Viewport() : mouseInViewArea{ false }, lightEnabled{ true }, drawMode{ 2 }, pendingScreenshot{ false },
+			camera{ Camera(CameraMode::Orbit) }, fBuffer{ Engine::RenderTarget(1280, 720, 4) }
 		{
-			renderScale = 1.0f;
 			stbi_flip_vertically_on_write(1);
 		}
 
@@ -89,6 +88,9 @@ namespace Glitter
 			UI::transparentButton(ICON_FA_VIDEO, UI::btnNormal);
 			if (ImGui::BeginPopupContextItem("cam_popup", ImGuiMouseButton_Left))
 			{
+				ImGui::Text("Camera");
+				ImGui::Separator();
+
 				float y = camera.getYaw();
 				float p = camera.getPitch();
 				float fov = camera.getFOV();
@@ -162,6 +164,9 @@ namespace Glitter
 			UI::transparentButton(ICON_FA_LIGHTBULB, UI::btnNormal);
 			if (ImGui::BeginPopupContextItem("light_popup", ImGuiMouseButton_Left))
 			{
+				ImGui::Text("Lighting");
+				ImGui::Separator();
+
 				ImGui::Checkbox("Enabled", &lightEnabled);
 				ImGui::Separator();
 
@@ -186,6 +191,9 @@ namespace Glitter
 			UI::transparentButton(ICON_FA_IMAGE, UI::btnNormal);
 			if (ImGui::BeginPopupContextItem("rendering_popup", ImGuiMouseButton_Left))
 			{
+				ImGui::Text("Rendering");
+				ImGui::Separator();
+
 				static const char* modes[]{ "Point", "Wireframe", "Polygon" };
 				if (ImGui::BeginCombo("Rendering Mode", modes[drawMode]))
 				{
@@ -204,7 +212,7 @@ namespace Glitter
 				}
 
 				static const char* scales[]{ "x1.00", "x1.25", "x1.50", "x2.00" };
-				static int scaleSelection = 0;
+				static int scaleSelection = 1;
 				if (ImGui::BeginCombo("Rendering Scale", scales[scaleSelection]))
 				{
 					for (int i = 0; i < 4; ++i)

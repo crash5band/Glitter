@@ -82,28 +82,28 @@ namespace Glitter
 			switch (pivot)
 			{
 			case PivotPosition::TopLeft:
-				return Vector3(0.5, -0.5, 0);
+				return Vector3(-0.5, -0.5, 0);
 
 			case PivotPosition::TopCenter:
 				return Vector3(0, -0.5, 0);
 
 			case PivotPosition::TopRight:
-				return Vector3(-0.5, -0.5, 0);
+				return Vector3(0.5, -0.5, 0);
 
 			case PivotPosition::MiddleLeft:
-				return Vector3(0.5, 0, 0);
-
-			case PivotPosition::MiddleRight:
 				return Vector3(-0.5, 0, 0);
 
+			case PivotPosition::MiddleRight:
+				return Vector3(0.5, 0, 0);
+
 			case PivotPosition::BottomLeft:
-				return Vector3(0.5, 0.5, 0);
+				return Vector3(-0.5, 0.5, 0);
 
 			case PivotPosition::BottomCenter:
 				return Vector3(0, 0.5, 0);
 
 			case PivotPosition::BottomRight:
-				return Vector3(-0.5, 0.5, 0);
+				return Vector3(0.5, 0.5, 0);
 
 			default:
 				return Vector3(0, 0, 0);

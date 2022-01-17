@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 #include "IconsFontAwesome5.h"
 #include "File.h"
+#include "MathExtensions.h"
 #include <map>
 
 namespace Glitter
@@ -113,6 +114,14 @@ namespace Glitter
 			return NodeType::Effect;
 		}
 
+		void EffectNode::updateMatrix(const Vector3& pos, const Quaternion& rot, const Vector3& scale)
+		{
+			mat4  = DirectX::XMMatrixIdentity();
+			mat4 *= DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+			mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ rot.x, rot.y, rot.z, rot.w });
+			mat4 *= DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+		}
+
 		void EffectNode::update(float time, const Camera& camera)
 		{
 			float effectTime = time - effect->getStartTime();
@@ -130,17 +139,9 @@ namespace Glitter
 				Vector3 position = effect->getTranslation() + animationCache.tryGetTranslation(effectLife);
 				Vector3 rotation = effect->getRotation() + animationCache.tryGetRotation(effectLife);
 				Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
+				Quaternion qR = MathExtensions::fromRotationZYX(rotation);
 
-				Quaternion qX, qY, qZ, qR;
-				qX.fromAngleAxis(Utilities::toRadians(rotation.x), Vector3(1, 0, 0));
-				qY.fromAngleAxis(Utilities::toRadians(rotation.y), Vector3(0, 1, 0));
-				qZ.fromAngleAxis(Utilities::toRadians(rotation.z), Vector3(0, 0, 1));
-				qR = qZ * qY * qX;
-
-				mat4 = DirectX::XMMatrixIdentity();
-				mat4 *= DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-				mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ qR.x, qR.y, qR.z, qR.w });
-				mat4 *= DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+				updateMatrix(position, qR, scale);
 
 				for (auto& emitter : emitterNodes)
 					emitter->update(effectTime, effectLife, camera, mat4, qR);

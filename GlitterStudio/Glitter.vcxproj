@@ -209,6 +209,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GTMManager.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
+    <ClCompile Include="MathExtensions.cpp" />
     <ClCompile Include="ModelEditor.cpp" />
     <ClCompile Include="ModelViewer.cpp" />
     <ClCompile Include="ParticleEditor.cpp" />
@@ -262,6 +263,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="GTMManager.h" />
     <ClInclude Include="MaterialNode.h" />
+    <ClInclude Include="MathExtensions.h" />
     <ClInclude Include="ModelEditor.h" />
     <ClInclude Include="ModelViewer.h" />
     <ClInclude Include="ParticleEditor.h" />

@@ -31,6 +31,9 @@ namespace Glitter
 			Vector3 lastEmissionPosition;
 			Vector3 rotationAdd;
 
+			void updateMatrix(const Vector3& pos, const Quaternion& rot, const Vector3& scale, 
+				const Camera &view, const DirectX::XMMATRIX &effMat);
+
 		public:
 			EmitterNode(std::shared_ptr<Emitter>& em, EffectNode* parent);
 			EmitterNode(std::shared_ptr<EmitterNode>& rhs);

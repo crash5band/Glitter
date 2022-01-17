@@ -173,6 +173,9 @@
     <ClCompile Include="CachedAnimation.cpp">
       <Filter>Animations</Filter>
     </ClCompile>
+    <ClCompile Include="MathExtensions.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h">
@@ -324,6 +327,9 @@
     </ClInclude>
     <ClInclude Include="INode.h">
       <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="MathExtensions.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

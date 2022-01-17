@@ -48,6 +48,7 @@ namespace Glitter
 			bool visible;
 
 			void verifyPoolSize();
+			void updateLocusHistory(ParticleStatus& p);
 
 		public:
 			ParticleInstance(std::weak_ptr<ParticleNode> ref);

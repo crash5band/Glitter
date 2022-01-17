@@ -18,6 +18,8 @@ namespace Glitter
 			DirectX::XMMATRIX mat4;
 			CachedAnimation animationCache;
 
+			void updateMatrix(const Vector3& pos, const Quaternion& rot, const Vector3& scale);
+
 		public:
 			EffectNode(std::shared_ptr<GlitterEffect>& eff);
 			EffectNode(std::shared_ptr<EffectNode>& rhs);

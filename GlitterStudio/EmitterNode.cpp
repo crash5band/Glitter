@@ -5,6 +5,7 @@
 #include "File.h"
 #include "FileGUI.h"
 #include "ResourceManager.h"
+#include "MathExtensions.h"
 
 namespace Glitter
 {
@@ -190,6 +191,59 @@ namespace Glitter
 			}
 		}
 
+		void EmitterNode::updateMatrix(const Vector3& pos, const Quaternion& rot, const Vector3& scale,
+			const Camera& cam, const DirectX::XMMATRIX &effMat)
+		{
+			mat4 = DirectX::XMMatrixIdentity();
+			mat4 *= DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+			mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ rot.x, rot.y, rot.z, rot.w });
+
+			DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
+			bool mulViewM4 = true;
+
+			switch (emitter->getDirectionType())
+			{
+			case EmitterDirectionType::Billboard:
+				view = cam.getViewMatrix();
+				view.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+				view = DirectX::XMMatrixInverse(nullptr, view);
+				view.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+				break;
+
+			case EmitterDirectionType::XAxis:
+				view = DirectX::XMMatrixRotationY(-PI / 2);
+				break;
+
+			case EmitterDirectionType::YAxis:
+				view = DirectX::XMMatrixRotationX(PI / 2);
+				break;
+
+			case EmitterDirectionType::ZAxis:
+				view = DirectX::XMMatrixRotationZ(-PI / 2);
+				break;
+
+			case EmitterDirectionType::YRotationOnly:
+				view = DirectX::XMMatrixRotationY(PI);
+				view *= DirectX::XMMatrixRotationY(Utilities::toRadians(90 - cam.getYaw()));
+				break;
+
+			default:
+				mulViewM4 = false;
+				break;
+			}
+
+			if (mulViewM4)
+				mat4 = mat4 * view;
+
+			// rotate emitter around effect
+			DirectX::XMMATRIX effM4Origin = effMat;
+			effM4Origin.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
+
+			DirectX::XMVECTOR emPos{ pos.x, pos.y, pos.z };
+			emPos = DirectX::XMVector3Transform(emPos, effM4Origin);
+			mat4 *= DirectX::XMMatrixTranslationFromVector(emPos);
+		}
+
 		void EmitterNode::update(float time, float effTime, const Camera& camera, const DirectX::XMMATRIX &effM4, const Quaternion &effRot)
 		{
 			float emitterTime = time - emitter->getStartTime();
@@ -213,68 +267,16 @@ namespace Glitter
 				animSet->markDirty(false);
 			}
 
-			Vector3 effTranslation = Vector3(effM4.r[3].m128_f32[0], effM4.r[3].m128_f32[1], effM4.r[3].m128_f32[2]);
-			Vector3 translation = emitter->getTranslation() + animationCache.tryGetTranslation(emitterLife) + effTranslation;
-			Vector3 rotation = emitter->getRotation() + rotationAdd + animationCache.tryGetRotation(emitterLife);
-			Vector3 scale = emitter->getScaling() *= animationCache.tryGetScale(emitterLife);
 			Quaternion qR;
-
 			if (emitterLife >= 0.0f)
 			{
-				Quaternion qX, qY, qZ;
-				qX.fromAngleAxis(Utilities::toRadians(rotation.x), Vector3(1, 0, 0));
-				qY.fromAngleAxis(Utilities::toRadians(rotation.y), Vector3(0, 1, 0));
-				qZ.fromAngleAxis(Utilities::toRadians(rotation.z), Vector3(0, 0, 1));
-				qR = effRot * qZ * qY * qX;
+				Vector3 effTranslation = Vector3(effM4.r[3].m128_f32[0], effM4.r[3].m128_f32[1], effM4.r[3].m128_f32[2]);
+				Vector3 translation = emitter->getTranslation() + animationCache.tryGetTranslation(emitterLife) + effTranslation;
+				Vector3 rotation = emitter->getRotation() + rotationAdd + animationCache.tryGetRotation(emitterLife);
+				Vector3 scale = emitter->getScaling() *= animationCache.tryGetScale(emitterLife);
+				qR = effRot * MathExtensions::fromRotationZYX(rotation);
 
-				mat4 = DirectX::XMMatrixIdentity();
-				mat4 *= DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-				mat4 *= DirectX::XMMatrixRotationQuaternion(DirectX::XMVECTOR{ qR.x, qR.y, qR.z, qR.w });
-
-				DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
-				bool mulViewM4 = true;
-
-				switch (emitter->getDirectionType())
-				{
-				case EmitterDirectionType::Billboard:
-					view = camera.getViewMatrix();
-					view.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
-					view = DirectX::XMMatrixInverse(nullptr, view);
-					view.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
-					break;
-
-				case EmitterDirectionType::XAxis:
-					view = DirectX::XMMatrixRotationY(-PI / 2);
-					break;
-
-				case EmitterDirectionType::YAxis:
-					view = DirectX::XMMatrixRotationX(PI / 2);
-					break;
-
-				case EmitterDirectionType::ZAxis:
-					view = DirectX::XMMatrixRotationZ(-PI / 2);
-					break;
-
-				case EmitterDirectionType::YRotationOnly:
-					view = DirectX::XMMatrixRotationY(PI);
-					view *= DirectX::XMMatrixRotationY(Utilities::toRadians(90 - camera.getYaw()));
-					break;
-
-				default:
-					mulViewM4 = false;
-					break;
-				}
-
-				if (mulViewM4)
-					mat4 = mat4 * view;
-
-				// rotate emitter around effect
-				DirectX::XMMATRIX effM4Origin = effM4;
-				effM4Origin.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
-
-				DirectX::XMVECTOR emPos{ translation.x, translation.y, translation.z };
-				emPos = DirectX::XMVector3Transform(emPos, effM4Origin);
-				mat4 *= DirectX::XMMatrixTranslationFromVector(emPos);
+				updateMatrix(translation, qR, scale, camera, effM4);
 
 				emissionCount = emitter->getParticlesPerEmission();
 				int count = round(animationCache.getValue(AnimationType::ParticlePerEmission, emitterLife, -1));

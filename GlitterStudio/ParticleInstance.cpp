@@ -1,5 +1,6 @@
 #include "ParticleInstance.h"
 #include "Utilities.h"
+#include "MathExtensions.h"
 
 namespace Glitter
 {
@@ -109,6 +110,46 @@ namespace Glitter
 				return Vector3(0, 0, 0);
 			}
 		}
+		
+		void ParticleInstance::updateLocusHistory(ParticleStatus& p)
+		{
+			Vector3 temp(p.mat4.r[3].m128_f32[0], p.mat4.r[3].m128_f32[1], p.mat4.r[3].m128_f32[2]);
+
+			LocusHistory history;
+			history.pos = temp;
+			history.scale = p.scale;
+			history.color = p.color;
+
+			// no history
+			if (p.locusHistories.size() < 1)
+				p.locusHistories.push_back(history);
+			else if (p.locusHistories.size() == 1)
+			{
+				// first entry. append normally
+				history.pos = p.locusHistories[0].pos;
+				if (p.locusHistories.size() < p.locusHistories.capacity())
+					p.locusHistories.push_back(history);
+
+				p.locusHistories[0].pos = temp;
+			}
+			else
+			{
+				// shift histories to end of array
+				Vector3 last = p.locusHistories[p.locusHistories.size() - 1].pos;
+				for (int i = p.locusHistories.size() - 1; i > 0; --i)
+					p.locusHistories[i].pos = p.locusHistories[i - 1].pos;
+
+				// then add new history with oldest position
+				if (p.locusHistories.size() < p.locusHistories.capacity())
+				{
+					LocusHistory h = history;
+					h.pos = last;
+					p.locusHistories.push_back(h);
+				}
+
+				p.locusHistories[0].pos = temp;
+			}
+		}
 
 		void ParticleInstance::update(float time, const Camera& camera, const DirectX::XMMATRIX &emM4, const Quaternion &emRot)
 		{
@@ -129,8 +170,6 @@ namespace Glitter
 			DirectX::XMMATRIX emM4Origin = emM4;
 			emM4Origin.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-			std::shared_ptr<EditorAnimationSet> animationSet = reference->getAnimationSet();
-
 			DirectX::XMMATRIX directionM4 = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX inverseViewM4 = DirectX::XMMatrixIdentity();
 			//inverseViewM4 = DirectX::XMMatrixRotationY(PI);
@@ -139,6 +178,7 @@ namespace Glitter
 			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 			ParticleDirectionType dType = particle->getDirectionType();
+			std::shared_ptr<EditorAnimationSet> animationSet = reference->getAnimationSet();
 
 			aliveCount = 0;
 			for (auto& p : pool)
@@ -164,20 +204,16 @@ namespace Glitter
 				{
 					// FLAGS: Emitter Local
 					// transform particle local to emitter axis.
-					DirectX::XMVECTOR pTransform{ basePos.x, basePos.y, + basePos.z };
-					pTransform = DirectX::XMVector3Transform(pTransform, emM4Origin);
-					pTransform = DirectX::XMVectorAdd(pTransform, emM4.r[3]);
-					basePos = Vector3(pTransform.m128_f32[0], pTransform.m128_f32[1], pTransform.m128_f32[2]);
+					basePos = MathExtensions::vector3Transform(basePos, emM4Origin);
+					basePos.x += emM4.r[3].m128_f32[0];
+					basePos.y += emM4.r[3].m128_f32[1];
+					basePos.z += emM4.r[3].m128_f32[2];
 
-					DirectX::XMVECTOR vTransform{ velocity.x, velocity.y, velocity.z };
-					vTransform = DirectX::XMVector3Transform(vTransform, emM4Origin);
-					velocity = Vector3(vTransform.m128_f32[0], vTransform.m128_f32[1], vTransform.m128_f32[2]);
+					velocity = MathExtensions::vector3Transform(velocity, emM4Origin);
 				}
 
 				// animations not included in emitter local transform
-				DirectX::XMVECTOR aTransform{ animT.x, animT.y, animT.z };
-				aTransform = DirectX::XMVector3Transform(aTransform, emM4Origin);
-				animT = Vector3(aTransform.m128_f32[0], aTransform.m128_f32[1], aTransform.m128_f32[2]);
+				animT = MathExtensions::vector3Transform(animT, emM4Origin);
 
 				Vector3 translation = basePos + (velocity * p.time) + animT + gravity;
 				Vector3 rotation = p.rotation + p.animation.tryGetRotation(p.time);
@@ -286,11 +322,9 @@ namespace Glitter
 					break;
 				}
 
-				Quaternion qX, qY, qZ, qR;
-				qX.fromAngleAxis(Utilities::toRadians(rotation.x), Vector3(1, 0, 0));
-				qY.fromAngleAxis(Utilities::toRadians(rotation.y), Vector3(0, 1, 0));
+				Quaternion qR = emRot * MathExtensions::fromRotationZYX(rotation);
+				Quaternion qZ;
 				qZ.fromAngleAxis(Utilities::toRadians(rotation.z), Vector3(0, 0, 1));
-				qR = emRot * qZ * qY * qX;
 
 				if (dType != ParticleDirectionType::Billboard)
 				{
@@ -306,48 +340,9 @@ namespace Glitter
 
 				p.color = particle->getColor() * p.animation.tryGetColor(p.time);
 
-				if (particle->getType() == ParticleType::Locus)
+				if (particle->getType() == ParticleType::Locus && lastTime != p.time)
 				{
-					// avoid appending to locus history if playback is paused
-					if (lastTime != p.time)
-					{
-						Vector3 temp(p.mat4.r[3].m128_f32[0], p.mat4.r[3].m128_f32[1], p.mat4.r[3].m128_f32[2]);
-
-						LocusHistory history;
-						history.pos = temp;
-						history.scale = p.scale;
-						history.color = p.color;
-
-						// no history
-						if (p.locusHistories.size() < 1)
-							p.locusHistories.push_back(history);
-						else if (p.locusHistories.size() == 1)
-						{
-							// first entry. append normally
-							history.pos = p.locusHistories[0].pos;
-							if (p.locusHistories.size() < p.locusHistories.capacity())
-								p.locusHistories.push_back(history);
-
-							p.locusHistories[0].pos = temp;
-						}
-						else
-						{
-							// shift histories to end of array
-							Vector3 last = p.locusHistories[p.locusHistories.size() - 1].pos;
-							for (int i = p.locusHistories.size() - 1; i > 0; --i)
-								p.locusHistories[i].pos = p.locusHistories[i - 1].pos;
-
-							// then add new history with oldest position
-							if (p.locusHistories.size() < p.locusHistories.capacity())
-							{
-								LocusHistory h = history;
-								h.pos = last;
-								p.locusHistories.push_back(h);
-							}
-
-							p.locusHistories[0].pos = temp;
-						}
-					}
+					updateLocusHistory(p);
 				}
 
 				if (particle->getUVIndexType() == UVIndexType::Fixed)

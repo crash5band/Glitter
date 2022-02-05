@@ -67,7 +67,9 @@ public:
 
 	void drawLocus(const Glitter::Editor::ParticleStatus& p, std::shared_ptr<TextureData> tex);
 
-	void drawMesh(std::shared_ptr<ModelData> model, const Glitter::Editor::Viewport &vp, float time);
 	void flush();
 	void endBatch();
+
+	inline int getNumVertices() const { return numIndices; }
+	inline int getNumQuads() const { return numQuads; }
 };

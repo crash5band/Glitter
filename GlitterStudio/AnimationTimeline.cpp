@@ -1127,44 +1127,5 @@ namespace Glitter
 			const float percent = (height - canvasPos.y - heightOffset) / (canvasSize.y - heightOffset);
 			return ((1 - percent) * (higherLimits[limitIndex] - lowerLimits[limitIndex])) + lowerLimits[limitIndex];
 		}
-
-		/*
-void AnimationTimeline::updateCurveScroll()
-{
-	const float scrollHeight = 15.0f;
-	float winY = ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y - scrollHeight - 5.0f;
-
-	scrollbarPos = ImVec2(ImGui::GetCurrentWindow()->Pos.x, winY);
-	scrollbarSize = ImGui::GetCurrentWindow()->Size;
-	scrollBoundaries = ImRect(scrollbarPos, ImVec2(scrollbarPos.x + scrollbarSize.x, scrollbarPos.y + scrollHeight));
-
-	ImGui::RenderFrame(scrollBoundaries.Min, scrollBoundaries.Max, ImGui::GetColorU32(ImGuiCol_ScrollbarBg));
-
-	float maxPos = timelineMaxOffset.x + abs(timelineMinOffset.x);
-	float curPos = timelinePosOffset.x + abs(timelineMinOffset.x);
-	float ratio = curPos / maxPos;
-	int visibleFrames = canvasSize.x / effectiveFrameWidth;
-	int maxFrames = ((timelineMaxOffset.x + abs(timelineMinOffset.x) + canvasSize.x) / effectiveFrameWidth) + frameStart;
-
-	float sizeRatio = ((float)visibleFrames / (float)maxFrames);
-	sizeRatio = std::clamp(sizeRatio, 0.05f, 1.0f);
-	float size = scrollbarSize.x * sizeRatio;
-
-	// we subtract barOffset.x twice for barMax because it is already included in barMin.
-	ImVec2 barOffset(5.0f, 2.5f);
-	ImVec2 barMin = ImVec2(scrollBoundaries.Min.x + ratio * (scrollBoundaries.Max.x - scrollBoundaries.Min.x - size), scrollbarPos.y) + barOffset;
-	ImVec2 barMax = ImVec2(barMin.x - barOffset.x + size, scrollbarPos.y + scrollHeight) - barOffset;
-
-	ImGui::SetCursorScreenPos(barMin);
-	ImGui::InvisibleButton("scroll_handle", barMax - barMin);
-	if (ImGui::IsItemActive())
-	{
-		timelinePosOffset.x += ImGui::GetIO().MouseDelta.x * zoom;
-		timelinePosOffset.x = std::clamp(timelinePosOffset.x, timelineMinOffset.x, timelineMaxOffset.x);
-	}
-
-	ImGui::GetWindowDrawList()->AddRectFilled(barMin, barMax, ImGui::GetColorU32(ImGuiCol_ScrollbarGrab), 15.0f);
-}
-*/
 	}
 }

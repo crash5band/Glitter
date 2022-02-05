@@ -23,19 +23,8 @@ void ModelData::dispose()
 
 void ModelData::buildGensModel(Glitter::Model &model)
 {
-	// BAD: load all uv-anims in the current directory and check if any belongs to the model later
 	if (!std::filesystem::exists(directory))
 		return;
-
-	/*
-	for (const auto& file : std::filesystem::directory_iterator(directory))
-	{
-		if (file.path().extension().string() == ".uv-anim")
-		{
-			ResourceManager::loadUVAnimation(file.path().string());
-		}
-	}
-	*/
 
 	std::vector<Glitter::Mesh*> gensMeshes = model.getMeshes();
 	meshes.reserve(meshes.size());
@@ -132,21 +121,7 @@ SubmeshData ModelData::buildGensSubMesh(Glitter::Submesh *submesh)
 			matData.textures.emplace_back(texture);
 	}
 
-	// load uv animations
-	auto uvAnims = ResourceManager::getUVAnimationsList();
-	std::shared_ptr<Glitter::UVAnimation> uvAnim;
-
-	for (const auto& anim : uvAnims)
-	{
-		if (anim->getMaterial() == matData.material->getName() && anim->getTexset() == textures[0]->getTexSet())
-		{
-			Logger::log(Message(MessageType::Normal, "Assigned uv-anim" + anim->getName() + " to model " + modelName + "."));
-			uvAnim = anim;
-			break;
-		}
-	}
-
-	return SubmeshData(vertexData, faceData, matData, uvAnim, PirimitveType::TriangleStrip);
+	return SubmeshData(vertexData, faceData, matData, PirimitveType::TriangleStrip);
 }
 
 void ModelData::draw(Shader* shader, float time)
@@ -176,29 +151,9 @@ bool ModelData::reload(const std::string& path)
 	return true;
 }
 
-void ModelData::move(Glitter::Vector3 pos)
-{
-	transform.position = pos;
-}
-
-void ModelData::rotate(Glitter::Quaternion q)
-{
-	transform.rotation = q;
-}
-
-void ModelData::scale(Glitter::Vector3 scale)
-{
-	transform.scale = scale;
-}
-
 std::string ModelData::getName() const
 {
 	return modelName;
-}
-
-Transform ModelData::getTransform()
-{
-	return transform;
 }
 
 std::vector<std::shared_ptr<Glitter::Material>> ModelData::getMaterials()

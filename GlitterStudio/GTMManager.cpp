@@ -1,10 +1,10 @@
 #include "GTMManager.h"
 #include "IconsFontAwesome5.h"
 #include "ImGui/imgui.h"
-#include "ImGui/imgui_internal.h"
 #include "UI.h"
 #include "Logger.h"
 #include "File.h"
+#include "FileDialog.h"
 #include "ResourceManager.h"
 
 namespace Glitter
@@ -39,6 +39,7 @@ namespace Glitter
 			// Dispose of unused materials
 			for (std::vector<std::shared_ptr<MaterialNode>>::iterator it = materialNodes.begin(); it != materialNodes.end();)
 			{
+				// material node is not referenced by any particle
 				if ((*it).use_count() < 2)
 				{
 					std::string matName = (*it)->getMaterial()->getName();
@@ -69,7 +70,7 @@ namespace Glitter
 			else
 			{
 				name = materialNodes[index]->getMaterial()->getName();
-				if (FileGUI::saveFileGUI(FileType::Material, name))
+				if (FileDialog::saveFileDialog(FileType::Material, name))
 				{
 					if (Glitter::File::getFileExtension(name) != "gtm")
 						name += ".gtm";
@@ -92,7 +93,7 @@ namespace Glitter
 			add(newNode);
 		}
 
-		std::vector<std::shared_ptr<MaterialNode>> GTMManager::getNodes()
+		std::vector<std::shared_ptr<MaterialNode>> GTMManager::getMaterials()
 		{
 			return materialNodes;
 		}

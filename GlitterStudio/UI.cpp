@@ -5,16 +5,11 @@ namespace Glitter
 {
 	namespace Editor
 	{
-		const char* UI::effWindow = ICON_FA_MAGIC " Effects";
-		const char* UI::matWindow = ICON_FA_LAYER_GROUP " Materials";
+		const char* UI::effWindow		= ICON_FA_MAGIC " Effects";
+		const char* UI::matWindow		= ICON_FA_LAYER_GROUP " Materials";
 		const char* UI::pTimelineWindow = ICON_FA_CLOCK " Animation##particle";
-		const char* UI::gPlayerWindow = ICON_FA_IMAGE " Preview";
+		const char* UI::gPlayerWindow	= ICON_FA_IMAGE " Preview";
 		const char* UI::inspectorWindow = ICON_FA_INFO_CIRCLE " Inspector";
-		const char* UI::modelWindow = ICON_FA_CUBES " Models";
-		const char* UI::texWindow = ICON_FA_IMAGES " Textures";
-		const char* UI::mViewerWindow = ICON_FA_IMAGE " Model View";
-		const char* UI::mPropertiesWindow = ICON_FA_INFO_CIRCLE " Model View Properties";
-		const char* UI::mTimelineWindow = ICON_FA_CLOCK " Animation##model";
 
 		float UI::btnHeight = 23.0f;
 		ImVec2 UI::btnSmall = ImVec2(btnHeight - 5, btnHeight - 5);
@@ -27,9 +22,7 @@ namespace Glitter
 			const auto& style = ImGui::GetStyle();
 
 			if (lineHeight < 0)
-			{
 				lineHeight = ImGui::GetFrameHeightWithSpacing();
-			}
 
 			float scrollOffsetH = ImGui::GetScrollX();
 			float scrollOffsetV = ImGui::GetScrollY();
@@ -64,16 +57,16 @@ namespace Glitter
 
 		void UI::resizeLayout(ImGuiID dockspaceID, int screenWidth, int screenHeight)
 		{
-			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_None;
+			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_NoResize;
 
-			float yPos = ImGui::GetFrameHeight() * 2 + 8;
+			float yPos = ImGui::GetFrameHeight() + 1;
 			ImGui::DockBuilderSetNodePos(dockspaceID, ImVec2(0.0f, yPos));
 			ImGui::DockBuilderSetNodeSize(dockspaceID, ImVec2(screenWidth, screenHeight - yPos));
 		}
 
-		void UI::initParticleLayout(ImGuiID dockspaceID, int width, int height)
+		void UI::initLayout(ImGuiID dockspaceID, int width, int height)
 		{
-			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_None;
+			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_NoResize;
 
 			if (!ImGui::DockBuilderGetNode(dockspaceID))
 			{
@@ -93,33 +86,6 @@ namespace Glitter
 				ImGui::DockBuilderDockWindow(gPlayerWindow, midID);
 				ImGui::DockBuilderDockWindow(inspectorWindow, rightID);
 				ImGui::DockBuilderDockWindow(pTimelineWindow, midBtmID);
-
-				ImGui::DockBuilderFinish(mainID);
-			}
-		}
-
-		void UI::initModelLayout(ImGuiID dockspaceID, int width, int height)
-		{
-			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_None;
-
-			if (!ImGui::DockBuilderGetNode(dockspaceID))
-			{
-				ImGui::DockBuilderRemoveNode(dockspaceID);
-				ImGui::DockBuilderAddNode(dockspaceID, dockNodeFlags);
-				ImGui::DockBuilderSetNodeSize(dockspaceID, ImVec2(width, height - ImGui::GetFrameHeight()));
-
-				ImGuiID mainBtmID, midID, midBtmID, rightID, rightBtmID, extraID;
-				ImGuiID mainID = dockspaceID;
-				ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Right, 0.8f, &midID, &mainID);
-				ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Down, 0.5f, &mainBtmID, &mainID);
-				ImGui::DockBuilderSplitNode(midID, ImGuiDir_Down, 0.3f, &midBtmID, &midID);
-				ImGui::DockBuilderSplitNode(midID, ImGuiDir_Right, 0.2f, &rightID, &midID);
-
-				ImGui::DockBuilderDockWindow(modelWindow, mainID);
-				ImGui::DockBuilderDockWindow(texWindow, mainBtmID);
-				ImGui::DockBuilderDockWindow(mViewerWindow, midID);
-				ImGui::DockBuilderDockWindow(mPropertiesWindow, rightID);
-				ImGui::DockBuilderDockWindow(mTimelineWindow, midBtmID);
 
 				ImGui::DockBuilderFinish(mainID);
 			}

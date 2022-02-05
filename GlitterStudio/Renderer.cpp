@@ -478,28 +478,3 @@ void Renderer::drawGrid(const Glitter::Editor::Viewport &vp)
 	glBindVertexArray(gVao);
 	glDrawArrays(GL_LINES, 0, gridVertexCount);
 }
-
-void Renderer::drawMesh(std::shared_ptr<ModelData> model, const Glitter::Editor::Viewport& vp, float time)
-{
-	configureShader(meshShader, vp, Glitter::BlendMode::Typical);
-	setBlendMode(Glitter::BlendMode::Typical);
-	glEnable(GL_DEPTH_TEST);
-
-	Transform t = model->getTransform();
-	DirectX::XMMATRIX m = DirectX::XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
-	m *= DirectX::XMMatrixRotationQuaternion(DirectX::FXMVECTOR{ t.rotation.x, t.rotation.y, t.rotation.z, t.rotation.w });
-	m *= DirectX::XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
-
-	meshShader->setMatrix4("model", m);
-	meshShader->setVec4("color", DirectX::XMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
-	meshShader->setVec3("viewPos", vp.getCamera().getPosition());
-
-	Light l = vp.getLight();
-	meshShader->setVec3("light.position", DirectX::XMVECTOR{ l.position.x, l.position.y, l.position.z, 1.0f });
-	meshShader->setVec3("light.color", DirectX::XMVECTOR{ l.color.r, l.color.g, l.color.b, 1.0f });
-	meshShader->setInt("light.type", vp.isLightEnabled() ? (int)vp.getLight().type : -1);
-	meshShader->setFloat("light.ambient", vp.getLight().ambient);
-	meshShader->setFloat("light.specular", vp.getLight().specular);
-
-	model->draw(meshShader.get(), time);
-}

@@ -1,12 +1,14 @@
 #pragma once
-#include "IViewer.h"
 #include "Viewport.h"
+#include "EffectNode.h"
+
+class Renderer;
 
 namespace Glitter
 {
 	namespace Editor
 	{
-		class GlitterPlayer : public IViewer
+		class GlitterPlayer
 		{
 		private:
 			float time;
@@ -15,28 +17,24 @@ namespace Glitter
 			bool playing;
 			bool loop;
 			bool drawGrid;
-			bool drawRefModel;
 			bool playOnSelect;
-			bool showTime;
 			EffectNode* selectedEffect;
+			Renderer* renderer;
 			Viewport viewport;
-			std::shared_ptr<ModelData> refModel;
 
-			virtual void updatePreview(Renderer* renderer, float deltaT);
+			void updatePreview(Renderer* renderer, float deltaT);
 
 		public:
 			GlitterPlayer();
 			~GlitterPlayer();
 
-			virtual void update(Renderer* renderer, float deltaT);
-			virtual void togglePlayback();
-			virtual void stopPlayback();
-			virtual void replay();
-			virtual void stepFrame();
-			virtual bool isPlaying();
-			virtual bool isLoop();
+			void update(Renderer* renderer, float deltaT);
+			void togglePlayback();
+			void stopPlayback();
+			void replay();
+			bool isPlaying();
+			bool isLoop();
 			void setEffect(EffectNode* node);
-			void changeRefMesh(const std::string& path);
 			bool isEffectLoop();
 		};
 	}

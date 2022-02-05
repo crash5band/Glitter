@@ -1,7 +1,6 @@
 #pragma once
 #include "INode.h"
 #include "ParticleNode.h"
-#include "Transform.h"
 #include "Emitter.h"
 #include "ParticleInstance.h"
 #include "ModelData.h"

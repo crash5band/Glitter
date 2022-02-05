@@ -3,7 +3,7 @@
 #include "CommandManager.h"
 #include "ResourceManager.h"
 #include "File.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include "IconsFontAwesome5.h"
 #include "UI.h"
 #include <filesystem>
@@ -49,7 +49,7 @@ namespace Glitter
 				for (auto& particle : effect->getParticles())
 					open(filepath + particle->getMaterial() + ".gtm");
 
-				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getNodes();
+				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getMaterials();
 				for (auto& p : effectNode->getParticleNodes())
 				{
 					for (auto& m : materials)
@@ -62,7 +62,7 @@ namespace Glitter
 			}
 			else if (extension == "gtm")
 			{
-				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getNodes();
+				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getMaterials();
 				for (const auto& m : materials)
 				{
 					if (m->getMaterial()->getFilename() == filename)
@@ -133,7 +133,7 @@ namespace Glitter
 				else
 				{
 					name = effects[index]->getEffect()->getName();
-					if (FileGUI::saveFileGUI(FileType::Effect, name))
+					if (FileDialog::saveFileDialog(FileType::Effect, name))
 					{
 						if (Glitter::File::getFileExtension(name) != "gte")
 							name += ".gte";
@@ -148,7 +148,7 @@ namespace Glitter
 
 					// save materials used by effect's particles
 					auto& particles = effects[index]->getParticleNodes();
-					auto materials = GTMManager::getNodes();
+					auto materials = GTMManager::getMaterials();
 					for (auto& particle : particles)
 					{
 						for (int m = 0; m < materials.size(); ++m)
@@ -273,14 +273,14 @@ namespace Glitter
 				if (ImGui::MenuItem("Open", "Ctrl + O"))
 				{
 					std::string name;
-					if (FileGUI::openFileGUI(FileType::Effect, name))
+					if (FileDialog::openFileDialog(FileType::Effect, name))
 						open(name);
 				}
 
 				if (ImGui::MenuItem("Open Folder"))
 				{
 					std::string path;
-					if (FileGUI::openFolderGUI(path))
+					if (FileDialog::openFolderDialog(path))
 						openFolder(path);
 				}
 
@@ -342,7 +342,7 @@ namespace Glitter
 				if (ImGui::MenuItem("Open", "Alt + O"))
 				{
 					std::string name;
-					if (FileGUI::openFileGUI(FileType::Material, name))
+					if (FileDialog::openFileDialog(FileType::Material, name))
 						open(name);
 				}
 
@@ -377,7 +377,7 @@ namespace Glitter
 				{
 					if (selectedMaterial >= 0 && selectedMaterial < GTMManager::count())
 					{
-						std::vector<std::shared_ptr<MaterialNode>> materialNodes = GTMManager::getNodes();
+						std::vector<std::shared_ptr<MaterialNode>> materialNodes = GTMManager::getMaterials();
 						std::string filename = materialNodes[selectedMaterial]->getMaterial()->getFilename();
 						if (filename.size())
 							filename = File::getFileNameWithoutExtension(filename).append(".xml");
@@ -407,8 +407,12 @@ namespace Glitter
 
 		void ParticleEditor::cleanUp()
 		{
+			// call GTMManager::clean after CommandManager::clean again in case
+			// a material is referenced in the undo or redo stacks.
 			GTMManager::clean();
 			CommandManager::clean();
+			GTMManager::clean();
+
 			ResourceManager::cleanModels();
 			ResourceManager::cleanTextures();
 		}

@@ -1,7 +1,7 @@
 #include "MaterialNode.h"
 #include "UiHelper.h"
 #include "File.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include "ResourceManager.h"
 
 namespace Glitter
@@ -70,7 +70,7 @@ namespace Glitter
 				if (ImGui::Button(textureLbl.c_str(), ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 				{
 					std::string name;
-					if (FileGUI::openFileGUI(FileType::Texture, name))
+					if (FileDialog::openFileDialog(FileType::Texture, name))
 					{
 						ResourceManager::loadTexture(name, TextureSlot::Diffuse);
 						changeTexture(ResourceManager::getTexture(File::getFileName(name)));

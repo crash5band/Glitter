@@ -1,5 +1,5 @@
 #include "ModelEditor.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include "ResourceManager.h"
 #include "ImGui/imgui.h"
 #include "IconsFontAwesome5.h"
@@ -17,14 +17,14 @@ namespace Glitter
 		void ModelEditor::openModel()
 		{
 			std::string name;
-			if (FileGUI::openFileGUI(FileType::Model, name))
+			if (FileDialog::openFileDialog(FileType::Model, name))
 				ResourceManager::loadModel(name);
 		}
 
 		void ModelEditor::openModelFolder()
 		{
 			std::string dir;
-			if (FileGUI::openFolderGUI(dir))
+			if (FileDialog::openFolderDialog(dir))
 			{
 				if (!std::filesystem::exists(dir))
 					return;
@@ -43,14 +43,14 @@ namespace Glitter
 		void ModelEditor::openTexture()
 		{
 			std::string name;
-			if (FileGUI::openFileGUI(FileType::Texture, name))
+			if (FileDialog::openFileDialog(FileType::Texture, name))
 				ResourceManager::loadTexture(name, TextureSlot::Diffuse);
 		}
 
 		void ModelEditor::openTextureFolder(const std::string& filepath)
 		{
 			std::string dir;
-			if (FileGUI::openFolderGUI(dir))
+			if (FileDialog::openFolderDialog(dir))
 			{
 				if (!std::filesystem::exists(dir))
 					return;

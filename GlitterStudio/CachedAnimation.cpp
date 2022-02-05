@@ -110,10 +110,10 @@ namespace Glitter
 			//interpolate key frame values for smoother animations. Mostly noticeable when using playback
 			//speeds less than 1.0x.
 
-			float start = values[(int)time];
+			float start = values[time];
 			float end = start;
-			if ((int)time < values.size() - 1)
-				end = values[(int)time + 1];
+			if (time < values.size() - 1)
+				end = values[time + 1];
 
 			float ratio = time - (int)time;
 			return Utilities::lerp(start, end, ratio);

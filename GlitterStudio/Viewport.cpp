@@ -16,8 +16,8 @@ namespace Glitter
 {
 	namespace Editor
 	{
-		Viewport::Viewport() : mouseInViewArea{ false }, lightEnabled{ true }, drawMode{ 2 }, pendingScreenshot{ false },
-			camera{ Camera(CameraMode::Orbit) }, fBuffer{ Engine::RenderTarget(1280, 720, 4) }
+		Viewport::Viewport() : lightEnabled{ true }, drawMode{ 2 }, pendingScreenshot{ false },
+			camera{}, fBuffer{ Engine::RenderTarget(1280, 720, 4) }
 		{
 			stbi_flip_vertically_on_write(1);
 		}
@@ -30,7 +30,7 @@ namespace Glitter
 		void Viewport::use()
 		{
 			viewArea = ImRect(ImGui::GetCursorScreenPos(), ImGui::GetCursorScreenPos() + ImGui::GetContentRegionAvail());
-			mouseInViewArea = ImGui::IsMouseHoveringRect(viewArea.Min, viewArea.Max, false);
+			bool mouseInViewArea = ImGui::IsMouseHoveringRect(viewArea.Min, viewArea.Max, false);
 
 			if (mouseInViewArea && ImGui::IsWindowFocused())
 			{
@@ -93,60 +93,33 @@ namespace Glitter
 
 				float y = camera.getYaw();
 				float p = camera.getPitch();
-				float fov = camera.getFOV();
 
 				float height = ImGui::GetContentRegionAvail().x;
-				ImGui::SliderFloat("Yaw", &y, -180, 90, "%g", ImGuiSliderFlags_ClampOnInput);
+				ImGui::SliderFloat("Yaw", &y, -180, 180, "%g", ImGuiSliderFlags_ClampOnInput);
 				ImGui::SliderFloat("Pitch", &p, -89, 89, "%g", ImGuiSliderFlags_ClampOnInput);
-
-				if (ImGui::DragFloat("FOV", &fov, 1.0f, 10.0f, 120.0f, "%g"))
-					camera.setFOV(fov);
 
 				ImGui::Separator();
 
 				float r = camera.getDistance();
-				if (ImGui::DragFloat("Distance", &r, 1.0f, 0.0f, 0.0f, "%g"))
+				if (ImGui::DragFloat("Distance", &r, 1.0f, 200.0f, 0.0f, "%g"))
 					camera.setDistance(r);
-
-				DirectX::XMVECTOR tgt = camera.getTarget();
-				float t[3]{ tgt.m128_f32[0], tgt.m128_f32[1], tgt.m128_f32[2] };
 
 				ImGui::Separator();
 				ImGui::Text("Presets");
 
-				if (ImGui::Button(ICON_FA_ANGLE_UP, UI::btnNormal))
-				{
-					y = -90;
-					p = 15;
-				}
+				if (ImGui::Button(ICON_FA_ANGLE_UP, UI::btnNormal)) { y = -90; p = 15; }
 
 				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_ANGLE_RIGHT, UI::btnNormal))
-				{
-					y = 0;
-					p = 15;
-				}
+				if (ImGui::Button(ICON_FA_ANGLE_RIGHT, UI::btnNormal)) { y = 0; p = 15; }
 
 				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_ANGLE_LEFT, UI::btnNormal))
-				{
-					y = -180;
-					p = 15;
-				}
+				if (ImGui::Button(ICON_FA_ANGLE_LEFT, UI::btnNormal)) { y = -180; p = 15; }
 
 				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_ANGLE_DOWN, UI::btnNormal))
-				{
-					y = 90;
-					p = 15;
-				}
+				if (ImGui::Button(ICON_FA_ANGLE_DOWN, UI::btnNormal)) { y = 90; p = 15; }
 
 				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_LOCATION_ARROW, UI::btnNormal))
-				{
-					y = -45;
-					p = 20;
-				}
+				if (ImGui::Button(ICON_FA_LOCATION_ARROW, UI::btnNormal)) { y = -45; p = 20; }
 
 				if (y != camera.getYaw() || p != camera.getPitch())
 					camera.setAngle(y, p);
@@ -212,7 +185,7 @@ namespace Glitter
 				}
 
 				static const char* scales[]{ "x1.00", "x1.25", "x1.50", "x2.00" };
-				static int scaleSelection = 1;
+				static int scaleSelection = 2;
 				if (ImGui::BeginCombo("Rendering Scale", scales[scaleSelection]))
 				{
 					for (int i = 0; i < 4; ++i)

@@ -11,17 +11,9 @@ namespace Glitter
 {
 	namespace Editor
 	{
-		enum class EditorMode
-		{
-			Particle,
-			Model
-		};
-
 		class Application
 		{
 		private:
-			EditorMode mode;
-
 			static std::string appDir;
 			static std::string shadersDir;
 			static std::string fontsDir;
@@ -37,10 +29,8 @@ namespace Glitter
 
 			GLFWwindow* window;
 			ImGuiID pDockSpaceID;
-			ImGuiID mDockSpaceID;
 
 			ParticleEditor *particleEditor;
-			ModelEditor* modelEditor;
 			Renderer *renderer;
 			InputListener inputListener;
 

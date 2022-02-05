@@ -1,12 +1,11 @@
 #include "SubmeshData.h"
 #include "glad/glad.h"
 
-SubmeshData::SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const MaterialData &m, std::shared_ptr<Glitter::UVAnimation> uv, PirimitveType pirimitive)
+SubmeshData::SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const MaterialData &m, PirimitveType pirimitive)
 {
 	vertices = v;
 	faces = i;
 	material = m;
-	uvAnim = uv;
 	pirimitiveType = pirimitive;
 	
 	build();
@@ -180,20 +179,6 @@ void SubmeshData::draw(Shader* shader, float time)
 	}
 
 	setMaterialParams(shader);
-	
-	// animate uvs if available
-	Glitter::Vector2 uvOffset;
-	if (uvAnim)
-	{
-		Glitter::UVAnimationSet animSet = uvAnim->getAnimationSet();
-		//uvOffset.x = animSet.getValue(time, Glitter::uAnim);
-		//uvOffset.y = animSet.getValue(time, Glitter::vAnim);
-	}
-
-	shader->setVec2("material.uvOffset0", DirectX::XMVECTOR{ uvOffset.x, uvOffset.y });
-	shader->setVec2("material.uvOffset1", DirectX::XMVECTOR{ uvOffset.x, uvOffset.y });
-	shader->setVec2("material.uvOffset2", DirectX::XMVECTOR{ uvOffset.x, uvOffset.y });
-	shader->setVec2("material.uvOffset3", DirectX::XMVECTOR{ uvOffset.x, uvOffset.y });
 
 	// draw
 	glActiveTexture(GL_TEXTURE0);

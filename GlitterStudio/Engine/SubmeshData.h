@@ -43,9 +43,8 @@ private:
 
 public:
 	MaterialData material;
-	std::shared_ptr<Glitter::UVAnimation> uvAnim;
 
-	SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const MaterialData &mat, std::shared_ptr<Glitter::UVAnimation> uvAnim, PirimitveType pirimitive);
+	SubmeshData(const std::vector<VertexData> &v, const std::vector<unsigned int> &i, const MaterialData &mat, PirimitveType pirimitive);
 	~SubmeshData();
 
 	void dispose();

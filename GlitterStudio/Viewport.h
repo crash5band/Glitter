@@ -17,7 +17,6 @@ namespace Glitter
 			Engine::RenderTarget fBuffer;
 			ImRect viewArea;
 			Glitter::Vector2 size;
-			bool mouseInViewArea;
 			bool lightEnabled;
 			bool pendingScreenshot;
 			int drawMode;

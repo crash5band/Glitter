@@ -22,6 +22,8 @@ namespace Glitter
 			static void clearUndo();
 			static void clearRedo();
 			static void clean();
+			static const char* peekUndo();
+			static const char* peekRedo();
 
 			static std::stack<ICommand*> getUndoHistory() { return undoStack; }
 			static std::stack<ICommand*> getRedoHistory() { return redoStack; }

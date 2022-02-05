@@ -23,7 +23,7 @@ namespace Glitter
 			static void saveAll();
 			static void duplicate(int index);
 			static int count();
-			static std::vector<std::shared_ptr<MaterialNode>> getNodes();
+			static std::vector<std::shared_ptr<MaterialNode>> getMaterials();
 
 		};
 	}

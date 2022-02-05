@@ -3,7 +3,7 @@
 #include "IconsFontAwesome5.h"
 #include "CommandManager.h"
 #include "ResourceManager.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include "UI.h"
 
 namespace Glitter
@@ -15,44 +15,12 @@ namespace Glitter
 
 		void Application::updateUI()
 		{
-
 			if (imguiDemoWindow)
 				ImGui::ShowDemoWindow(&imguiDemoWindow);
 
-			switch (mode)
-			{
-			case EditorMode::Particle:
-				UI::resizeLayout(pDockSpaceID, screenWidth, screenHeight);
-				UI::initParticleLayout(pDockSpaceID, screenWidth, screenHeight);
-				particleEditor->update(renderer, frameDelta);
-				break;
-
-			case EditorMode::Model:
-				UI::resizeLayout(mDockSpaceID, screenWidth, screenHeight);
-				UI::initModelLayout(mDockSpaceID, screenWidth, screenHeight);
-				modelEditor->update(renderer, frameDelta);
-				break;
-
-			default:
-				break;
-			}
-
-			float size = ImGui::GetStyle().WindowPadding.y + ImGui::GetStyle().FramePadding.y + 5;
-			ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetFrameHeight() - 1));
-			ImGui::SetNextWindowSize(ImVec2(screenWidth, 10), ImGuiCond_Always);
-			ImGui::Begin("Mode Select", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-
-			if (ImGui::Selectable("Particle Editor", mode == EditorMode::Particle, 0,
-				ImVec2(ImGui::GetContentRegionAvail().x / 2.0f, size)))
-				mode = EditorMode::Particle;
-
-			// Disable model viewer for now
-			ImGui::SameLine();
-			if (ImGui::Selectable("Model Viewer", mode == EditorMode::Model, 0,
-				ImVec2(ImGui::GetContentRegionAvail().x, size)))
-				mode = EditorMode::Particle;
-
-			ImGui::End();
+			UI::resizeLayout(pDockSpaceID, screenWidth, screenHeight);
+			UI::initLayout(pDockSpaceID, screenWidth, screenHeight);
+			particleEditor->update(renderer, frameDelta);
 
 			debugInfo();
 			updateMenubar();
@@ -72,6 +40,12 @@ namespace Glitter
 
 			if (ImGui::BeginMenu("Edit"))
 			{
+				std::string undoStr{ ICON_FA_UNDO " Undo " };
+				undoStr.append(CommandManager::peekUndo());
+
+				std::string redoStr{ ICON_FA_REDO " Redo " };
+				redoStr.append(CommandManager::peekRedo());
+
 				ImGui::Separator();
 				if (ImGui::MenuItem(ICON_FA_UNDO " Undo", "Ctrl + Z"))
 					CommandManager::undo();

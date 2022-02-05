@@ -192,7 +192,7 @@
     <ClCompile Include="EffectNode.cpp" />
     <ClCompile Include="EffectOperations.cpp" />
     <ClCompile Include="EmitterNode.cpp" />
-    <ClCompile Include="FileGUI.cpp" />
+    <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GlitterPlayer.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -210,8 +210,6 @@
     <ClCompile Include="GTMManager.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
     <ClCompile Include="MathExtensions.cpp" />
-    <ClCompile Include="ModelEditor.cpp" />
-    <ClCompile Include="ModelViewer.cpp" />
     <ClCompile Include="ParticleEditor.cpp" />
     <ClCompile Include="ParticleInstance.cpp" />
     <ClCompile Include="ParticleTreeview.cpp" />
@@ -235,14 +233,13 @@
     <ClInclude Include="Engine\Shader.h" />
     <ClInclude Include="Engine\SubmeshData.h" />
     <ClInclude Include="Engine\TextureData.h" />
-    <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="AnimationCommands.h" />
     <ClInclude Include="AnimationTimeline.h" />
     <ClInclude Include="CommandManager.h" />
     <ClInclude Include="EffectCommands.h" />
     <ClInclude Include="EffectNode.h" />
     <ClInclude Include="EmitterNode.h" />
-    <ClInclude Include="FileGUI.h" />
+    <ClInclude Include="FileDialog.h" />
     <ClInclude Include="GlitterPlayer.h" />
     <ClInclude Include="Engine\Light.h" />
     <ClInclude Include="ICommand.h" />
@@ -259,13 +256,10 @@
     <ClInclude Include="INode.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="Inspector.h" />
-    <ClInclude Include="IViewer.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="GTMManager.h" />
     <ClInclude Include="MaterialNode.h" />
     <ClInclude Include="MathExtensions.h" />
-    <ClInclude Include="ModelEditor.h" />
-    <ClInclude Include="ModelViewer.h" />
     <ClInclude Include="ParticleEditor.h" />
     <ClInclude Include="ParticleInstance.h" />
     <ClInclude Include="PropertyCommands.h" />

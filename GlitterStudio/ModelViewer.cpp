@@ -3,7 +3,7 @@
 #include "IconsFontAwesome5.h"
 #include "UI.h"
 #include "UiHelper.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include <filesystem>
 
 namespace Glitter
@@ -20,14 +20,14 @@ namespace Glitter
 		void ModelViewer::open()
 		{
 			std::string name;
-			if (FileGUI::openFileGUI(FileType::Model, name))
+			if (FileDialog::openFileDialog(FileType::Model, name))
 				ResourceManager::loadModel(name);
 		}
 
 		void ModelViewer::openFolder()
 		{
 			std::string dir;
-			if (FileGUI::openFolderGUI(dir))
+			if (FileDialog::openFolderDialog(dir))
 			{
 				if (!std::filesystem::exists(dir))
 					return;

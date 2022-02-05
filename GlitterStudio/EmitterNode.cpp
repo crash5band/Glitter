@@ -3,7 +3,7 @@
 #include "Utilities.h"
 #include "UiHelper.h"
 #include "File.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include "ResourceManager.h"
 #include "MathExtensions.h"
 
@@ -425,7 +425,7 @@ namespace Glitter
 					if (ImGui::Button(mesh.get() ? emitter->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 					{
 						std::string name;
-						if (FileGUI::openFileGUI(FileType::Model, name))
+						if (FileDialog::openFileDialog(FileType::Model, name))
 						{
 							ResourceManager::loadModel(name);
 							changeMesh(ResourceManager::getModel(File::getFileName(name)));

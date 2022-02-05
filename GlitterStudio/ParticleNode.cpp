@@ -1,7 +1,7 @@
 #include "ParticleNode.h"
 #include "UiHelper.h"
 #include "File.h"
-#include "FileGUI.h"
+#include "FileDialog.h"
 #include "ResourceManager.h"
 #include "GTMManager.h"
 
@@ -164,7 +164,7 @@ namespace Glitter
 					if (ImGui::Button(mesh.get() ? particle->getMeshName().c_str() : "None", ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 					{
 						std::string name;
-						if (FileGUI::openFileGUI(FileType::Model, name))
+						if (FileDialog::openFileDialog(FileType::Model, name))
 						{
 							ResourceManager::loadModel(name);
 							changeMesh(ResourceManager::getModel(File::getFileName(name)));
@@ -191,7 +191,7 @@ namespace Glitter
 			if (ImGui::TreeNodeEx("Texture", defaultOpen))
 			{
 				std::string comboLbl = materialNode ? materialNode->getMaterial()->getName() : std::string(particle->getMaterial() + "(Not Loaded)");
-				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getNodes();
+				std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getMaterials();
 
 				beginPropertyColumn();
 				ImGui::Text("Material");

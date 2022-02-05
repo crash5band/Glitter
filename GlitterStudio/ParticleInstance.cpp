@@ -172,7 +172,6 @@ namespace Glitter
 
 			DirectX::XMMATRIX directionM4 = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX inverseViewM4 = DirectX::XMMatrixIdentity();
-			//inverseViewM4 = DirectX::XMMatrixRotationY(PI);
 			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 			inverseViewM4 *= DirectX::XMMatrixInverse(nullptr, camera.getViewMatrix());
 			inverseViewM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -195,9 +194,8 @@ namespace Glitter
 				float lastTime = p.time;
 				p.time = time - p.startTime;
 
-				Vector3 velocity = p.direction + (p.acceleration * p.time);
 				Vector3 basePos = p.basePos;
-				Vector3 animT = p.animation.tryGetTranslation(p.time);
+				Vector3 velocity = p.direction + (p.acceleration * p.time);
 				Vector3 gravity = (particle->getGravitationalAccel() / 3600) * p.time * p.time;
 
 				if (particle->getFlags() & 4)
@@ -213,7 +211,7 @@ namespace Glitter
 				}
 
 				// animations not included in emitter local transform
-				animT = MathExtensions::vector3Transform(animT, emM4Origin);
+				Vector3 animT = MathExtensions::vector3Transform(p.animation.tryGetTranslation(p.time), emM4Origin);
 
 				Vector3 translation = basePos + (velocity * p.time) + animT + gravity;
 				Vector3 rotation = p.rotation + p.animation.tryGetRotation(p.time);
@@ -285,7 +283,6 @@ namespace Glitter
 
 					if (dType == ParticleDirectionType::DirectionalAngleBillboard)
 					{
-						//directionM4 *= DirectX::XMMatrixRotationY(PI);
 						directionM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
 						directionM4 *= DirectX::XMMatrixRotationY(Utilities::toRadians(90 - camera.getYaw()));
 						directionM4.r[3] = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -379,6 +376,7 @@ namespace Glitter
 				++aliveCount;
 			}
 			
+			// all animations should be up to date here.
 			animationSet->markDirty(false);
 		}
 

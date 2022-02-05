@@ -1,9 +1,6 @@
 #include "EffectNode.h"
 #include "UiHelper.h"
 #include "Utilities.h"
-#include "FileGUI.h"
-#include "ResourceManager.h"
-#include "IconsFontAwesome5.h"
 #include "File.h"
 #include "MathExtensions.h"
 #include <map>

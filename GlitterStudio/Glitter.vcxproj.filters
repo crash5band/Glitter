@@ -29,9 +29,6 @@
     <Filter Include="Components\ParticleEditor">
       <UniqueIdentifier>{b35c8c84-1282-4c1c-896e-e0f9ceaba7b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\ModeViewer">
-      <UniqueIdentifier>{f48d5782-106d-41bd-ad7d-d00d76496d2f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Nodes">
       <UniqueIdentifier>{51d4849d-cfa2-44f1-a4f2-c38cf5a3cc2b}</UniqueIdentifier>
     </Filter>
@@ -131,9 +128,6 @@
     <ClCompile Include="GlitterPlayer.cpp">
       <Filter>Components\ParticleEditor</Filter>
     </ClCompile>
-    <ClCompile Include="ModelViewer.cpp">
-      <Filter>Components\ModeViewer</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleEditor.cpp">
       <Filter>Components\ParticleEditor</Filter>
     </ClCompile>
@@ -142,9 +136,6 @@
     </ClCompile>
     <ClCompile Include="ParticleTreeview.cpp">
       <Filter>Components\ParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelEditor.cpp">
-      <Filter>Components\ModeViewer</Filter>
     </ClCompile>
     <ClCompile Include="GTMManager.cpp">
       <Filter>Components\ParticleEditor</Filter>
@@ -156,7 +147,7 @@
     <ClCompile Include="Engine\Shader.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
-    <ClCompile Include="FileGUI.cpp">
+    <ClCompile Include="FileDialog.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="About.cpp" />
@@ -256,9 +247,6 @@
     <ClInclude Include="Engine\ResourceManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Transform.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\MeshData.h">
       <Filter>Engine\Model</Filter>
     </ClInclude>
@@ -283,21 +271,12 @@
     <ClInclude Include="Engine\Light.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IViewer.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h" />
     <ClInclude Include="GlitterPlayer.h">
       <Filter>Components\ParticleEditor</Filter>
     </ClInclude>
-    <ClInclude Include="ModelViewer.h">
-      <Filter>Components\ModeViewer</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleEditor.h">
       <Filter>Components\ParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelEditor.h">
-      <Filter>Components\ModeViewer</Filter>
     </ClInclude>
     <ClInclude Include="GTMManager.h">
       <Filter>Components\ParticleEditor</Filter>
@@ -310,7 +289,7 @@
     <ClInclude Include="Engine\Shader.h">
       <Filter>Engine\Render</Filter>
     </ClInclude>
-    <ClInclude Include="FileGUI.h">
+    <ClInclude Include="FileDialog.h">
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="EditorAnimation.h">

@@ -25,11 +25,10 @@ namespace Glitter
 				return;
 
 			ICommand* command = undoStack.top();
-
 			undoStack.pop();
+
 			redoStack.push(command);
 			command->undo();
-
 			Logger::log(Message(MessageType::Normal, "Undo " + std::string(command->getDescription())));
 		}
 
@@ -39,12 +38,35 @@ namespace Glitter
 				return;
 
 			ICommand* command = redoStack.top();
-
 			redoStack.pop();
+
 			undoStack.push(command);
 			command->execute();
-
 			Logger::log(Message(MessageType::Normal, "Redo " + std::string(command->getDescription())));
+		}
+
+		const char* CommandManager::peekUndo()
+		{
+			if (undoStack.empty())
+				return "";
+
+			ICommand* cmd = undoStack.top();
+			if (cmd->isValid())
+				return cmd->getDescription();
+
+			return "";
+		}
+
+		const char* CommandManager::peekRedo()
+		{
+			if (redoStack.empty())
+				return "";
+
+			ICommand* cmd = redoStack.top();
+			if (cmd->isValid())
+				return cmd->getDescription();
+
+			return "";
 		}
 
 		void CommandManager::clearUndo()
@@ -89,17 +111,6 @@ namespace Glitter
 				undoStack.pop();
 			}
 
-			while (filteredUndo.size())
-			{
-				ICommand* cmd = filteredUndo.top();
-				if (cmd->isValid())
-					undoStack.push(cmd);
-				else
-					delete cmd;
-
-				filteredUndo.pop();
-			}
-
 			while (redoStack.size())
 			{
 				ICommand* cmd = redoStack.top();
@@ -109,6 +120,17 @@ namespace Glitter
 					delete cmd;
 
 				redoStack.pop();
+			}
+
+			while (filteredUndo.size())
+			{
+				ICommand* cmd = filteredUndo.top();
+				if (cmd->isValid())
+					undoStack.push(cmd);
+				else
+					delete cmd;
+
+				filteredUndo.pop();
 			}
 
 			while (filteredRedo.size())
@@ -122,6 +144,5 @@ namespace Glitter
 				filteredRedo.pop();
 			}
 		}
-
 	}
 }

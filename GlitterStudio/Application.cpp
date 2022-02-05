@@ -3,6 +3,7 @@
 #include "CommandManager.h"
 #include "Utilities.h"
 #include "File.h"
+#include "FileDialog.h"
 #include "ImGui/imgui_impl_glfw.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
@@ -15,14 +16,11 @@ namespace Glitter
 		std::string Application::fontsDir;
 		std::string Application::screenshotsDir;
 
-		Application::Application(const std::string& dir) : mode{ EditorMode::Particle }, vsync{ true }
+		Application::Application(const std::string& dir) : vsync{ true }, imguiDemoWindow{ false }, fpsMeter{false},
+			aboutOpen{ false }, debugView{ false }
 		{
 			screenWidth = 1366;
 			screenHeight = 768;
-			imguiDemoWindow = false;
-			fpsMeter = false;
-			aboutOpen = false;
-			debugView = false;
 
 			setDirectory(dir);
 			initOpenGL();
@@ -35,11 +33,9 @@ namespace Glitter
 			ResourceManager::loadShader("Mesh", shadersDir + "Mesh");
 			
 			particleEditor = new ParticleEditor();
-			modelEditor = new ModelEditor();
 			renderer = new Renderer();
 
 			pDockSpaceID = 3939;
-			mDockSpaceID = 4239;
 
 			Utilities::initRandom();
 		}
@@ -93,23 +89,13 @@ namespace Glitter
 				else if (inputListener.isTapped(GLFW_KEY_O))
 				{
 					std::string name;
-					if (mode == EditorMode::Particle)
-					{
-						if (FileGUI::openFileGUI(FileType::Effect, name))
-							particleEditor->open(name);
-					}
-					else if (mode == EditorMode::Model)
-					{
-						modelEditor->openModel();
-					}
+					if (FileDialog::openFileDialog(FileType::Effect, name))
+						particleEditor->open(name);
 				}
 				else if (inputListener.isTapped(GLFW_KEY_S))
 				{
-					if (mode == EditorMode::Particle)
-					{
-						bool saveAs = inputListener.isDown(GLFW_KEY_LEFT_SHIFT) || inputListener.isDown(GLFW_KEY_RIGHT_SHIFT);
-						particleEditor->save(particleEditor->getSelectedEffect(), saveAs);
-					}
+					bool saveAs = inputListener.isDown(GLFW_KEY_LEFT_SHIFT) || inputListener.isDown(GLFW_KEY_RIGHT_SHIFT);
+					particleEditor->save(particleEditor->getSelectedEffect(), saveAs);
 				}
 			}
 			else
@@ -119,15 +105,8 @@ namespace Glitter
 					if (inputListener.isTapped(GLFW_KEY_O))
 					{
 						std::string name;
-						if (mode == EditorMode::Particle)
-						{
-							if (FileGUI::openFileGUI(FileType::Material, name))
-								particleEditor->open(name);
-						}
-						else if (mode == EditorMode::Model)
-						{
-							modelEditor->openTexture();
-						}
+						if (FileDialog::openFileDialog(FileType::Material, name))
+							particleEditor->open(name);
 					}
 
 					if (inputListener.isTapped(GLFW_KEY_S))
@@ -160,14 +139,6 @@ namespace Glitter
 
 				ImGui::Render();
 				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-				if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-				{
-					GLFWwindow* backup = glfwGetCurrentContext();
-					ImGui::UpdatePlatformWindows();
-					ImGui::RenderPlatformWindowsDefault();
-					glfwMakeContextCurrent(backup);
-				}
 
 				glEnable(GL_FRAMEBUFFER_SRGB);
 

@@ -232,7 +232,7 @@ namespace Glitter
 			if (selectionMode == SelectionMode::GTM)
 			{
 				if (selectedMaterial >= 0 && selectedMaterial < GTMManager::count())
-					inspector.setNode(GTMManager::getNodes().at(selectedMaterial));
+					inspector.setNode(GTMManager::getMaterials().at(selectedMaterial));
 			}
 			else
 			{
@@ -358,7 +358,7 @@ namespace Glitter
 			ImGui::Begin(ICON_FA_LAYER_GROUP " Materials");
 			UI::itemRowsBackground();
 
-			std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getNodes();
+			std::vector<std::shared_ptr<MaterialNode>> materials = GTMManager::getMaterials();
 			for (int m = 0; m < materials.size(); ++m)
 			{
 				nodeFlags = selectedMaterial == m ? selectedChildFlags : childNodeFlags;

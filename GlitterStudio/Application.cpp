@@ -11,6 +11,7 @@ namespace Glitter
 {
 	namespace Editor
 	{
+		std::string Application::version;
 		std::string Application::appDir;
 		std::string Application::shadersDir;
 		std::string Application::fontsDir;
@@ -19,13 +20,13 @@ namespace Glitter
 		Application::Application(const std::string& dir) : vsync{ true }, imguiDemoWindow{ false }, fpsMeter{false},
 			aboutOpen{ false }, debugView{ false }
 		{
-			screenWidth = 1366;
-			screenHeight = 768;
-
 			setDirectory(dir);
+			imguiConfig = dir + imguiConfig;
+
 			initOpenGL();
 			initImgui();
 			setImguiStyle();
+			version = getVersion();
 
 			ResourceManager::loadShader("BillboardParticle", shadersDir + "BillboardParticle");
 			ResourceManager::loadShader("MeshParticle", shadersDir + "MeshParticle");
@@ -61,6 +62,11 @@ namespace Glitter
 		std::string Application::getScreenshotsDirectory()
 		{
 			return screenshotsDir;
+		}
+
+		std::string Application::getAppVersion()
+		{
+			return version;
 		}
 
 		void Application::frameTime()
@@ -139,6 +145,14 @@ namespace Glitter
 
 				ImGui::Render();
 				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+				if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+				{
+					GLFWwindow* contextBackup = glfwGetCurrentContext();
+					ImGui::UpdatePlatformWindows();
+					ImGui::RenderPlatformWindowsDefault();
+					glfwMakeContextCurrent(contextBackup);
+				}
 
 				glEnable(GL_FRAMEBUFFER_SRGB);
 

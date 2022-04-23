@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdlib>
 #include <ctime>
+#include <memory>
+#include <stdexcept>
 #include "MathGens.h"
 
 class Utilities
@@ -34,5 +36,18 @@ public:
 	inline static float toDegrees(const float radians)
 	{
 		return radians * (180.0f / Glitter::PI);
+	}
+
+	template<typename ... Args>
+	static std::string formatString(const char* format, Args ... args)
+	{
+		size_t length = std::snprintf(nullptr, 0, format) + 1;
+		if (length <= 0)
+			throw std::runtime_error("An error occured while attempting to format a string.");
+
+		std::unique_ptr<char[]> buf(new char[length]);
+		std::snprintf(buf.get(), length, format, args ...);
+
+		return std::string(buf.get());
 	}
 };

@@ -1,13 +1,14 @@
 #include "Application.h"
 #include "ImGui/imgui.h"
 #include "UI.h"
+#include "Utilities.h"
 #include <Windows.h>
 
 namespace Glitter
 {
 	namespace Editor
 	{
-		void Application::getVersion(char* buffer)
+		std::string Application::getVersion()
 		{
 			char filename[1024];
 			strcpy_s(filename, std::string(appDir + "GlitterStudio.exe").c_str());
@@ -41,24 +42,20 @@ namespace Glitter
 				delete[] verData;
 			}
 
-			sprintf(buffer, "%d.%d.%d", major, minor, rev);
+			return Utilities::formatString("%d.%d.%d", major, minor, rev);
 		}
 
 		void Application::about()
 		{
-			ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
-			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-			ImGui::SetNextWindowSize(ImVec2(500, 250), ImGuiCond_Appearing);
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetWorkCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			ImGui::SetNextWindowSize(ImVec2(500, 250), ImGuiCond_Always);
 
 			if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_NoResize))
 			{
 				ImGui::Text("Glitter Studio\nCopyright (C) 2021 Crash5b\n\n");
 				ImGui::Separator();
 
-				char buffer[64];
-				getVersion(buffer);
-
-				ImGui::Text("Version %s", buffer);
+				ImGui::Text("Version %s", version.c_str());
 				ImGui::Text("Github: https://github.com/crash5band/Glitter");
 
 				ImGui::Separator();

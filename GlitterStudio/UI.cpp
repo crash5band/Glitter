@@ -55,40 +55,16 @@ namespace Glitter
 			drawList->PopClipRect();
 		}
 
-		void UI::resizeLayout(ImGuiID dockspaceID, int screenWidth, int screenHeight)
+		void UI::initLayout(ImGuiID dockspaceID)
 		{
-			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_NoResize;
+			dockspaceID = ImGui::DockSpaceOverViewport();
+			if (ImGui::DockBuilderGetNode(dockspaceID))
+				return;
 
-			float yPos = ImGui::GetFrameHeight() + 1;
-			ImGui::DockBuilderSetNodePos(dockspaceID, ImVec2(0.0f, yPos));
-			ImGui::DockBuilderSetNodeSize(dockspaceID, ImVec2(screenWidth, screenHeight - yPos));
-		}
-
-		void UI::initLayout(ImGuiID dockspaceID, int width, int height)
-		{
-			ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_NoResize;
-
-			if (!ImGui::DockBuilderGetNode(dockspaceID))
-			{
-				ImGui::DockBuilderRemoveNode(dockspaceID);
-				ImGui::DockBuilderAddNode(dockspaceID, dockNodeFlags);
-				ImGui::DockBuilderSetNodeSize(dockspaceID, ImVec2(width, height - ImGui::GetFrameHeight()));
-
-				ImGuiID mainBtmID, midID, midBtmID, rightID, rightBtmID, extraID;
-				ImGuiID mainID = dockspaceID;
-				ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Right, 0.8f, &midID, &mainID);
-				ImGui::DockBuilderSplitNode(mainID, ImGuiDir_Down, 0.5f, &mainBtmID, &mainID);
-				ImGui::DockBuilderSplitNode(midID, ImGuiDir_Down, 0.3f, &midBtmID, &midID);
-				ImGui::DockBuilderSplitNode(midID, ImGuiDir_Right, 0.2f, &rightID, &midID);
-
-				ImGui::DockBuilderDockWindow(effWindow, mainID);
-				ImGui::DockBuilderDockWindow(matWindow, mainBtmID);
-				ImGui::DockBuilderDockWindow(gPlayerWindow, midID);
-				ImGui::DockBuilderDockWindow(inspectorWindow, rightID);
-				ImGui::DockBuilderDockWindow(pTimelineWindow, midBtmID);
-
-				ImGui::DockBuilderFinish(mainID);
-			}
+			ImGui::DockBuilderRemoveNode(dockspaceID);
+			ImGui::DockBuilderAddNode(dockspaceID);
+			ImGui::DockBuilderSetNodeSize(dockspaceID, ImGui::GetMainViewport()->WorkSize);
+			ImGui::DockBuilderFinish(dockspaceID);
 		}
 
 		bool UI::transparentButton(const std::string& lbl, const ImVec2& size)

@@ -22,8 +22,7 @@ namespace Glitter
 			static ImVec2 btnNormal;
 			static ImVec2 btnWide;
 
-			static void initLayout(ImGuiID dockspaceID, int width, int height);
-			static void resizeLayout(ImGuiID dockspaceID, int screenWidth, int screenHeight);
+			static void initLayout(ImGuiID dockspaceID);
 			static void itemRowsBackground(float lineHeight = -1.0f, const ImColor& color = ImColor(55, 55, 55, 255));
 			static bool transparentButton(const std::string& lbl, const ImVec2& size);
 			static bool selectNode(int& selection1, int val1, int& selection2, int val2);

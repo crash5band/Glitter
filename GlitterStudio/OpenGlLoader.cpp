@@ -16,11 +16,6 @@ namespace Glitter
 		void frameBufferResizeCallback(GLFWwindow* window, int width, int height)
 		{
 			glViewport(0, 0, width, height);
-			if (width && height)
-			{
-				Application::screenWidth = width;
-				Application::screenHeight = height;
-			}
 		}
 
 		void loadIcon(std::string filepath, GLFWwindow* window)
@@ -40,7 +35,7 @@ namespace Glitter
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 			glfwWindowHint(GLFW_SAMPLES, 4);
 
-			window = glfwCreateWindow(screenWidth, screenHeight, "Glitter Studio", NULL, NULL);
+			window = glfwCreateWindow(1280, 720, "Glitter Studio", NULL, NULL);
 			if (window == NULL)
 			{
 				MessageBox(NULL, "Failed to create GLFW Window.\n", NULL, MB_OK | MB_ICONERROR);
@@ -57,7 +52,7 @@ namespace Glitter
 				return false;
 			}
 
-			glViewport(0, 0, screenWidth, screenHeight);
+			glViewport(0, 0, 1280, 720);
 			glfwSwapInterval(1);
 			glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
@@ -76,12 +71,15 @@ namespace Glitter
 			ImGuiIO *io = &ImGui::GetIO();
 
 			io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+			io->BackendFlags |= ImGuiBackendFlags_PlatformHasViewports | ImGuiBackendFlags_RendererHasViewports;
 			//io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 			//io->ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard;
 			io->ConfigWindowsMoveFromTitleBarOnly = true;
-			io->ConfigViewportsNoDefaultParent = true;
-			std::string imINI = appDir + imguiConfig;
-			//io->IniFilename = imINI.c_str();
+			io->ConfigViewportsNoDefaultParent = false;
+			io->ConfigViewportsNoAutoMerge = true;
+			io->ConfigViewportsNoDecoration = false;
+			io->IniFilename = imguiConfig.c_str();
 
 			ImGui::StyleColorsDark();
 			ImGui_ImplGlfw_InitForOpenGL(window, true);

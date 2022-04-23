@@ -10,16 +10,12 @@ namespace Glitter
 {
 	namespace Editor
 	{
-		int Application::screenWidth;
-		int Application::screenHeight;
-
 		void Application::updateUI()
 		{
 			if (imguiDemoWindow)
 				ImGui::ShowDemoWindow(&imguiDemoWindow);
 
-			UI::resizeLayout(pDockSpaceID, screenWidth, screenHeight);
-			UI::initLayout(pDockSpaceID, screenWidth, screenHeight);
+			UI::initLayout(pDockSpaceID);
 			particleEditor->update(renderer, frameDelta);
 
 			debugInfo();

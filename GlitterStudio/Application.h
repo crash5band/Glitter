@@ -18,6 +18,8 @@ namespace Glitter
 			static std::string shadersDir;
 			static std::string fontsDir;
 			static std::string screenshotsDir;
+			static std::string version;
+
 			std::string imguiConfig = "imgui.ini";
 			std::string editorConfig = "config.dat";
 
@@ -37,17 +39,15 @@ namespace Glitter
 			float lastFrame;
 			float frameDelta;
 
+			std::string getVersion();
+
 			bool initOpenGL();
 			bool initImgui();
 			void setImguiStyle();
 			void debugInfo();
-
 			void updateMenubar();
 
 		public:
-			static int screenWidth;
-			static int screenHeight;
-
 			Application(const std::string& dir);
 			~Application();
 
@@ -56,11 +56,11 @@ namespace Glitter
 			void about();
 			void processInput();
 			void updateUI();
-			void getVersion(char* buffer);
 			void setDirectory(const std::string& dir);
 			void loadSettings(const std::string& filename);
 			void saveSettings(const std::string& filename);
 
+			static std::string getAppVersion();
 			static std::string getDirectory();
 			static std::string getScreenshotsDirectory();
 		};

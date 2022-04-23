@@ -19,7 +19,6 @@ namespace Glitter
 			bool drawGrid;
 			bool playOnSelect;
 			EffectNode* selectedEffect;
-			Renderer* renderer;
 			Viewport viewport;
 
 			void updatePreview(Renderer* renderer, float deltaT);

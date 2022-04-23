@@ -68,8 +68,6 @@ namespace Glitter
 			TimelineMode mode;
 
 			void initLimits();
-			float valueToHeight(float value);
-			float heightToValue(float height);
 
 			void timelineContextMenu();
 			void timelineSettings();
@@ -85,6 +83,10 @@ namespace Glitter
 			void updateCurveEditor();
 			void animationProperties();
 
+			bool keyframe(const ImVec2 &pos, const ImVec2 &size, const std::string &str);
+			bool isValidKeySelection() const;
+			bool canCreateKey() const;
+
 		public:
 			AnimationTimeline(const char* name);
 
@@ -98,6 +100,13 @@ namespace Glitter
 			void pasteKey();
 			void setAnimations(std::shared_ptr<EditorAnimationSet> set);
 			void update();
+
+			float framePos(const int frame);
+			int posFrame(const float pos);
+			float valueToHeight(const float value);
+			float heightToValue(const float height);
+			float ratioToHeight(const float ratio);
+			float heightToRatio(const float heihgt);
 		};
 	}
 }

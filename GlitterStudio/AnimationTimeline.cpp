@@ -32,6 +32,66 @@ namespace Glitter
 			initLimits();
 		}
 
+		float AnimationTimeline::framePos(const int frame)
+		{
+			return canvasPos.x + ((frame - frameStart) * effectiveFrameWidth);
+		}
+
+		int AnimationTimeline::posFrame(const float x)
+		{
+			return ((x - canvasPos.x) / effectiveFrameWidth) + frameStart;
+		}
+
+		float AnimationTimeline::ratioToHeight(const float ratio)
+		{
+			return canvasPos.y + (ratio * (canvasSize.y - heightOffset)) + heightOffset;
+		}
+
+		float AnimationTimeline::heightToRatio(const float height)
+		{
+			return height / (canvasPos.y + canvasSize.y - heightOffset);
+		}
+
+		bool AnimationTimeline::keyframe(const ImVec2& pos, const ImVec2& size, const std::string& str)
+		{
+			ImGui::SetCursorScreenPos(ImVec2{ pos.x - (size.x / 2.0f), pos.y - (size.y / 2.0f) });
+			return ImGui::InvisibleButton(str.c_str(), size);
+		}
+
+		bool AnimationTimeline::isValidKeySelection() const
+		{
+			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
+			bool invalid = !set;
+			if (set)
+			{
+				bool invalidAnim = animationIndex < 0 || animationIndex >= set->animations.size();
+				invalid |= invalidAnim;
+
+				if (!invalidAnim)
+				{
+					bool invalidKey = selectedKey < 0 || selectedKey >= set->animations[animationIndex].keys.size();
+					invalid |= invalidKey;
+				}
+			}
+
+			return !invalid;
+		}
+
+		bool AnimationTimeline::canCreateKey() const
+		{
+			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
+			if (set)
+			{
+				return (animationIndex >= 0 && animationIndex < set->animations.size() &&
+					selectedKey == -1 &&
+					currentFrame >= set->animations.at(animationIndex).getStart() &&
+					currentFrame <= set->animations.at(animationIndex).getEnd());
+
+			}
+
+			return false;
+		}
+
 		void AnimationTimeline::initLimits()
 		{
 			for (int limit = 0; limit < 6; ++limit)
@@ -526,18 +586,7 @@ namespace Glitter
 			ImGui::BeginChild("key_properties", ImGui::GetContentRegionAvail(), true);
 
 			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
-			bool disabled = !set;
-			if (set)
-			{
-				bool invalidAnim = animationIndex < 0 || animationIndex >= set->animations.size();
-				disabled |= invalidAnim;
-
-				if (!invalidAnim)
-				{
-					bool invalidKey = selectedKey < 0 || selectedKey >= set->animations[animationIndex].keys.size();
-					disabled |= invalidKey;
-				}
-			}
+			bool disabled = !isValidKeySelection();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
 			if (disabled)
@@ -658,7 +707,6 @@ namespace Glitter
 			boundaries = ImRect(canvasPos, canvasPos + canvasSize);
 
 			ImGui::ItemSize(boundaries);
-			effectiveFrameWidth = frameWidth * zoom;
 			canvasPos -= timelinePosOffset;
 
 			ImU32 bgColor = ImGui::GetColorU32(ImGuiCol_FrameBg);
@@ -667,18 +715,18 @@ namespace Glitter
 
 			int start = std::max((timelinePosOffset.x / effectiveFrameWidth) + frameStart, 0.0f);
 			int end = ((timelinePosOffset.x + canvasSize.x) / effectiveFrameWidth) + frameStart;
+			ImU32 color1 = ImGui::GetColorU32(ImVec4(0.50, 0.50, 0.50, 0.75));
+			ImU32 color2 = ImGui::GetColorU32(ImVec4(0.40, 0.40, 0.40, 0.45));
+			ImU32 color3 = ImGui::GetColorU32(ImVec4(0.20, 0.20, 0.20, 0.75f));
 
 			for (int frame = start; frame <= end; ++frame)
 			{
-				const float x = canvasPos.x + ((frame - frameStart) * effectiveFrameWidth);
+				const float x = framePos(frame);
 				const float y = canvasPos.y + ((frame & 1) ? 10 : 0) + canvasSize.y;
 
 				const bool boldFrame = frame % 10 == 0 || frame == frameStart || frame == frameEnd;
 				const bool validFrame = frame >= frameStart && frame <= frameEnd;
 
-				ImU32 color1 = ImGui::GetColorU32(ImVec4(0.50, 0.50, 0.50, 0.75));
-				ImU32 color2 = ImGui::GetColorU32(ImVec4(0.40, 0.40, 0.40, 0.45));
-				ImU32 color3 = ImGui::GetColorU32(ImVec4(0.20, 0.20, 0.20, 0.75f));
 				ImU32 result = !validFrame ? color3 : boldFrame ? color1 : color2;
 
 				drawList->AddLine(ImVec2(x, y - canvasSize.y), ImVec2(x, y), result, 0.80f);
@@ -726,8 +774,8 @@ namespace Glitter
 
 		void AnimationTimeline::drawAnimationCurve(const EditorKeyframe& k1, const EditorKeyframe& k2)
 		{
-			const float x1{ canvasPos.x + ((k1.time - frameStart) * effectiveFrameWidth) };
-			const float x2{ canvasPos.x + ((k2.time - frameStart) * effectiveFrameWidth) };
+			const float x1{ framePos(k1.time) };
+			const float x2{ framePos(k2.time) };
 
 			// drawing curves can be expensive so return early if the two points are out of range
 			if (((x1 < canvasPos.x + timelinePosOffset.x) && (x2 < canvasPos.x + timelinePosOffset.x)) ||
@@ -744,7 +792,7 @@ namespace Glitter
 				ImVec2* points = (ImVec2*)(malloc(sizeof ImVec2 * ((size_t)k2.time - (size_t)k1.time + 1)));
 
 				for (size_t i = k1.time; i <= k2.time; ++i)
-					points[i - (size_t)k1.time] = ImVec2(canvasPos.x + ((i - frameStart) * effectiveFrameWidth), valueToHeight(animSet.lock()->animations[animationIndex].interpolate(i, k1, k2)));
+					points[i - (size_t)k1.time] = ImVec2(framePos(i), valueToHeight(animSet.lock()->animations[animationIndex].interpolate(i, k1, k2)));
 
 				drawList->AddPolyline(points, k2.time - k1.time + 1, lineColor, false, lineThickness);
 				free(points);
@@ -784,31 +832,29 @@ namespace Glitter
 			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
 			if (set)
 			{
-				if (animationIndex >= 0 && animationIndex < set->animations.size() && selectedKey == -1)
+				if (animationIndex >= 0 && animationIndex < set->animations.size() &&
+					selectedKey == -1 &&
+					currentFrame >= set->animations.at(animationIndex).getStart() &&
+					currentFrame <= set->animations.at(animationIndex).getEnd()
+					)
 					CommandManager::pushNew(new AddKeyCommand(set, animationIndex, currentFrame));
 			}
 		}
 
 		void AnimationTimeline::deleteKey()
 		{
-			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
-			if (set && selectedKey != -1)
+			if (isValidKeySelection())
 			{
+				auto set = animSet.lock();
 				CommandManager::pushNew(new RemoveKeyCommand(set, animationIndex, selectedKey));
 			}
 		}
 
 		void AnimationTimeline::copyKey()
 		{
-			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
-			if (!set)
-				return;
-
-			if (animationIndex < 0 || animationIndex >= set->animations.size())
-				return;
-
-			if (selectedKey >= 0 && selectedKey < set->animations[animationIndex].keys.size() - 1)
+			if (isValidKeySelection())
 			{
+				std::shared_ptr<EditorAnimationSet> set = animSet.lock();
 				copyiedKey = set->animations[animationIndex].keys[selectedKey];
 				canPaste = true;
 			}
@@ -816,16 +862,10 @@ namespace Glitter
 
 		void AnimationTimeline::pasteKey()
 		{
-			std::shared_ptr<EditorAnimationSet> set = animSet.lock();
-			if (!set)
-				return;
-
-			if (animationIndex < 0 || animationIndex >= set->animations.size())
-				return;
-
-			if (currentFrame >= set->animations[animationIndex].getStart() && currentFrame <= set->animations[animationIndex].getEnd()
-				&& selectedKey == -1 && canPaste)
+			if (canCreateKey() && canPaste)
 			{
+				std::shared_ptr<EditorAnimationSet> set = animSet.lock();
+
 				EditorKeyframe k = copyiedKey;
 				k.time = currentFrame;
 				CommandManager::pushNew(new AddKeyCommand(set, animationIndex, k));
@@ -861,9 +901,10 @@ namespace Glitter
 			if (!set || animationIndex >= set->animations.size() || animationIndex < 0)
 				return;
 
-			if (ImGui::GetIO().MouseClicked[0] && hovered && !holdingTan && !ImGui::IsPopupOpen((unsigned int)0, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel))
+			if (ImGui::GetIO().MouseClicked[0] && hovered && !holdingTan && 
+				!ImGui::IsPopupOpen((unsigned int)0, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel))
 			{
-				int frame = ((ImGui::GetIO().MousePos.x - canvasPos.x) / effectiveFrameWidth) + frameStart;
+				int frame = posFrame(ImGui::GetIO().MousePos.x);
 				currentFrame = frame;
 				if (currentFrame < 0)
 					currentFrame = 0;
@@ -898,7 +939,7 @@ namespace Glitter
 					drawAnimationCurve(keys[i], keys[i + 1]);
 
 				// get key position in timeline
-				float x{ canvasPos.x + ((keys[i].time - frameStart) * effectiveFrameWidth) };
+				float x{ framePos(keys[i].time) };
 				float y{ valueToHeight(keys[i].value) };
 
 				static EditorKeyframe k;
@@ -914,8 +955,7 @@ namespace Glitter
 					const ImU32 bluKey = ImGui::GetColorU32(ImVec4(0.0, 0.0, 1.0, 0.75));
 					const ImU32 circleColor = hermite ? bluKey : redKey;
 
-					ImGui::SetCursorScreenPos(ImVec2(x - (UI::btnSmall.x / 2.0f), y - (UI::btnSmall.y / 2.0f)));
-					ImGui::InvisibleButton(std::string("##circle" + i).c_str(), UI::btnSmall);
+					keyframe(ImVec2(x, y), UI::btnSmall, std::string("##circle" + i));
 
 					if (ImGui::IsItemActivated()) k = keys[i];
 					if (ImGui::IsItemActive())
@@ -927,7 +967,7 @@ namespace Glitter
 							y += io.MouseDelta.y;
 
 							selectedKey = i;
-							currentFrame = ((io.MousePos.x - canvasPos.x) / effectiveFrameWidth) + frameStart;
+							currentFrame = posFrame(io.MousePos.x);
 							currentFrame = std::clamp(currentFrame, frameStart, frameEnd);
 							keys[i].time = currentFrame;
 							keys[i].time = set->animations[animationIndex].verifyKeyOrder(i, keys[i].time);
@@ -955,8 +995,7 @@ namespace Glitter
 						if (Utilities::isWithinRange(circlePos.y, canvasPos.y, canvasPos.y + canvasSize.y + 10))
 						{
 							// left tangent
-							ImGui::SetCursorScreenPos(ImVec2(circlePos.x, circlePos.y - (UI::btnSmall.y / 2.0f)));
-							ImGui::InvisibleButton(std::string("tan_in" + std::to_string(i)).c_str(), UI::btnSmall);
+							keyframe(circlePos, UI::btnSmall, std::string("tan_in" + std::to_string(i)));
 
 							if (ImGui::IsItemActivated()) k = keys[i];
 							if (ImGui::IsItemActive())
@@ -981,8 +1020,7 @@ namespace Glitter
 						if (Utilities::isWithinRange(circlePos.y, canvasPos.y, canvasPos.y + canvasSize.y + 10))
 						{
 							// right tangent
-							ImGui::SetCursorScreenPos(ImVec2(circlePos.x - (UI::btnSmall.x / 2.0f), circlePos.y - (UI::btnSmall.y / 2.0f)));
-							ImGui::InvisibleButton(std::string("tan_out" + std::to_string(i)).c_str(), UI::btnSmall);
+							keyframe(circlePos, UI::btnSmall, std::string("tan_out" + std::to_string(i)));
 
 							if (ImGui::IsItemActivated()) k = keys[i];
 							if (ImGui::IsItemActive())
@@ -1058,10 +1096,11 @@ namespace Glitter
 				if (timelinePosOffset.x < timelineMinOffset.x)
 					timelinePosOffset.x = timelineMinOffset.x;
 
+				effectiveFrameWidth = frameWidth * zoom;
 				drawTimelineBase();
 
 				// draw cursor below keys
-				ImVec2 cursorPos = ImVec2(canvasPos.x + ((currentFrame - frameStart) * effectiveFrameWidth), canvasPos.y);
+				ImVec2 cursorPos = ImVec2(framePos(currentFrame), canvasPos.y);
 				if (Utilities::isWithinRange(cursorPos.x, canvasPos.x + timelinePosOffset.x - 10, canvasPos.x + timelinePosOffset.x + canvasSize.x + 10))
 				{
 					ImU32 cursorColor = ImGui::GetColorU32(ImVec4(0.8, 0.8, 0.8, 0.75));
@@ -1119,7 +1158,7 @@ namespace Glitter
 		float AnimationTimeline::valueToHeight(float val)
 		{
 			const float percent = 1 - ((val - lowerLimits[limitIndex]) / (higherLimits[limitIndex] - lowerLimits[limitIndex]));
-			return canvasPos.y + (percent * (canvasSize.y - heightOffset)) + heightOffset;
+			return ratioToHeight(percent);
 		}
 
 		float AnimationTimeline::heightToValue(float height)

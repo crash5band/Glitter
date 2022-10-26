@@ -19,6 +19,7 @@ namespace Glitter
 		private:
 			static const char* getTitle(FileType type);
 			static const char* getFilters(FileType type);
+			static const char* getExtensionFromType(FileType type);
 
 		public:
 			static bool openFolderDialog(std::string& path);

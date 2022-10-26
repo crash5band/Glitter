@@ -49,6 +49,23 @@ namespace Glitter
 			}
 		}
 
+		const char* FileDialog::getExtensionFromType(FileType type)
+		{
+			switch (type)
+			{
+			case Glitter::Editor::FileType::Effect:
+				return ".gte";
+			case Glitter::Editor::FileType::Material:
+				return ".gtm";
+			case Glitter::Editor::FileType::Model:
+				return ".model";
+			case Glitter::Editor::FileType::Texture:
+				return ".dds";
+			default:
+				return "";
+			}
+		}
+
 		bool FileDialog::openFolderDialog(std::string& path)
 		{
 			HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -153,6 +170,7 @@ namespace Glitter
 			ofn.lpstrFile = filename;
 			ofn.nMaxFile = 1024;
 			ofn.lpstrTitle = title;
+			ofn.lpstrDefExt = getExtensionFromType(type);
 			ofn.Flags = OFN_PATHMUSTEXIST | OFN_LONGNAMES | OFN_EXPLORER
 				| OFN_HIDEREADONLY | OFN_ENABLESIZING;
 

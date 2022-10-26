@@ -134,12 +134,7 @@ namespace Glitter
 				{
 					name = effects[index]->getEffect()->getName();
 					if (FileDialog::saveFileDialog(FileType::Effect, name))
-					{
-						if (Glitter::File::getFileExtension(name) != "gte")
-							name += ".gte";
-
 						ok = true;
-					}
 				}
 
 				if (ok)
@@ -156,7 +151,28 @@ namespace Glitter
 							if (particle->getMaterialNode())
 							{
 								if (particle->getMaterialNode()->getMaterial()->getName() == materials[m]->getMaterial()->getName())
-									GTMManager::save(m, false);
+								{
+									if (saveAs)
+									{
+										std::string saveDir = File::getFilePath(name);
+										std::string matName = materials[m]->getMaterial()->getName();
+										if (matName.size())
+										{
+											matName = saveDir + matName;
+											materials[m]->getMaterial()->write(matName);
+										}
+										else
+										{
+											if (FileDialog::saveFileDialog(FileType::Material, name))
+												materials[m]->getMaterial()->write(name);
+										}
+
+									}
+									else
+									{
+										GTMManager::save(m, false);
+									}
+								}
 							}
 						}
 					}

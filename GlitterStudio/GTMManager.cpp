@@ -71,12 +71,7 @@ namespace Glitter
 			{
 				name = materialNodes[index]->getMaterial()->getName();
 				if (FileDialog::saveFileDialog(FileType::Material, name))
-				{
-					if (Glitter::File::getFileExtension(name) != "gtm")
-						name += ".gtm";
-
 					materialNodes[index]->getMaterial()->write(name);
-				}
 			}
 
 			Logger::log(Message(MessageType::Normal, "Saved material " + name));

@@ -21,7 +21,7 @@ namespace Glitter
 			aboutOpen{ false }, debugView{ false }
 		{
 			setDirectory(dir);
-			imguiConfig = dir + imguiConfig;
+			imguiConfig = appDir + imguiConfig;
 
 			initOpenGL();
 			initImgui();

@@ -94,37 +94,51 @@ namespace Glitter
 				float y = camera.getYaw();
 				float p = camera.getPitch();
 
-				float height = ImGui::GetContentRegionAvail().x;
+				CameraMode mode = camera.getMode();
+				if (ImGui::BeginCombo("Mode", cameraModes[(int)mode].c_str()))
+				{
+					for (int i = 0; i < 2; ++i)
+					{
+						if (ImGui::Selectable(cameraModes[i].c_str(), (CameraMode)i == mode))
+							camera.setMode((CameraMode)i);
+					}
+
+					ImGui::EndCombo();
+				}
+
 				ImGui::SliderFloat("Yaw", &y, -180, 180, "%g", ImGuiSliderFlags_ClampOnInput);
 				ImGui::SliderFloat("Pitch", &p, -89, 89, "%g", ImGuiSliderFlags_ClampOnInput);
-
 				ImGui::Separator();
 
-				float r = camera.getDistance();
-				if (ImGui::DragFloat("Distance", &r, 1.0f, 200.0f, 0.0f, "%g"))
-					camera.setDistance(r);
+				if (camera.getMode() == CameraMode::Orbit)
+				{
+					float r = camera.getDistance();
+					if (ImGui::DragFloat("Distance", &r, 1.0f, 200.0f, 0.0f, "%g"))
+						camera.setDistance(r);
 
-				ImGui::Separator();
-				ImGui::Text("Presets");
+					ImGui::Separator();
+					ImGui::Text("Presets");
 
-				if (ImGui::Button(ICON_FA_ANGLE_UP, UI::btnNormal)) { y = -90; p = 15; }
+					if (ImGui::Button(ICON_FA_ANGLE_UP, UI::btnNormal)) { y = -90; p = 15; }
 
-				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_ANGLE_RIGHT, UI::btnNormal)) { y = 0; p = 15; }
+					ImGui::SameLine();
+					if (ImGui::Button(ICON_FA_ANGLE_RIGHT, UI::btnNormal)) { y = 0; p = 15; }
 
-				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_ANGLE_LEFT, UI::btnNormal)) { y = -180; p = 15; }
+					ImGui::SameLine();
+					if (ImGui::Button(ICON_FA_ANGLE_LEFT, UI::btnNormal)) { y = -180; p = 15; }
 
-				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_ANGLE_DOWN, UI::btnNormal)) { y = 90; p = 15; }
+					ImGui::SameLine();
+					if (ImGui::Button(ICON_FA_ANGLE_DOWN, UI::btnNormal)) { y = 90; p = 15; }
 
-				ImGui::SameLine();
-				if (ImGui::Button(ICON_FA_LOCATION_ARROW, UI::btnNormal)) { y = -45; p = 20; }
+					ImGui::SameLine();
+					if (ImGui::Button(ICON_FA_LOCATION_ARROW, UI::btnNormal)) { y = -45; p = 20; }
 
-				if (y != camera.getYaw() || p != camera.getPitch())
-					camera.setAngle(y, p);
+					if (y != camera.getYaw() || p != camera.getPitch())
+						camera.setAngle(y, p);
 
-				ImGui::Separator();
+					ImGui::Separator();
+				}
+
 				if (ImGui::Button("Reset", ImVec2(ImGui::GetContentRegionAvail().x, UI::btnHeight)))
 					camera.reset();
 

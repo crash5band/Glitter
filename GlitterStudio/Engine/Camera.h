@@ -2,9 +2,22 @@
 #include "..\DirectXMath-master\Inc\DirectXMath.h"
 #include <string>
 
+enum class CameraMode
+{
+	Orbit,
+	Normal
+};
+
+static const std::string cameraModes[] =
+{
+	"Orbit",
+	"Normal"
+};
+
 class Camera
 {
 private:
+	CameraMode mode;
 	float defaultYaw = 90;
 	float defaultPitch = 5;
 	float defaultRadius = 3.0f;
@@ -13,14 +26,19 @@ private:
 	DirectX::XMVECTOR target;
 	DirectX::XMVECTOR position;
 	DirectX::XMVECTOR front;
+	DirectX::XMVECTOR right;
 	float yaw;
 	float pitch;
 	float radius;
 
 	void positionCamOrbit();
-	void updateCameraVectors();
+	void updateCameraVectorsOrbit();
+	void positionCamNormal();
 	void rotate(float x, float y);
-	void pollMouseWheel(float yOffset, float r);
+	void pollMouseWheel(float yOffset);
+
+	void updateOrbit(bool lBtn, bool rBtn, float x, float y, float wheel);
+	void updateNormal(bool lBtn, bool rBtn, float x, float y, float wheel);
 
 public:
 	Camera(DirectX::XMVECTOR pos = DirectX::XMVECTOR{ 0.0f, 0.0f, 0.0f, 1.0f });
@@ -36,4 +54,7 @@ public:
 
 	DirectX::XMMATRIX getViewMatrix() const;
 	DirectX::XMMATRIX getProjectionMatrix(float aspect) const;
+
+	inline CameraMode getMode() const { return mode; }
+	inline void setMode(CameraMode m) { mode = m; if (mode == CameraMode::Orbit) reset(); }
 };

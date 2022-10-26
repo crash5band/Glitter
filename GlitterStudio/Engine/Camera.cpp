@@ -3,7 +3,7 @@
 
 Camera::Camera(DirectX::XMVECTOR pos) :
 	position{ pos }, front{ DirectX::XMVECTOR{0.0f, 0.0f, -1.0f, 1.0f} },
-	yaw{ defaultYaw }, pitch{ defaultPitch }
+	yaw{ defaultYaw }, pitch{ defaultPitch }, mode{ CameraMode::Normal }
 {
 	defaultRadius = 5.0f;
 	defaultPosition = position;
@@ -24,7 +24,11 @@ void Camera::reset()
 
 DirectX::XMMATRIX Camera::getViewMatrix() const
 {
-	return DirectX::XMMatrixLookAtRH(position, front, DirectX::XMVECTOR{ 0.0f, 1.0f, 0.0f, 1.0f });
+	DirectX::XMVECTOR tgt = front;
+	if (mode == CameraMode::Normal)
+		tgt = DirectX::XMVectorAdd(tgt, position);
+
+	return DirectX::XMMatrixLookAtRH(position, tgt, DirectX::XMVECTOR{0.0f, 1.0f, 0.0f, 1.0f});
 }
 
 DirectX::XMMATRIX Camera::getProjectionMatrix(float aspect) const
@@ -41,12 +45,25 @@ void Camera::positionCamOrbit()
 	position.m128_f32[1] = sin(rPitch) * radius;
 	position.m128_f32[2] = sin(rYaw) * cos(rPitch) * radius;
 
-	updateCameraVectors();
+	updateCameraVectorsOrbit();
+}
+
+void Camera::positionCamNormal()
+{
+	float rYaw = DirectX::XMConvertToRadians(yaw);
+	float rPitch = DirectX::XMConvertToRadians(pitch);
+
+	DirectX::XMVECTOR _front{ 0.0f, 0.0f, 0.0f, 1.0f };
+	_front.m128_f32[0] = cos(rYaw) * cos(rPitch);
+	_front.m128_f32[1] = -sin(rPitch);
+	_front.m128_f32[2] = -sin(rYaw) * cos(rPitch);
+	front = DirectX::XMVector3Normalize(_front);
 }
 
 void Camera::rotate(float x, float y)
 {
-	yaw		+= x * 0.1f;
+	float factor = (mode == CameraMode::Orbit ? 1 : -1);
+	yaw		+= x * 0.1f * factor;
 	pitch	+= y * 0.1f;
 	pitch	 = std::clamp(pitch, -89.0f, 89.0f);
 }
@@ -57,7 +74,17 @@ void Camera::setAngle(float y, float p)
 	pitch = std::clamp(p, -89.0f, 89.0f);
 
 	radius = DirectX::XMVector3Length(DirectX::XMVectorSubtract(target, position)).m128_f32[0];
-	positionCamOrbit();
+	switch (mode)
+	{
+	case CameraMode::Orbit:
+		positionCamOrbit();
+		break;
+	case CameraMode::Normal:
+		positionCamNormal();
+		break;
+	default:
+		break;
+	}
 }
 
 void Camera::setDistance(float d)
@@ -66,29 +93,55 @@ void Camera::setDistance(float d)
 	positionCamOrbit();
 }
 
-void Camera::pollMouseWheel(float yOffset, float r)
+void Camera::pollMouseWheel(float yOffset)
 {
-	if (r <= 1.0f && yOffset > 0)
-		return;
-
 	position = DirectX::XMVectorAdd(position, DirectX::XMVectorScale(front, yOffset));
 }
 
-void Camera::updateCameraVectors()
+void Camera::updateCameraVectorsOrbit()
 {
 	DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(target, position);
 	front = DirectX::XMVector3Normalize(direction);
 }
 
-void Camera::update(bool leftBtn, bool rightBtn, float x, float y, float wheel)
+void Camera::updateOrbit(bool lBtn, bool rBtn, float x, float y, float wheel)
 {
 	radius = DirectX::XMVector3Length(DirectX::XMVectorSubtract(target, position)).m128_f32[0];
 
-	if (leftBtn)
+	if (lBtn)
 	{
 		rotate(x, y);
 		positionCamOrbit();
 	}
 
-	pollMouseWheel(wheel, radius);
+	if (radius <= 1.0f && wheel > 0)
+		return;
+
+	pollMouseWheel(wheel);
+}
+
+void Camera::updateNormal(bool lBtn, bool rBtn, float x, float y, float wheel)
+{
+	if (lBtn)
+	{
+		rotate(x, y);
+		positionCamNormal();
+	}
+
+	pollMouseWheel(wheel);
+}
+
+void Camera::update(bool leftBtn, bool rightBtn, float x, float y, float wheel)
+{
+	switch (mode)
+	{
+	case CameraMode::Orbit:
+		updateOrbit(leftBtn, rightBtn, x, y, wheel);
+		break;
+	case CameraMode::Normal:
+		updateNormal(leftBtn, rightBtn, x, y, wheel);
+		break;
+	default:
+		break;
+	}
 }

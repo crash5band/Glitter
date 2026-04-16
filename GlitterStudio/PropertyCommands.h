@@ -1,7 +1,7 @@
 #pragma once
 #include "ICommand.h"
 #include <functional>
-
+#include <memory>
 namespace Glitter
 {
 	namespace Editor

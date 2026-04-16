@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <array>
-
+#include <string>
 namespace Glitter
 {
 	namespace Editor
